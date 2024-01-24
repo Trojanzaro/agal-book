@@ -1,162 +1,96 @@
 <!DOCTYPE html>
 <html>
 
-  <head>
+<head>
+  <style>
+    .main-dashboard {
+      padding-left: 18rem;
+      padding-top: 2rem;
+    }
+  </style>
 
-    <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+  <script src='js/index.js'></script>
 
-    <style>
-  .main-dashboard {
-    padding-left: 18rem;
-    padding-top: 2rem;
-  }
-</style>
+  <!-- Data Table JS -->
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/jquery.dataTables.css" />
 
-    <!-- Data Table JS -->
-    <script
-      src='https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js'></script>
-    <script
-      src='https://cdn.datatables.net/responsive/2.1.0/js/dataTables.responsive.min.js'></script>
-    <script
-      src='https://cdn.datatables.net/1.13.5/js/dataTables.bootstrap5.min.js'></script>
+  <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
+  <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <!--BOOTSTRAP-->
-    <!-- Latest compiled and minified CSS -->
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet">
-    <!-- Latest compiled JavaScript -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <!--BOOTSTRAP-->
+  <!-- Latest compiled and minified CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Latest compiled JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!--HTMX IMPORT-->
-    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+  <!--HTMX IMPORT-->
+  <script src="https://unpkg.com/htmx.org@1.9.10"></script>
 
-    <!--POCKETBASE IMPORT-->
-    <script src="dist/pocketbase.umd.js"></script>
-
-    <script type="text/javascript">
+  <!--POCKETBASE IMPORT-->
+  <script src="dist/pocketbase.umd.js"></script>
+  <script type="text/javascript">
 
     ////////////////
     //CONST FOR POCKETBASE CLIENT
     const pb = new PocketBase('http://127.0.0.1:8090');
     ////////////////
 
+
     ///////
     // EVENT: USER: LOAD PAGE
-    window.onload = () =>{
-      if(pb.authStore.isValid) {
+    window.onload = () => {
+      if (pb.authStore.isValid) {
         login();
       } else {
         pb.authStore.clear();
       }
     }
-
-    ///////
-    // EVENT: USER: CLICK LOGIN
-    async function loginButton(_t) {
-
-      //get form data
-      const username = document.forms["login_form"]["email"].value
-      const password = document.forms["login_form"]["password"].value
-
-      // try to loging for error return an error message
-      try {
-        const authData = await pb.collection('users').authWithPassword(
-          username,
-          password,
-        );login();
-      } catch (e) {
-        console.error(e);
-        var myAlert = document.getElementById('login_alert')
-        myAlert.innerHTML = '<div class="alert alert-danger alert-dismissible fade show" role="alert">\
-                      <strong>Error!</strong> '+ e.toString() + '.\
-                      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\
-                    </div>'
-      }
-    }
-
-    ///////
-    // EVENT: CTRL: LOGOUT
-    async function logout(){
-      await pb.authStore.clear();
-      window.location.reload();
-    }
-
-    ///////
-    // EVENT: CTRL: LOGIN
-    async function login() {
-        // SUCCESS: CLEAR LOGIN FORM
-        document.getElementById("UI_HTMX").innerHTML='';
-
-        // Succesfully logged in! send token to header requests
-        const headers = {Authorization:  pb.authStore.token.trim()};
-        document.getElementById("UI_MAIN_HTMX").setAttribute("hx-headers", JSON.stringify(headers));
-        document.getElementById("btn_logout").hidden = false; // MAKE THE LOGOUT BUTTON VISILE
-        htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
-
-      
-    }
   </script>
+  <title>agal-book</title>
+</head>
 
-    <title>agal-book</title>
-
-  </head>
-  <body class="pt-5">
-    <!--NAVBAR-->
-    <!--XHX LOADER-->
-    <div id="autoLogin"
-      hx-get="http://localhost:8090/_dist/dashboard"
-      hx-target="#UI_HTMX"
-      hx-trigger="autoLoginT"></div>
-    <!--XHXEND-->
-    <nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
-      <div class="container-fluid">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-          data-bs-target="#navbarTogglerDemo01"
-          aria-controls="navbarTogglerDemo01" aria-expanded="false"
-          aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-          <div>
-            <a class="navbar-brand" href="index.html">
-              <img src="logo.png" alt width="30" height="24"
-                class="d-inline-block align-text-top">
-              Agal - Book
-            </a>
-          </div>
-        </div>
-        <div class="d-flex">
-          <img src="user_profile.png" class="rounded-circle" alt="Cinque Terre"
-            width="50" height="50">
-          <button id="btn_logout" class="btn btn-outline-warning" onclick="logout()"hidden>Log
-            out</button>
+<body class="pt-5" id="body_ID">
+  <!--NAVBAR-->
+  <!--XHX LOADER-->
+  <div id="autoLogin" hx-get="http://localhost:8090/_dist/dashboard" hx-target="#UI_HTMX" hx-trigger="autoLoginT"></div>
+  <!--XHXEND-->
+  <nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
+        aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+        <div>
+          <a class="navbar-brand" href="index.html">
+            <img src="logo.png" alt width="30" height="24" class="d-inline-block align-text-top">
+            Agal - Book
+          </a>
         </div>
       </div>
-    </nav><!--END NAVBAR-->
-
-    <!--MAIN LOGIN HTMX-->
-    <div id="UI_HTMX"></div>
-    <!--END LOGIN-->
-
-    <!--MAIN HTMX-->
-    <div id="UI_MAIN_HTMX"
-      hx-get="http://localhost:8090/_dist/dashboard"
-      hx-trigger="loginAccept"
-      hx-target="#UI_HTMX">
-
+      <div class="d-flex">
+        <img src="user_profile.png" class="rounded-circle" alt="Cinque Terre" width="50" height="50">
+        <button id="btn_logout" class="btn btn-outline-warning" onclick="logout()" hidden>Log
+          out</button>
+      </div>
     </div>
+  </nav><!--END NAVBAR-->
 
-    <div id="UI_LOGIN_HTMX"
-      hx-get="http://localhost:8090/_dist/login"
-      hx-trigger="load"
-      hx-target="#UI_HTMX">
-    </div>
+  <!--MAIN LOGIN HTMX-->
+  <div id="UI_HTMX"></div>
+  <!--END LOGIN-->
 
-    <!--END OF HTMX -->
-  </body>
+  <!--MAIN HTMX-->
+  <div id="UI_MAIN_HTMX" hx-get="http://localhost:8090/_dist/dashboard" hx-trigger="loginAccept" hx-target="#UI_HTMX">
+
+  </div>
+
+  <div id="UI_LOGIN_HTMX" hx-get="http://localhost:8090/_dist/login" hx-trigger="load" hx-target="#UI_HTMX">
+  </div>
+
+  <!--END OF HTMX -->
+</body>
 
 </html>
