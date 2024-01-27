@@ -33,9 +33,10 @@ routerAdd("GET", "/_dist/login", (c) => {
 });
 
 //GET DASHBOARD
+//
+// @param @
 routerAdd("GET", "/_dist/dashboard", (c) => {
     
-
     //generate templates
     const html = $template.loadFiles(
         `${__hooks}/views/dashboard/layout.html`
