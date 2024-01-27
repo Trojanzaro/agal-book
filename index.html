@@ -54,7 +54,7 @@
 <body class="pt-5" id="body_ID">
   <!--NAVBAR-->
   <!--XHX LOADER-->
-  <div id="autoLogin" hx-get="http://localhost:8090/_dist/dashboard" hx-target="#UI_HTMX" hx-trigger="autoLoginT"></div>
+  <div id="autoLogin" hx-get="http://localhost:8090/_dist/dashboard?wd=dashboard" hx-target="#UI_HTMX" hx-trigger="autoLoginT"></div>
   <!--XHXEND-->
   <nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
     <div class="container-fluid">
@@ -78,19 +78,19 @@
     </div>
   </nav><!--END NAVBAR-->
 
-  <!--MAIN LOGIN HTMX-->
+  <!--MAIN-->
   <div id="UI_HTMX"></div>
-  <!--END LOGIN-->
+  <!--END OF MAIN-->
 
-  <!--MAIN HTMX-->
-  <div id="UI_MAIN_HTMX" hx-get="http://localhost:8090/_dist/dashboard" hx-trigger="loginAccept" hx-target="#UI_HTMX">
+  <!--VIEWS HTMX-->
+  <div id="UI_MAIN_HTMX" hx-get="http://localhost:8090/_dist/dashboard?wd=dashboard" hx-trigger="loginAccept" hx-target="#UI_HTMX">
 
   </div>
 
   <div id="UI_LOGIN_HTMX" hx-get="http://localhost:8090/_dist/login" hx-trigger="load" hx-target="#UI_HTMX">
   </div>
 
-  <!--END OF HTMX -->
+  
 </body>
 
 </html>
