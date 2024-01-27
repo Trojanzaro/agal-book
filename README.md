@@ -23,11 +23,11 @@ Contained in the project directory is that main **requirements** for pocketbase
 ``` shell
 ./
  /pocketbase # - pocketbase binary, to be replaced with latest version of pocketbase binary
-/pb_data # - copntainsstores your application data, uploaded files, etc. (in .gitignore)
+ /pb_data # - copntainsstores your application data, uploaded files, etc. (in .gitignore)
  /pb_migrations # - contains JS migration files with your collection changes (can be safely committed in your repository).
  /pb_hooks # contains the JS/Go code that can run on pocketbases bin as a backend
-You can even write custom migration scripts. For more info check the JS migrations [docs](https://pocketbase.io/docs/js-migrations).
 ```
+You can even write custom migration scripts. For more info check the JS migrations [docs](https://pocketbase.io/docs/js-migrations).
 
 
 For the installation process you need to:
