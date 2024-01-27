@@ -11,39 +11,39 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto" style="margin-bottom: 30rem!important;">
       <li class="nav-item">
-        <a href="#" class="nav-link active" aria-current="page">
+        <a href="#" class="nav-link text-white active" aria-current="page"><!--active" aria-current="page"-->
           <svg class="bi me-2" width="16" height="16">
             <use xlink:href="#home" />
-          </svg>
-          Students
-        </a>
-      </li>
-      <li>
-        <a href="#" class="nav-link text-white">
-          <svg class="bi me-2" width="16" height="16">
-            <use xlink:href="#speedometer2" />
           </svg>
           Dashboard
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white">
+        <a href="#" class="nav-link text-white" hx-get="http://localhost:8090/_dist/dashboard?wd=students" hx-target="#UI_HTMX">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#speedometer2" />
+          </svg>
+          Students
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link text-white" hx-get="http://localhost:8090/_dist/dashboard?wd=teachers" hx-target="#UI_HTMX">
           <svg class="bi me-2" width="16" height="16">
             <use xlink:href="#table" />
           </svg>
-          Orders
+          Teachers
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white">
+        <a href="#" class="nav-link text-white" hx-get="http://localhost:8090/_dist/dashboard?wd=classrooms" hx-target="#UI_HTMX">
           <svg class="bi me-2" width="16" height="16">
             <use xlink:href="#grid" />
           </svg>
-          Products
+          Class-Rooms
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white">
+        <a href="#" class="nav-link text-white" hx-get="http://localhost:8090/_dist/dashboard?wd=customers" hx-target="#UI_HTMX">
           <svg class="bi me-2" width="16" height="16">
             <use xlink:href="#people-circle" />
           </svg>
@@ -70,21 +70,3 @@
 </div>
 
 <!--END SIDEBAR-->
-
-<!--MAIN-->
-<div class="main-dashboard">
-  <table id="dataTable" class="table table-striped" style="width:100%">
-    <thead>
-      <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Age</th>
-        <th>Phone</th>
-      </tr>
-    </thead>
-    <tbody id="tbodyStudents" hx-get="http://localhost:8090/_coll/students/records" hx-trigger="load"
-      hx-swap="inerHTML" hx-on::after-on-load="new DataTable('#dataTable')">
-    </tbody>
-  </table>
-</div>
-<!--END MAIN-->
