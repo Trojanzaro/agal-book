@@ -48,7 +48,7 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
 //////////////
 
 
-//GET DASHBOARD
+//GET STUDENTS API
 routerAdd("GET", "/_coll/students/records", (c) => {
     let returnString = []
     const result = arrayOf(new DynamicModel({
@@ -62,6 +62,35 @@ routerAdd("GET", "/_coll/students/records", (c) => {
     }))
     $app.dao().db()
         .newQuery("SELECT * FROM student LIMIT 100")
+        .all(result) // throw an error on db failure
+
+    for(let i=0; i<result.length; i++) {
+        returnString = [returnString, 
+        "<tr>",
+            "<td>",result[i].first_name,"</td>",
+            "<td>",result[i].last_name,"</td>",
+            "<td>",result[i].birthdate,"</td>",
+            "<td>",result[i].phone_number,"</td>",
+        "</tr>"
+        ].join("")
+    }
+    return c.html(200, returnString);
+}, $apis.requireRecordAuth("users"));
+
+//GET TEACHERS API
+routerAdd("GET", "/_coll/teachers/records", (c) => {
+    let returnString = []
+    const result = arrayOf(new DynamicModel({
+        // describe the shape of the data (used also as initial values)
+        "id":     "",
+        "first_name": "",
+        "last_name":"",
+        "birthdate": "",
+        "phone_number":"",
+        "roles":  [], // serialized json db arrays are decoded as plain arrays
+    }))
+    $app.dao().db()
+        .newQuery("SELECT * FROM teacher LIMIT 100")
         .all(result) // throw an error on db failure
 
     for(let i=0; i<result.length; i++) {
