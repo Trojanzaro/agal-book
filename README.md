@@ -23,7 +23,7 @@ Contained in the project directory is that main **requirements** for pocketbase
 ``` shell
 ./
  /pocketbase # - pocketbase binary, to be replaced with latest version of pocketbase binary
- /pb_data # - copntainsstores your application data, uploaded files, etc. (in .gitignore)
+ /pb_data # - contains, stores your application data, uploaded files, etc. (in .gitignore)
  /pb_migrations # - contains JS migration files with your collection changes (can be safely committed in your repository).
  /pb_hooks # contains the JS/Go code that can run on pocketbases bin as a backend
 ```
@@ -73,19 +73,19 @@ Simply **copy** and **REPLACE** the newly downloaded/extracted `pocketbase` exec
 
 
 # -rw-r--r-- 1 usr usr 3046 Ιαν 27 02:14 README.md
- # -rw-r--r-- 1 usr usr 15116 Ιαν 19 05:12 user_profile.png
+# -rw-r--r-- 1 usr usr 15116 Ιαν 19 05:12 user_profile.png
 ```
 
 
 4. **Setup** Your admin account. <br/>In following the instruction from the official [pocketbase documentation on installation](https://pocketbase.io/docs/#:~:text=Once%20you%27ve%20extracted,pocketbase%20%5Bcommand%5D%20%2D%2Dhelp)
-it mentions that there is no need for Administrator setup.<br/> THe command  to run the back end is `./pocktbase server --dev`<br/>
+it mentions that there is no need for Administrator setup.<br/> The command to start up the back end is `./pocktbase server --dev`<br/>
 ```shell
 $ cd agal-book
 $ pwd
 /home/usr/agal-book
 $ ./pocketbase serve --dev # --dev flag for debug logs
 ```
-**HOWEVER**, Given that the circumstances require that a administrator needs to delete, update or create a new admin accoun , you can still you se the `./pocketbase admin create, ./pockebase admin update ./pocketbase admin delete` for more infoamrtion 
+**HOWEVER**, Given that the circumstances require that a administrator needs to delete, update or create a new admin account , you can still you use the `./pocketbase admin create, ./pockebase admin update ./pocketbase admin delete` for more information
 You could find all available commands and their options by running `./pocketbase --help` or `./pocketbase [command] --help`
 
 
