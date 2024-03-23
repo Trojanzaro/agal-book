@@ -39,16 +39,15 @@ $ git clone https://github.com/Trojanzaro/agal-book.git
 $ cd agal-book
 ```
 In this folder you can edit and change any file, modifying the `./index.html` will be modifying the **main entry point** <br /><br /> Basically the main .html file from where you can run your application, serve you index.html
+
 2. **Download** PocketBase from their official [GitHub Releases page](https://github.com/pocketbase/pocketbase/releases) (make sure you get the correct **bin**). <br /> <br />You extract from the `pocketbase_**ver**.zip` the `pocketbase` executable<br /> this is the Go written single executable that runs the entire backend, from Authentication/Authorization,Database,File upload/Server Side Code
 ```shell
  #!/example:
-
 
  pocketbase_0.21.1_linux_amd64.zip/
  /README.md
  /LICENSE.md
  /pocketbase # <-- The pocketbase executable! The file we need
-
 
 ```
 
@@ -78,7 +77,7 @@ Simply **copy** and **REPLACE** the newly downloaded/extracted `pocketbase` exec
 
 
 4. **Setup** Your admin account. <br/>In following the instruction from the official [pocketbase documentation on installation](https://pocketbase.io/docs/#:~:text=Once%20you%27ve%20extracted,pocketbase%20%5Bcommand%5D%20%2D%2Dhelp)
-it mentions that there is no need for Administrator setup.<br/> The command to start up the back end is `./pocktbase server --dev`<br/>
+it mentions that there is no need for Administrator setup.<br/> The command to start up the back end is `./pocketbase server --dev`<br/>
 ```shell
 $ cd agal-book
 $ pwd
