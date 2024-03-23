@@ -32,15 +32,66 @@ async function logout() {
 ///////
 // EVENT: CTRL: LOGIN
 async function login() {
+    console.log("entering!")
     // SUCCESS: SET BODY HX-HEADERS
     document.getElementById("body_ID").setAttribute("hx-headers", getAuthHeader());
 
     // SUCCESS: CLEAR LOGIN FORM
-    document.getElementById("UI_HTMX").innerHTML = '';
+    document.getElementById("UI_MAIN").innerHTML = '';
 
     // Succesfully logged in! send token to header requests
-    document.getElementById("btn_logout").hidden = false; // MAKE THE LOGOUT BUTTON VISILE
     htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
+}
+
+///////
+// EVENT: CTRL: LOAD ALL STUDENTS
+async function loadAllStudents() {
+    // you can also fetch all records at once via getFullList
+    const records = await pb.collection('student').getFullList({
+        sort: '-created',
+    });
+
+    records.forEach(element => {
+        document.getElementById("tbodyStudents").innerHTML += `<tr>\
+            <td>${element.first_name}</td>\
+            <td>${element.last_name}</td>\
+            <td>${element.birthdate}</td>\
+            <td>${element.phone_number}</td>\
+        </tr>`
+    });
+
+    $(document).ready(function() {
+        var table = $('#dataTable').DataTable( {
+            lengthChange: true,
+            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+        } );
+    } );
+    
+}
+
+///////
+// EVENT: CTRL: LOAD ALL TEACHERS
+async function loadAllTeachers() {
+    // you can also fetch all records at once via getFullList
+    const records = await pb.collection('teacher').getFullList({
+        sort: '-created',
+    });
+
+    records.forEach(element => {
+        document.getElementById("tbodyTeachers").innerHTML += `<tr>\
+            <td>${element.first_name}</td>\
+            <td>${element.last_name}</td>\
+            <td>${element.birthdate}</td>\
+            <td>${element.phone_number}</td>\
+        </tr>`
+    });
+
+    $(document).ready(function() {
+        var table = $('#dataTable').DataTable( {
+            lengthChange: true,
+            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+        } );
+    } );
 }
 
 // UTIL
