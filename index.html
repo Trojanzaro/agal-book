@@ -17,6 +17,10 @@
   <script src='https://code.jquery.com/jquery-3.7.0.js'></script>
   <script src="https://cdn.datatables.net/1.13.7/js/jquery.dataTables.js"></script>
 
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/2.4.2/css/buttons.bootstrap5.min.css" />
+  <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css" />
+
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   <!--BOOTSTRAP-->
@@ -52,45 +56,18 @@
 </head>
 
 <body class="pt-5" id="body_ID">
-  <!--NAVBAR-->
-  <!--XHX LOADER-->
-  <div id="autoLogin" hx-get="http://localhost:8090/_dist/dashboard?wd=dashboard" hx-target="#UI_HTMX" hx-trigger="autoLoginT"></div>
-  <!--XHXEND-->
-  <nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
-    <div class="container-fluid">
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01"
-        aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
-        <div>
-          <a class="navbar-brand" href="index.html">
-            <img src="logo.png" alt width="30" height="24" class="d-inline-block align-text-top">
-            Agal - Book
-          </a>
-        </div>
-      </div>
-      <div class="d-flex">
-        <img src="user_profile.png" class="rounded-circle" alt="Cinque Terre" width="50" height="50">
-        <button id="btn_logout" class="btn btn-outline-warning" onclick="logout()" hidden>Log
-          out</button>
-      </div>
-    </div>
-  </nav><!--END NAVBAR-->
 
   <!--MAIN-->
-  <div id="UI_HTMX"></div>
+  <div id="UI_MAIN"></div>
   <!--END OF MAIN-->
 
-  <!--VIEWS HTMX-->
-  <div id="UI_MAIN_HTMX" hx-get="http://localhost:8090/_dist/dashboard?wd=dashboard" hx-trigger="loginAccept" hx-target="#UI_HTMX">
-
+  <div id="UI_MAIN_HTMX" hx-get="http://localhost:8090/_dist/dashboard?wd=dashboard" hx-trigger="loginAccept" hx-target="#UI_MAIN">
   </div>
 
-  <div id="UI_LOGIN_HTMX" hx-get="http://localhost:8090/_dist/login" hx-trigger="load" hx-target="#UI_HTMX">
+  <div id="UI_LOGIN_HTMX" hx-get="http://localhost:8090/_dist/login" hx-trigger="load" hx-target="#UI_MAIN">
   </div>
 
-  
+
 </body>
 
 </html>
