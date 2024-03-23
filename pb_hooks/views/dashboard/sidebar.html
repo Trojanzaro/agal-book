@@ -1,0 +1,78 @@
+{{define "sidebar"}}
+<!--SIDEBAR-->
+<div class="position-fixed shadow" hx-trigger="loginAccept" id="UI_SIDEBAR_HTMX">
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-secondary" style="width: 280px;">
+    <br />
+    <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+      <svg class="bi me-2" width="40" height="32">
+        <use xlink:href="#bootstrap" />
+      </svg>
+      <span class="fs-4">Sidebar</span>
+    </a>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto" style="margin-bottom: 30rem!important;">
+      <li class="nav-item">
+        <a href="#" class="nav-link text-white {{.sb_dashboard}}" hx-get="http://localhost:8090/_dist/dashboard?wd=dashboard"
+          hx-target="#UI_MAIN"><!--...active" aria-current="page"-->
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#home" />
+          </svg>
+          Dashboard
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link text-white {{.sb_students}}" hx-get="http://localhost:8090/_dist/dashboard?wd=students"
+          hx-target="#UI_MAIN" id="sb_students">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#speedometer2" />
+          </svg>
+          Students
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link text-white {{.sb_teachers}}" hx-get="http://localhost:8090/_dist/dashboard?wd=teachers"
+          hx-target="#UI_MAIN">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#table" />
+          </svg>
+          Teachers
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link text-white {{.sb_classrooms}}" hx-get="http://localhost:8090/_dist/dashboard?wd=classrooms"
+          hx-target="#UI_MAIN">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#grid" />
+          </svg>
+          Class-Rooms
+        </a>
+      </li>
+      <li>
+        <a href="#" class="nav-link text-white {{.sb_customers}}" hx-get="http://localhost:8090/_dist/dashboard?wd=customers"
+          hx-target="#UI_MAIN">
+          <svg class="bi me-2" width="16" height="16">
+            <use xlink:href="#people-circle" />
+          </svg>
+          Customers
+        </a>
+      </li>
+    </ul>
+    <hr>
+    <div class="dropdown">
+      <a href="#" class="d-flex pb-4 ps-4 align-items-center text-white text-decoration-none dropdown-toggle"
+        id="dropdownUser1" data-bs-toggle="dropdown" aria-expanded="false">
+        <strong>Help</strong>
+      </a>
+      <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser1">
+        <li><a class="dropdown-item" href="#">About</a></li>
+        <li><a class="dropdown-item" href="#">Help Documents</a></li>
+        <li><a class="dropdown-item" href="#">Contact</a></li>
+        <li>
+          <hr class="dropdown-divider">
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+<!--END SIDEBAR-->
+{{end}}
