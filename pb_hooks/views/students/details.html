@@ -1,0 +1,40 @@
+<!--MAIN-->
+<form class="row g-3">
+    <div class="col-md-6">
+        <label for="inputFirstname" class="form-label">First Name</label>
+        <input type="text" class="form-control" id="inputFirstname" value="{{.first_name}}">
+    </div>
+    <div class="col-md-6">
+        <label for="inputLastname" class="form-label">Last Name</label>
+        <input type="text" class="form-control" id="inputLastname" value="{{.last_name}}">
+    </div>
+    <div class="col-md-6">
+        <label for="inputEmail" class="form-label">E-mail</label>
+        <input type="email" class="form-control" id="inputEmail" value="{{.email}}">
+    </div>
+    <div class="col-12">
+        <label class="form-label">Phone</label>
+        <input type="text" class="form-control" id="inputPhone1" value="{{.phone1}}">
+        <input type="text" class="form-control" id="inputPhone2" value="{{.phone2}}">
+    </div>
+    <div class="col-12">
+        <label for="inputAddress" class="form-label">Address</label>
+        <input type="text" class="form-control" id="inputAddress" value="{{.address}}">
+    </div>
+    <div class="col-md-6">
+        <label for="inputCity" class="form-label">City</label>
+        <input type="text" class="form-control" id="inputCity" value="{{.city}}">
+    </div>
+    <div class="col-md-4">
+        <label for="inputState" class="form-label">State</label>
+        <input type="text" class="form-control" id="inputState" value="{{.state}}">
+    </div>
+    <div class="col-md-2">
+        <label for="inputZip" class="form-label">Zip</label>
+        <input type="text" class="form-control" id="inputZip" value="{{.zip_code}}">
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary" disabled>Submit</button>
+    </div>
+</form>
+<!--END MAIN-->

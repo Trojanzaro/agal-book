@@ -1,4 +1,22 @@
 ///////
+// EVENT: USER: CLICK USER DETAILS
+async function studentDetails(studentId) {
+
+    // try to loging for error return an error message
+    try {
+        const student = await pb.collection('student').getOne(studentId);
+        const mainDashboard = document.getElementById("main-dashboard");
+        mainDashboard.innerHTML='';
+        const studentHTML = await httpPromise('GET', 'http://localhost:8090/_dist/details?id='+studentId, student);
+        mainDashboard.innerHTML = studentHTML;
+        console.log(studentHTML);
+    } catch (e) {
+        pushNotification(e);
+        console.error(e);
+    }
+}
+
+///////
 // EVENT: USER: CLICK LOGIN
 async function loginButton(_t) {
 
@@ -32,15 +50,19 @@ async function logout() {
 ///////
 // EVENT: CTRL: LOGIN
 async function login() {
-    console.log("entering!")
     // SUCCESS: SET BODY HX-HEADERS
     document.getElementById("body_ID").setAttribute("hx-headers", getAuthHeader());
 
     // SUCCESS: CLEAR LOGIN FORM
     document.getElementById("UI_MAIN").innerHTML = '';
 
-    // Succesfully logged in! send token to header requests
+    // Succesfully logged in! send token to header requests and navigate to where the nav variable says
+    let nav = window.localStorage.getItem('nav');
+    nav = nav !== undefined ? nav : "dashboard";
+    console.log("http://localhost:8090/_dist/dashboard?wd="+nav);
+    document.getElementById("UI_MAIN_HTMX").setAttribute('hx-get', "http://localhost:8090/_dist/dashboard?wd="+nav);
     htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
+    //TODO: replace with working -> htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
 }
 
 ///////
@@ -53,8 +75,8 @@ async function loadAllStudents() {
 
     records.forEach(element => {
         document.getElementById("tbodyStudents").innerHTML += `<tr>\
-            <td>${element.first_name}</td>\
-            <td>${element.last_name}</td>\
+            <td><a href="javascript:studentDetails('${element.id}');" >${element.first_name}</a></td>\
+            <td><a href="javascript:studentDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${element.birthdate}</td>\
             <td>${element.phone_number}</td>\
         </tr>`
@@ -98,4 +120,37 @@ async function loadAllTeachers() {
 function getAuthHeader() {
     const headers = {Authorization:pb.authStore.token.trim()}
     return JSON.stringify(headers)
+}
+
+function httpPromise(method, url, data) {
+    return new Promise((resolve, reject) => {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onload = function() {
+            console.log(this.onerror);
+            if(this.status > 299) {
+                reject(this.response);
+            } else {
+                resolve(this.response);
+            }
+        }
+        xhttp.open(method, url, false);
+        xhttp.setRequestHeader("Authorization", pb.authStore.token.trim());
+        xhttp.send(JSON.stringify(data));
+    });
+}
+
+function pushNotification(data) {
+    console.log('pushing')
+    const toast_board = document.getElementById("toast_board")
+    toast_board.innerHTML += `<div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-bs-autohide="false">
+        <div class="toast-header">
+        <strong class="me-auto">Message</strong>
+        <small>11 mins ago</small>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+        ${data}
+        </div>
+    </div>`
+    $('.toast').show();
 }
