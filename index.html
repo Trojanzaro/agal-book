@@ -65,7 +65,7 @@
   <div id="UI_MAIN"></div>
   <!--END OF MAIN-->
 
-  <div id="UI_MAIN_HTMX" hx-get="http://localhost:8090/_dist/dashboard?wd=dashboard" hx-trigger="loginAccept from:window" hx-target="#UI_MAIN">
+  <div id="UI_MAIN_HTMX" hx-get="http://localhost:8090/_dist/dashboard" hx-vals="js:{wd: window.localStorage.getItem('nav')}" hx-trigger="loginAccept from:window" hx-target="#UI_MAIN">
   </div>
 
   <div id="UI_LOGIN_HTMX" hx-get="http://localhost:8090/_dist/login" hx-trigger="load" hx-target="#UI_MAIN">

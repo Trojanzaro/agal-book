@@ -59,10 +59,7 @@ async function login() {
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
     let nav = window.localStorage.getItem('nav');
     nav = nav !== undefined ? nav : "dashboard";
-    console.log("http://localhost:8090/_dist/dashboard?wd="+nav);
-    document.getElementById("UI_MAIN_HTMX").setAttribute('hx-get', "http://localhost:8090/_dist/dashboard?wd="+nav);
     htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
-    //TODO: replace with working -> htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
 }
 
 ///////
