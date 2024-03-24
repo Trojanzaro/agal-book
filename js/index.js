@@ -4,10 +4,9 @@ async function studentDetails(studentId) {
 
     // try to loging for error return an error message
     try {
-        const student = await pb.collection('student').getOne(studentId);
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML='';
-        const studentHTML = await httpPromise('GET', 'http://localhost:8090/_dist/details?id='+studentId, student);
+        const studentHTML = await httpPromise('GET', 'http://localhost:8090/_dist/details?id='+studentId, null);
         mainDashboard.innerHTML = studentHTML;
         console.log(studentHTML);
     } catch (e) {
@@ -21,8 +20,8 @@ async function studentDetails(studentId) {
 async function loginButton(_t) {
 
     //get form data
-    const username = document.forms["login_form"]["email"].value
-    const password = document.forms["login_form"]["password"].value
+    const username = document.forms["login_form"]["email"].value;
+    const password = document.forms["login_form"]["password"].value;
 
     // try to loging for error return an error message
     try {
@@ -37,6 +36,49 @@ async function loginButton(_t) {
                         <strong>Error!</strong> '+ e.toString() + '.\
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>\
                       </div>'
+    }
+}
+
+///////
+// EVENT: USER: CLICK NEW USER
+async function createNewStudent() {
+
+    //get form data
+    const firstName = document.forms["new_student_form"]["firstName"].value;
+    const lastName = document.forms["new_student_form"]["lastName"].value;
+    const email = document.forms["new_student_form"]["email"].value;
+    const city = document.forms["new_student_form"]["city"].value;
+    const state = document.forms["new_student_form"]["state"].value;
+    const address = document.forms["new_student_form"]["address"].value;
+    const phone1 = document.forms["new_student_form"]["phone1"].value;
+    const phone2 = document.forms["new_student_form"]["phone2"].value;
+    const birthdate = document.forms["new_student_form"]["birthdate"].value;
+    const postalCode = document.forms["new_student_form"]["postalCode"].value;
+
+    
+    // try to loging for error return an error message
+    try {
+        // example create data
+        const data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "birthdate": birthdate,
+            "phone_number": phone1,
+            "email": email,
+            "phone_number_2": phone2,
+            "postal_code": postalCode,
+            "address": address,
+            "city": city,
+            "state": state
+        };
+        const record = await pb.collection('student').create(data);
+        console.log(record);
+
+        pushNotification(record);
+
+    } catch (e) {
+        pushNotification(e);
+        console.error(e);
     }
 }
 
