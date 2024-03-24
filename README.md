@@ -76,12 +76,22 @@ Simply **copy** and **REPLACE** the newly downloaded/extracted `pocketbase` exec
 ```
 
 
-4. **Setup** Your admin account. <br/>In following the instruction from the official [pocketbase documentation on installation](https://pocketbase.io/docs/#:~:text=Once%20you%27ve%20extracted,pocketbase%20%5Bcommand%5D%20%2D%2Dhelp)
-it mentions that there is no need for Administrator setup.<br/> The command to start up the back end is `./pocketbase server --dev`<br/>
+4. **Setup** Your **Migrations** and **Admin** account. <br/>In following the instruction from the official [pocketbase documentation on installation](https://pocketbase.io/docs/#:~:text=Once%20you%27ve%20extracted,pocketbase%20%5Bcommand%5D%20%2D%2Dhelp)
+it mentions that there is no need for Administrator setup after the first time.<br/><br/>If Migrations exist in our pocketbase project we need to apply them with the `pocketbase migrate up` command.<br/><br/>
+The command to create a new admin account on a fresh overwrite of the pocketbase bin is `pocketbase admin acreate`.<br/><br/> The command to start up the back end is `pocketbase server --dev`<br/>
 ```shell
 $ cd agal-book
 $ pwd
-/home/usr/agal-book
+#/home/usr/agal-book
+$ ./pocketbase migrate up
+#.....
+#...
+#Applied 1706025402_created_students.js
+#Applied 1706025491_updated_users.js
+#Applied 1706025727_updated_students.js
+#...
+#.....
+$ ./pocketbase admin create "example@email.com" "password123"
 $ ./pocketbase serve --dev # --dev flag for debug logs
 ```
 **HOWEVER**, Given that the circumstances require that a administrator needs to delete, update or create a new admin account , you can still you use the `./pocketbase admin create, ./pockebase admin update ./pocketbase admin delete` for more information

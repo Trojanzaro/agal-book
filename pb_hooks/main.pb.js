@@ -67,6 +67,11 @@ routerAdd("GET", "/_dist/details", (httpContext) => {
             "first_name": record.get("first_name"),
             "last_name": record.get("last_name"),
             "phone1": record.get("phone_number"),
+            "phone2": record.get("phone_number_2"),
+            "address": record.get("address"),
+            "city": record.get("city"),
+            "state": record.get("state"),
+            "postal_code": record.get("postal_code"),
             "email": record.email(),
             "sb_student": "active"
         });
