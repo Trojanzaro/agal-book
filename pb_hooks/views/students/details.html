@@ -1,5 +1,5 @@
 <!--MAIN-->
-<form class="row g-3">
+<form class="row g-3" onsubmit="putStudent()">
     <div class="col-md-6">
         <label for="inputFirstname" class="form-label">First Name</label>
         <input type="text" class="form-control" id="inputFirstname" value="{{.first_name}}">
@@ -30,11 +30,12 @@
         <input type="text" class="form-control" id="inputState" value="{{.state}}">
     </div>
     <div class="col-md-2">
-        <label for="inputZip" class="form-label">Zip</label>
-        <input type="text" class="form-control" id="inputZip" value="{{.zip_code}}">
+        <label for="inputPostal" class="form-label">Postal Code</label>
+        <input type="text" class="form-control" id="inputPostal" value="{{.postal_code}}">
     </div>
     <div class="col-12">
         <button type="submit" class="btn btn-primary" disabled>Submit</button>
+        <button type="button" class="btn btn-danger" onclick="window.location.reload()">Cancel</button>
     </div>
 </form>
 <!--END MAIN-->
