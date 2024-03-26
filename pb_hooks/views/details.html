@@ -1,5 +1,6 @@
 <!--MAIN-->
-<form class="row g-3" onsubmit="putTeacher()">
+<form class="row g-3" name="details_form">
+    <input type="hidden" value="{{.id}}" id="id"/>
     <div class="col-md-6">
         <label for="inputFirstname" class="form-label">First Name</label>
         <input type="text" class="form-control" id="inputFirstname" value="{{.first_name}}">
@@ -7,6 +8,10 @@
     <div class="col-md-6">
         <label for="inputLastname" class="form-label">Last Name</label>
         <input type="text" class="form-control" id="inputLastname" value="{{.last_name}}">
+    </div>
+    <div class="col-md-6">
+        <label for="birthdate" class="form-label">Birthdate</label>
+        <input class="form-control" type="date" id="inputBirthdate"  value="{{.birth_date}}"/>
     </div>
     <div class="col-md-6">
         <label for="inputEmail" class="form-label">E-mail</label>
@@ -34,7 +39,10 @@
         <input type="text" class="form-control" id="inputPostal" value="{{.postal_code}}">
     </div>
     <div class="col-12">
-        <button type="submit" class="btn btn-primary" disabled>Submit</button>
+        <button id="editbtn" type="button" class="btn btn-outline-warning" onclick="$('#submitEditbtn').removeAttr('disabled')"><i class="fas fa-edit"></i></button>
+    </div>
+    <div class="col-12">
+        <button id="submitEditbtn" type="button" class="btn btn-primary" onclick="putDetails('{{.id}}', '{{.col}}')" disabled>Submit</button>
         <button type="button" class="btn btn-danger" onclick="window.location.reload()">Cancel</button>
     </div>
 </form>

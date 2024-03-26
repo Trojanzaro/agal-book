@@ -32,6 +32,50 @@ async function studentDetails(studentId) {
     }
 }
 
+
+///////
+// EVENT: USER: CLICK SUBMIT STUDENT/TEACHER DETAILS
+async function putDetails(id, collection) {
+
+    //get form data
+    const firstName = document.forms["details_form"]["inputFirstname"].value;
+    const lastName = document.forms["details_form"]["inputLastname"].value;
+    const email = document.forms["details_form"]["inputEmail"].value;
+    const city = document.forms["details_form"]["inputCity"].value;
+    const state = document.forms["details_form"]["inputState"].value;
+    const address = document.forms["details_form"]["inputAddress"].value;
+    const phone1 = document.forms["details_form"]["inputPhone1"].value;
+    const phone2 = document.forms["details_form"]["inputPhone2"].value;
+    const birthdate = document.forms["details_form"]["inputBirthdate"].value;
+    const postalCode = document.forms["details_form"]["inputPostal"].value;
+
+    
+    // try to loging for error return an error message
+    try {
+        // example create data
+        const data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "birthdate": birthdate,
+            "phone_number": phone1,
+            "email": email,
+            "phone_number_2": phone2,
+            "postal_code": postalCode,
+            "address": address,
+            "city": city,
+            "state": state
+        };
+        console.log(data)
+        const record = await pb.collection(collection).update(id, data);
+        console.log(record);
+        pushNotification(JSON.stringify(record));
+
+    } catch (e) {
+        pushNotification(e);
+        console.error(e);
+    }
+}
+
 ///////
 // EVENT: USER: CLICK LOGIN
 async function loginButton(_t) {
@@ -57,7 +101,7 @@ async function loginButton(_t) {
 }
 
 ///////
-// EVENT: USER: CLICK NEW USER
+// EVENT: USER: CLICK NEW STUDENT
 async function createNewStudent() {
 
     //get form data
@@ -196,17 +240,14 @@ function httpPromise(method, url, data) {
 }
 
 function pushNotification(data) {
-    console.log('pushing')
-    const toast_board = document.getElementById("toast_board")
-    toast_board.innerHTML += `<div role="alert" aria-live="assertive" aria-atomic="true" class="toast" data-bs-autohide="false">
+    const toast_board = document.getElementById('toast-container')
+    toast_board.innerHTML += `<div class="toast show" id="mytoast">
         <div class="toast-header">
         <strong class="me-auto">Message</strong>
-        <small>11 mins ago</small>
         <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
         </div>
         <div class="toast-body">
         ${data}
         </div>
     </div>`
-    $('.toast').show();
 }
