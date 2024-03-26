@@ -39,11 +39,10 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
             `${__hooks}/views/dashboard/navbar.html`,
             `${__hooks}/views/dashboard/sidebar.html`,
         ).render(data);
-        console.log(html)
         // Once generated return the HTML contents
         return httpContext.html(200, html);
     } catch(e) {
-        console.log(e)
+        console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
     }
 }, $apis.requireRecordAuth("users"));
@@ -55,7 +54,6 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
     
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
     const studentsId = httpContext.queryParam("id");
-    console.log("id", studentsId)
     const record = $app.dao().findRecordById("student", studentsId);
     const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
     const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ birthdate.getDate();
@@ -82,7 +80,7 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
         // Once generated return the HTML contents
         return httpContext.html(200, html);
     } catch(e) {
-        console.log(e)
+        console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
     }
 }, $apis.requireRecordAuth("users"));
@@ -116,19 +114,19 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
     
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
     const teachersId = httpContext.queryParam("id");
-    console.log("id", teachersId)
     const record = $app.dao().findRecordById("teacher", teachersId);
+
     const scheduleArray = JSON.parse(record.get("schedule"))
     const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
     const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ birthdate.getDate();
-    const scheduleMonday = scheduleArray.filter((v) => v.day === "Monday").map((v) => v.hour).join(", ");
-    const scheduleTuesday = scheduleArray.filter((v) => v.day === "Tuesday").map((v) => v.hour).join(", ");
-    const scheduleWednesday = scheduleArray.filter((v) => v.day === "Wednesday").map((v) => v.hour).join(", ");
-    const scheduleThursday = scheduleArray.filter((v) => v.day === "Thursday").map((v) => v.hour).join(", ");
-    const scheduleFriday = scheduleArray.filter((v) => v.day === "Friday").map((v) => v.hour).join(", ");
-    const scheduleSaturday = scheduleArray.filter((v) => v.day === "Saturday").map((v) => v.hour).join(", ");
-    const scheduleSunday = scheduleArray.filter((v) => v.day === "Sunday").map((v) => v.hour).join(", ");
-    console.log(scheduleMonday);
+    const scheduleMonday = scheduleArray.filter((v) => v.day === "Monday").map((v) => v.hour).join("| ");
+    const scheduleTuesday = scheduleArray.filter((v) => v.day === "Tuesday").map((v) => v.hour).join("| ");
+    const scheduleWednesday = scheduleArray.filter((v) => v.day === "Wednesday").map((v) => v.hour).join("| ");
+    const scheduleThursday = scheduleArray.filter((v) => v.day === "Thursday").map((v) => v.hour).join("| ");
+    const scheduleFriday = scheduleArray.filter((v) => v.day === "Friday").map((v) => v.hour).join("| ");
+    const scheduleSaturday = scheduleArray.filter((v) => v.day === "Saturday").map((v) => v.hour).join("| ");
+    const scheduleSunday = scheduleArray.filter((v) => v.day === "Sunday").map((v) => v.hour).join("| ");
+
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
@@ -159,7 +157,7 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
         // Once generated return the HTML contents
         return httpContext.html(200, html);
     } catch(e) {
-        console.log(e)
+        console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
     }
 }, $apis.requireRecordAuth("users"));

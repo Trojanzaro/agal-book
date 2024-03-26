@@ -10,7 +10,7 @@ async function teacherDetails(teacherId) {
         mainDashboard.innerHTML = teacherHTML;
 
     } catch (e) {
-        pushNotification(e);
+        pushNotification("ERROR: "+JSON.stringify(e.response));
         console.error(e);
     }
 }
@@ -25,9 +25,8 @@ async function studentDetails(studentId) {
         mainDashboard.innerHTML='';
         const studentHTML = await httpPromise('GET', 'http://localhost:8090/_dist/student/details?id='+studentId, null);
         mainDashboard.innerHTML = studentHTML;
-        console.log(studentHTML);
     } catch (e) {
-        pushNotification(e);
+        pushNotification("ERROR: "+JSON.stringify(e.response));
         console.error(e);
     }
 }
@@ -65,14 +64,12 @@ async function putDetails(id, collection) {
             "city": city,
             "state": state
         };
-        console.log(data)
         const record = await pb.collection(collection).update(id, data);
-        console.log(record);
-        pushNotification(JSON.stringify(record));
+        pushNotification("Succesfully Updated Entry!");
 
     } catch (e) {
-        pushNotification(e);
         console.error(e);
+        pushNotification("ERROR: "+JSON.stringify(e.response.data));
     }
 }
 
@@ -133,13 +130,10 @@ async function createNewStudent() {
             "state": state
         };
         const record = await pb.collection('student').create(data);
-        console.log(record);
-
-        pushNotification(record);
+        pushNotification('Successfully created New Entry!');
 
     } catch (e) {
-        pushNotification(e);
-        console.error(e);
+        pushNotification("ERROR: "+JSON.stringify(e.response.data));
     }
 }
 
@@ -226,7 +220,6 @@ function httpPromise(method, url, data) {
     return new Promise((resolve, reject) => {
         const xhttp = new XMLHttpRequest();
         xhttp.onload = function() {
-            console.log(this.onerror);
             if(this.status > 299) {
                 reject(this.response);
             } else {
