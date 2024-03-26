@@ -102,7 +102,7 @@ You could find all available commands and their options by running `./pocketbase
 
 
 Information about the User Interface/experience/design/development
-
+<img src="https://raw.githubusercontent.com/Trojanzaro/agal-book/doc-img-ex/software_architecture.drawio.svg"/>
 
 ## HTML, CSS, JS
 - [ ] [Bootstarp 5](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
@@ -115,4 +115,5 @@ Information about the User Interface/experience/design/development
 
 <picture>
 <img src="https://raw.githubusercontent.com/Trojanzaro/agal-book/doc-img-ex/git_flow.drawio.svg"/>
+
 </picture>

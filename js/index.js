@@ -1,12 +1,29 @@
 ///////
-// EVENT: USER: CLICK USER DETAILS
+// EVENT: USER: CLICK TEACHER DETAILS
+async function teacherDetails(teacherId) {
+
+    // try to loging for error return an error message
+    try {
+        const mainDashboard = document.getElementById("main-dashboard");
+        mainDashboard.innerHTML='';
+        const teacherHTML = await httpPromise('GET', 'http://localhost:8090/_dist/teacher/details?id='+teacherId, null);
+        mainDashboard.innerHTML = teacherHTML;
+
+    } catch (e) {
+        pushNotification(e);
+        console.error(e);
+    }
+}
+
+///////
+// EVENT: USER: CLICK STUDENT DETAILS
 async function studentDetails(studentId) {
 
     // try to loging for error return an error message
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML='';
-        const studentHTML = await httpPromise('GET', 'http://localhost:8090/_dist/details?id='+studentId, null);
+        const studentHTML = await httpPromise('GET', 'http://localhost:8090/_dist/student/details?id='+studentId, null);
         mainDashboard.innerHTML = studentHTML;
         console.log(studentHTML);
     } catch (e) {
@@ -101,10 +118,7 @@ async function login() {
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
     let nav = window.localStorage.getItem('nav');
     nav = nav !== undefined ? nav : "dashboard";
-    console.log("http://localhost:8090/_dist/dashboard?wd="+nav);
-    document.getElementById("UI_MAIN_HTMX").setAttribute('hx-get', "http://localhost:8090/_dist/dashboard?wd="+nav);
     htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
-    //TODO: replace with working -> htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
 }
 
 ///////
@@ -143,8 +157,8 @@ async function loadAllTeachers() {
 
     records.forEach(element => {
         document.getElementById("tbodyTeachers").innerHTML += `<tr>\
-            <td>${element.first_name}</td>\
-            <td>${element.last_name}</td>\
+            <td><a href="javascript:teacherDetails('${element.id}');" >${element.first_name}</a></td>\
+            <td><a href="javascript:teacherDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${element.birthdate}</td>\
             <td>${element.phone_number}</td>\
         </tr>`

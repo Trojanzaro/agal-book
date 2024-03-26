@@ -1,5 +1,5 @@
 <!--MAIN-->
-<form class="row g-3" onsubmit="putStudent()">
+<form class="row g-3" onsubmit="putTeacher()">
     <div class="col-md-6">
         <label for="inputFirstname" class="form-label">First Name</label>
         <input type="text" class="form-control" id="inputFirstname" value="{{.first_name}}">
@@ -38,4 +38,28 @@
         <button type="button" class="btn btn-danger" onclick="window.location.reload()">Cancel</button>
     </div>
 </form>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Monday</th>
+            <th>Tuesday</th>
+            <th>Wednesday</th>
+            <th>Thursday</th>
+            <th>Friday</th>
+            <th>Saturday</th>
+            <th>Sunday</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>{{.schedule_monday}}</td>
+            <td>{{.schedule_tuesday}}</td>
+            <td>{{.schedule_wednesday}}</td>
+            <td>{{.schedule_thursday}}</td>
+            <td>{{.schedule_friday}}</td>
+            <td>{{.schedule_saturday}}</td>
+            <td>{{.schedule_sunday}}</td>
+        </tr>
+    </tbody>
+</table>
 <!--END MAIN-->
