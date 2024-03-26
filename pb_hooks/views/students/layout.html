@@ -40,7 +40,7 @@
       </div>
       <div class="modal-body">
         <!-- <p>Modal body text goes here.</p> -->
-        <form class="row g-3" name="new_student_form" onsubmit="createNewStudent();">
+        <form class="row g-3" name="new_student_form">
           <div class="col-md-4">
             <label for="validationDefault01" class="form-label">First name</label>
             <input type="text" class="form-control" id="firstName" value="Mark" required>
@@ -83,7 +83,7 @@
             <input id="birthdate" class="form-control" type="date" />
           </div>
           <div class="col-12">
-            <button class="btn btn-primary" type="submit">Create new</button>
+            <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewStudent();">Create new</button>
           </div>
         </form>
       </div>
