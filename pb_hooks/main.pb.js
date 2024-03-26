@@ -57,16 +57,20 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
     const studentsId = httpContext.queryParam("id");
     console.log("id", studentsId)
     const record = $app.dao().findRecordById("student", studentsId);
-    console.log(record.get("first_name"))
+    const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
+    const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ birthdate.getDate();
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
         const html = $template.loadFiles(
             `${__hooks}/views/details.html`
         ).render({
+            "id": studentsId,
+            "col": "student",
             "first_name": record.get("first_name"),
             "last_name": record.get("last_name"),
             "phone1": record.get("phone_number"),
+            "birth_date": birthdateStr,
             "phone2": record.get("phone_number_2"),
             "address": record.get("address"),
             "city": record.get("city"),
@@ -75,7 +79,6 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
             "email": record.email(),
             "sb_student": "active"
         });
-        console.log(html)
         // Once generated return the HTML contents
         return httpContext.html(200, html);
     } catch(e) {
@@ -116,6 +119,8 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
     console.log("id", teachersId)
     const record = $app.dao().findRecordById("teacher", teachersId);
     const scheduleArray = JSON.parse(record.get("schedule"))
+    const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
+    const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ birthdate.getDate();
     const scheduleMonday = scheduleArray.filter((v) => v.day === "Monday").map((v) => v.hour).join(", ");
     const scheduleTuesday = scheduleArray.filter((v) => v.day === "Tuesday").map((v) => v.hour).join(", ");
     const scheduleWednesday = scheduleArray.filter((v) => v.day === "Wednesday").map((v) => v.hour).join(", ");
@@ -130,8 +135,11 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
         const html = $template.loadFiles(
             `${__hooks}/views/details.html`
         ).render({
+            "id": teachersId,
+            "col": "teacher",
             "first_name": record.get("first_name"),
             "last_name": record.get("last_name"),
+            "birth_date": birthdateStr,
             "phone1": record.get("phone_number"),
             "phone2": record.get("phone_number_2"),
             "address": record.get("address"),
