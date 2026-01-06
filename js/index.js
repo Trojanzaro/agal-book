@@ -155,7 +155,10 @@ async function login() {
 
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
     let nav = window.localStorage.getItem('nav');
-    nav = nav !== undefined ? nav : "dashboard";
+    console.log("Navigating to: "+nav);
+    nav = nav !== null ? nav : "dashboard";
+    console.log("Navigating to: "+nav);
+    window.localStorage.setItem('nav', nav);    
     htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
 }
 
@@ -168,10 +171,11 @@ async function loadAllStudents() {
     });
 
     records.forEach(element => {
+        const age = ((new Date()).getFullYear() - new Date(element.birthdate).getFullYear())
         document.getElementById("tbodyStudents").innerHTML += `<tr>\
             <td><a href="javascript:studentDetails('${element.id}');" >${element.first_name}</a></td>\
             <td><a href="javascript:studentDetails('${element.id}');" >${element.last_name}</a></td>\
-            <td>${element.birthdate}</td>\
+            <td>${age}</td>\
             <td>${element.phone_number}</td>\
         </tr>`
     });
@@ -194,10 +198,11 @@ async function loadAllTeachers() {
     });
 
     records.forEach(element => {
+        const age = ((new Date()).getFullYear() - new Date(element?.birthdate).getFullYear())
         document.getElementById("tbodyTeachers").innerHTML += `<tr>\
             <td><a href="javascript:teacherDetails('${element.id}');" >${element.first_name}</a></td>\
             <td><a href="javascript:teacherDetails('${element.id}');" >${element.last_name}</a></td>\
-            <td>${element.birthdate}</td>\
+            <td>${age}</td>\
             <td>${element.phone_number}</td>\
         </tr>`
     });

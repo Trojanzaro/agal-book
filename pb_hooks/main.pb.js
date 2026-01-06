@@ -24,10 +24,11 @@ routerAdd("GET", "/_dist/login", (c) => {
 //  
 //  @param httpContext - echo.Context []
 routerAdd("GET", "/_dist/dashboard", (httpContext) => {
-    
+    console.log("Dashboard Request")
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
-    const workinDirectory = httpContext.queryParam("wd")
-    httpContext.response().header().set("Hx-Trigger", "loginAccept")
+    const workinDirectory = httpContext.request.url.query().get("wd")
+    console.log("Working Directory: "+workinDirectory)
+    httpContext.response.header().set("Hx-Trigger", "loginAccept")
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
@@ -45,7 +46,7 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
         console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
     }
-}, $apis.requireRecordAuth("users"));
+}, $apis.requireAuth("users"));
 
 // GET STUDENT DETAILS
 //  
@@ -53,9 +54,9 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
 routerAdd("GET", "/_dist/student/details", (httpContext) => {
     
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
-    const studentsId = httpContext.queryParam("id");
-    const record = $app.dao().findRecordById("student", studentsId);
-    const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
+    const studentsId = httpContext.request.url.query().get("id");
+    const record = $app.findRecordById("student", studentsId);
+    const birthdate = new Date(record.get("birthdate").string().replace(" ", 'T'));
     const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ birthdate.getDate();
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
@@ -83,7 +84,7 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
         console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
     }
-}, $apis.requireRecordAuth("users"));
+}, $apis.requireAuth("users"));
 
 
 
@@ -113,8 +114,8 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
 routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
     
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
-    const teachersId = httpContext.queryParam("id");
-    const record = $app.dao().findRecordById("teacher", teachersId);
+    const teachersId = httpContext.request.url.query().get("id");
+    const record = $app.findRecordById("teacher", teachersId);
 
     const scheduleArray = JSON.parse(record.get("schedule"))
     const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
@@ -160,4 +161,4 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
         console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
     }
-}, $apis.requireRecordAuth("users"));
+}, $apis.requireAuth("users"));
