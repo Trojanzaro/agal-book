@@ -33,7 +33,7 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
     try {
         //generate templates base on working directory path
         const data = {}
-        data["sb_"+workinDirectory] = "active";
+        data["sb_"+workinDirectory] = "active"; // sillyhack to set "active" sidebar item based on working directory
 
         const html = $template.loadFiles(
             `${__hooks}/views/${workinDirectory}/layout.html`,
@@ -76,7 +76,16 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
             "state": record.get("state"),
             "postal_code": record.get("postal_code"),
             "email": record.email(),
-            "sb_student": "active"
+            "sb_student": "active",
+            "student_bool": "true",
+            "parent1_first_name": JSON.parse(record.get("parent_1"))["first_name"],
+            "parent1_last_name": JSON.parse(record.get("parent_1"))["last_name"],
+            "parent1_phone": JSON.parse(record.get("parent_1"))["phone"],
+            "parent1_email": JSON.parse(record.get("parent_1"))["email"],
+            "parent2_first_name": JSON.parse(record.get("parent_2"))["first_name"],
+            "parent2_last_name": JSON.parse(record.get("parent_2"))["last_name"],
+            "parent2_phone": JSON.parse(record.get("parent_2"))["phone"],
+            "parent2_email": JSON.parse(record.get("parent_2"))["email"]
         });
         // Once generated return the HTML contents
         return httpContext.html(200, html);
