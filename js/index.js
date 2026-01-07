@@ -13,6 +13,7 @@ async function teacherDetails(teacherId) {
         pushNotification("ERROR: "+JSON.stringify(e.response));
         console.error(e);
     }
+    drawTeacherCallendar();
 }
 
 ///////
@@ -248,4 +249,42 @@ function pushNotification(data) {
         ${data}
         </div>
     </div>`
+}
+
+///////
+// EVENT: LOAD TEACHER CALENDAR ON DETAILS PAGE
+// TODO: REPLACE DUMMY DATA WITH ACTUAL TEACHER CALL DATA
+function drawTeacherCallendar() {
+  // Ensure Google Charts is loaded before drawing
+  google.charts.load('current', { packages: ['calendar'] });
+
+  google.charts.load('current', { packages: ['calendar'] })
+    .then(() => {
+      const dataTable = new google.visualization.DataTable();
+      dataTable.addColumn({ type: 'date', id: 'Date' });
+      dataTable.addColumn({ type: 'number', id: 'Calls' });
+
+      // Example teacher call data
+      dataTable.addRows([
+        [new Date(2025, 0, 3), 4],
+        [new Date(2025, 0, 4), 2],
+        [new Date(2025, 0, 5), 6],
+        [new Date(2025, 0, 6), 1],
+        [new Date(2025, 0, 7), 5]
+      ]);
+
+      const chart = new google.visualization.Calendar(
+        document.getElementById('teacher_calendar')
+      );
+
+      const options = {
+        title: 'Teacher Calendar',
+        height: 350,
+        calendar: {
+          cellSize: 15
+        }
+      };
+
+      chart.draw(dataTable, options);
+    });
 }
