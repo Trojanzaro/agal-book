@@ -24,10 +24,8 @@ routerAdd("GET", "/_dist/login", (c) => {
 //  
 //  @param httpContext - echo.Context []
 routerAdd("GET", "/_dist/dashboard", (httpContext) => {
-    console.log("Dashboard Request")
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
     const workinDirectory = httpContext.request.url.query().get("wd")
-    console.log("Working Directory: "+workinDirectory)
     httpContext.response.header().set("Hx-Trigger", "loginAccept")
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {

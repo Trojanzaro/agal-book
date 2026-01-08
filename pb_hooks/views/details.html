@@ -38,6 +38,10 @@
         <label for="inputPostal" class="form-label">Postal Code</label>
         <input type="text" class="form-control" id="inputPostal" value="{{.postal_code}}">
     </div>
+    <!--TEACHER CALENDAR-->
+    {{if not .student_bool}}
+    <div id="teacher_calendar" style="width: 1000px; "></div>
+    {{ end }}
     <div class="col-12">
         <button id="editbtn" type="button" class="btn btn-outline-warning"
             onclick="$('#submitEditbtn').removeAttr('disabled')"><i class="fas fa-edit"></i></button>
@@ -48,66 +52,50 @@
         <button type="button" class="btn btn-danger" onclick="window.location.reload()">Cancel</button>
     </div>
 </form>
-<br/>
-<!--TODO:DELETE TABLE REPLACE WITH CALENDAR-->
-<!-- <table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Monday</th>
-            <th>Tuesday</th>
-            <th>Wednesday</th>
-            <th>Thursday</th>
-            <th>Friday</th>
-            <th>Saturday</th>
-            <th>Sunday</th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <td>{{.schedule_monday}}</td>
-            <td>{{.schedule_tuesday}}</td>
-            <td>{{.schedule_wednesday}}</td>
-            <td>{{.schedule_thursday}}</td>
-            <td>{{.schedule_friday}}</td>
-            <td>{{.schedule_saturday}}</td>
-            <td>{{.schedule_sunday}}</td>
-        </tr>
-    </tbody>
-</table> -->
-<!--TEACHER CALENDAR-->
-{{if not .student_bool}}
-<div id="teacher_calendar" style="width: 1000px; height: 350px;"></div>
-{{ end }}
+
+<br />
+
 <!--PARENTS INFO-->
 {{if .student_bool}}
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
+            role="tab" aria-controls="nav-home" aria-selected="true">Parent/Guardian 1</button>
+        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button"
+            role="tab" aria-controls="nav-profile" aria-selected="false">Parent/Guardian 2</button>
+</nav>
+<div class="tab-content" id="nav-tabContent">
+    <!-- Parent/Guardian 1 -->
+    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+        <dl class="row">
+            <dt class="col-sm-3">First Name</dt>
+            <dd class="col-sm-9">{{.parent1_first_name}}</dd>
 
-<div class="row">
-    <div class="col-sm-4">
-        <div class="card border-primary mb-3" style="max-width: 18rem;">
-            <div class="card-header">Guardian/Parent 1</div>
-            <div class="card-body text-primary">
-                <h5 class="card-title">{{.parent1_first_name}} {{.parent1_last_name}}</h5>
-                <p class="card-text">
-                    Phone: {{.parent1_phone}}<br />
-                    E-mail: {{.parent1_email}}
-                </p>
-            </div>
-        </div>
+            <dt class="col-sm-3">Last Name</dt>
+            <dd class="col-sm-9">
+                <p>{{.parent1_last_name}}</p>
+            </dd>
+
+            <dt class="col-sm-3">Phone</dt>
+            <dd class="col-sm-9">{{.parent1_phone}}</dd>
+        </dl>
     </div>
-    <div class="col-sm-4">
-        <div class="card border-primary mb-3" style="max-width: 18rem;">
-            <div class="card-header">Guardian/Parent 2</div>
-            <div class="card-body text-primary">
-                <h5 class="card-title">{{.parent2_first_name}} {{.parent2_last_name}}</h5>
-                <p class="card-text">
-                    Phone: {{.parent2_phone}}<br />
-                    E-mail: {{.parent2_email}}
-                </p>
-            </div>
-        </div>
+    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
+        <!-- Parent/Guardian 2 -->
+        <dl class="row">
+            <dt class="col-sm-3">First Name</dt>
+            <dd class="col-sm-9">{{.parent2_first_name}}</dd>
+
+            <dt class="col-sm-3">Last Name</dt>
+            <dd class="col-sm-9">
+                <p>{{.parent2_last_name}}</p>
+            </dd>
+
+            <dt class="col-sm-3">Phone</dt>
+            <dd class="col-sm-9">{{.parent2_phone}}</dd>
+        </dl>
     </div>
-</div>
 
-{{end}}
+    {{end}}
 
-<!--END MAIN-->
+    <!--END MAIN-->

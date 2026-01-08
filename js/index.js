@@ -156,10 +156,8 @@ async function login() {
 
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
     let nav = window.localStorage.getItem('nav');
-    console.log("Navigating to: "+nav);
     nav = nav !== null ? nav : "dashboard";
-    console.log("Navigating to: "+nav);
-    window.localStorage.setItem('nav', nav);    
+    window.localStorage.setItem('nav', nav);
     htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
 }
 
@@ -256,8 +254,6 @@ function pushNotification(data) {
 // TODO: REPLACE DUMMY DATA WITH ACTUAL TEACHER CALL DATA
 function drawTeacherCallendar() {
   // Ensure Google Charts is loaded before drawing
-  google.charts.load('current', { packages: ['calendar'] });
-
   google.charts.load('current', { packages: ['calendar'] })
     .then(() => {
       const dataTable = new google.visualization.DataTable();
@@ -279,7 +275,6 @@ function drawTeacherCallendar() {
 
       const options = {
         title: 'Teacher Calendar',
-        height: 350,
         calendar: {
           cellSize: 15
         }
