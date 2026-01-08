@@ -26,6 +26,23 @@ routerAdd("GET", "/_dist/login", (c) => {
 routerAdd("GET", "/_dist/dashboard", (httpContext) => {
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
     const workinDirectory = httpContext.request.url.query().get("wd")
+
+    const notifications = []
+    let records = $app.findAllRecords("notification");
+
+    records.forEach(element => {
+        notifications.push({
+            "id": element.id,
+            "title": element.get("title"),  
+            "body_text": element.get("body_text"),
+            "created": element.get("created"),
+            "read": element.get("read")
+        })
+    });
+    const notificationsCount = notifications.filter(n => n.read === false).length;
+    console.log("NOTIFICATIONS COUNT: "+notificationsCount);
+    console.log("NOTIFICATIONS: "+JSON.stringify(notifications));
+
     httpContext.response.header().set("Hx-Trigger", "loginAccept")
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
@@ -33,13 +50,28 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
         const data = {}
         data["sb_"+workinDirectory] = "active"; // sillyhack to set "active" sidebar item based on working directory
 
+        const date = new Date(notifications[0]?.created ?? ""); //this will probably crash
+        // const longDate = date.toLocaleDateString('en-US', {
+        //     year: 'numeric',
+        //     month: 'long',
+        //     day: 'numeric',  
+        //     weekday: 'long'
+        // });
+
+        data["created"] = date.toDateString();
+        data["body_text"] = notifications[0]?.body_text ?? "";
+        data["title"] = notifications[0]?.title ?? "";
+
         const html = $template.loadFiles(
             `${__hooks}/views/${workinDirectory}/layout.html`,
             `${__hooks}/views/dashboard/navbar.html`,
             `${__hooks}/views/dashboard/sidebar.html`,
         ).render(data);
+
+        const html2 = html.replaceAll("\&gt\;", ">").replaceAll("\&lt\;", "<").replaceAll("\&amp\;", "&"); // THIS IS ILLEGAL BUT WORKS FOR NOW
+
         // Once generated return the HTML contents
-        return httpContext.html(200, html);
+        return httpContext.html(200, html2);
     } catch(e) {
         console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');

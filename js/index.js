@@ -214,41 +214,6 @@ async function loadAllTeachers() {
     } );
 }
 
-// UTIL
-function getAuthHeader() {
-    const headers = {Authorization:pb.authStore.token.trim()}
-    return JSON.stringify(headers)
-}
-
-function httpPromise(method, url, data) {
-    return new Promise((resolve, reject) => {
-        const xhttp = new XMLHttpRequest();
-        xhttp.onload = function() {
-            if(this.status > 299) {
-                reject(this.response);
-            } else {
-                resolve(this.response);
-            }
-        }
-        xhttp.open(method, url, false);
-        xhttp.setRequestHeader("Authorization", pb.authStore.token.trim());
-        xhttp.send(JSON.stringify(data));
-    });
-}
-
-function pushNotification(data) {
-    const toast_board = document.getElementById('toast-container')
-    toast_board.innerHTML += `<div class="toast show" id="mytoast">
-        <div class="toast-header">
-        <strong class="me-auto">Message</strong>
-        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-        </div>
-        <div class="toast-body">
-        ${data}
-        </div>
-    </div>`
-}
-
 ///////
 // EVENT: LOAD TEACHER CALENDAR ON DETAILS PAGE
 // TODO: REPLACE DUMMY DATA WITH ACTUAL TEACHER CALL DATA
@@ -282,4 +247,72 @@ function drawTeacherCallendar() {
 
       chart.draw(dataTable, options);
     });
+}
+
+///////
+// EVENT: LOAD CLASSROOM DETAILS PAGE
+//
+async function loadAllClassrooms() {
+    const records = await pb.collection('classroom').getFullList({
+        sort: '-created',
+    });
+
+    for (let i = 0; i < records.length; i++) {
+        const element = records[i];
+        console.log(element.teacher);
+        const teacher = await pb.collection('teacher').getOne(element.teacher);
+        console.log("OPE" + teacher);
+    }
+
+    records.forEach(element => {
+        const age = ((new Date()).getFullYear() - new Date(element?.birthdate).getFullYear())
+        document.getElementById("tbodyClassrooms").innerHTML += `<tr>\
+            <td><a href="javascript:classroomDetails('${element.id}');" >${element.name}</a></td>\
+            <td><a href="javascript:classroomDetails('${element.id}');" >${element.teacher}</a></td>\
+            <td>${element.level}</td>\
+            <td>${element.room}</td>\
+        </tr>`
+    });
+
+    $(document).ready(function() {
+        var table = $('#dataTable').DataTable( {
+            lengthChange: true,
+            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
+        } );
+    } );
+}
+
+// UTIL
+function getAuthHeader() {
+    const headers = {Authorization:pb.authStore.token.trim()}
+    return JSON.stringify(headers)
+}
+
+function httpPromise(method, url, data) {
+    return new Promise((resolve, reject) => {
+        const xhttp = new XMLHttpRequest();
+        xhttp.onload = function() {
+            if(this.status > 299) {
+                reject(this.response);
+            } else {
+                resolve(this.response);
+            }
+        }
+        xhttp.open(method, url, false);
+        xhttp.setRequestHeader("Authorization", pb.authStore.token.trim());
+        xhttp.send(JSON.stringify(data));
+    });
+}
+
+function pushNotification(data) {
+    const toast_board = document.getElementById('toast-container')
+    toast_board.innerHTML += `<div class="toast show" id="mytoast">
+        <div class="toast-header">
+        <strong class="me-auto">Message</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body">
+        ${data}
+        </div>
+    </div>`
 }
