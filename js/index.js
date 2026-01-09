@@ -32,6 +32,21 @@ async function studentDetails(studentId) {
     }
 }
 
+///////
+// EVENT: USER: CLICK CLASSROOM DETAILS
+async function classroomDetails(classroomId) {
+
+    // try to loging for error return an error message
+    try {
+        const mainDashboard = document.getElementById("main-dashboard");
+        mainDashboard.innerHTML='';
+        const classroomHTML = await httpPromise('GET', 'http://localhost:8090/_dist/classroom/details?id='+classroomId, null);
+        mainDashboard.innerHTML = classroomHTML;
+    } catch (e) {
+        pushNotification("ERROR: "+JSON.stringify(e.response));
+        console.error(e);
+    }
+}
 
 ///////
 // EVENT: USER: CLICK SUBMIT STUDENT/TEACHER DETAILS
@@ -255,20 +270,14 @@ function drawTeacherCallendar() {
 async function loadAllClassrooms() {
     const records = await pb.collection('classroom').getFullList({
         sort: '-created',
+        expand: 'teacher'
     });
-
-    for (let i = 0; i < records.length; i++) {
-        const element = records[i];
-        console.log(element.teacher);
-        const teacher = await pb.collection('teacher').getOne(element.teacher);
-        console.log("OPE" + teacher);
-    }
 
     records.forEach(element => {
         const age = ((new Date()).getFullYear() - new Date(element?.birthdate).getFullYear())
         document.getElementById("tbodyClassrooms").innerHTML += `<tr>\
             <td><a href="javascript:classroomDetails('${element.id}');" >${element.name}</a></td>\
-            <td><a href="javascript:classroomDetails('${element.id}');" >${element.teacher}</a></td>\
+            <td><a href="javascript:teacherDetails('${element.expand.teacher.id}');" >${element.expand.teacher.first_name} ${element.expand.teacher.last_name}</a></td>\
             <td>${element.level}</td>\
             <td>${element.room}</td>\
         </tr>`
