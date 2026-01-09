@@ -8,30 +8,24 @@
 <!--MAIN-->
 <div class="main-dashboard" id="main-dashboard">
   <h1>
-    Dashboard 
+    Dashboard
   </h1>
+  <br />
+  <h2>
+    Notifications
+  </h2>
+  <div id="notifications-list">
 
-
-<div class="row">
-  <div class="col-sm-6">
     <div class="card">
+      <h5 class="card-header">{{.created}}</h5>
       <div class="card-body">
-        <h5 class="card-title">Special title treatment</h5>
-        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
+        <h5 class="card-title">{{.title}}</h5>
+        <p class="card-text">{{.body_text|raw}}</p>
+        <a href="#" class="btn btn-primary">Close</a>
       </div>
     </div>
+
   </div>
-  <div class="col-sm-6">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Special title treatment</h5>
-        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-        <a href="#" class="btn btn-primary">Go somewhere</a>
-      </div>
-    </div>
-  </div>
-</div>
 </div>
 
 <!--END MAIN-->

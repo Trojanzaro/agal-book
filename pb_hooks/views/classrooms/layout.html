@@ -1,0 +1,28 @@
+<!--Autoload all classrooms-->
+<script>
+  loadAllClassrooms()
+</script>
+
+{{ block "navbar" .}}
+{{ end }}
+
+
+{{ block "sidebar" .}}
+{{ end }}
+
+<!--MAIN-->
+<div class="main-dashboard" id="main-dashboard">
+  <table id="dataTable" class="table table-striped" style="width:100%">
+    <thead>
+      <tr>
+        <th>Class Name</th>
+        <th>Assigned Teacher</th>
+        <th>Level</th>
+        <th>Room</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyClassrooms">
+    </tbody>
+  </table>
+</div>
+<!--END MAIN-->
