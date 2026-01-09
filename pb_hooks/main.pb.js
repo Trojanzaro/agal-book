@@ -62,10 +62,8 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
             `${__hooks}/views/dashboard/sidebar.html`,
         ).render(data);
 
-        const html2 = html.replaceAll("\&gt\;", ">").replaceAll("\&lt\;", "<").replaceAll("\&amp\;", "&"); // THIS IS ILLEGAL BUT WORKS FOR NOW
-
         // Once generated return the HTML contents
-        return httpContext.html(200, html2);
+        return httpContext.html(200, html);
     } catch(e) {
         console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
