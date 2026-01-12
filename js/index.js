@@ -5,15 +5,18 @@ async function teacherDetails(teacherId) {
     // try to loging for error return an error message
     try {
         const mainDashboard = document.getElementById("main-dashboard");
-        mainDashboard.innerHTML='';
-        const teacherHTML = await httpPromise('GET', 'http://localhost:8090/_dist/teacher/details?id='+teacherId, null);
+        mainDashboard.innerHTML = '';
+        const teacherHTML = await httpPromise('GET', 'http://localhost:8090/_dist/teacher/details?id=' + teacherId, null);
         mainDashboard.innerHTML = teacherHTML;
 
     } catch (e) {
-        pushNotification("ERROR: "+JSON.stringify(e.response));
+        pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
-    drawTeacherCallendar();
+    const scheduleData = document.getElementById("schedule").value;
+    console.log("Schedule Data:", scheduleData);    
+    const schedule = JSON.parse(scheduleData);
+    drawTeacherCallendar(schedule, 2026);
 }
 
 ///////
@@ -23,11 +26,11 @@ async function studentDetails(studentId) {
     // try to loging for error return an error message
     try {
         const mainDashboard = document.getElementById("main-dashboard");
-        mainDashboard.innerHTML='';
-        const studentHTML = await httpPromise('GET', 'http://localhost:8090/_dist/student/details?id='+studentId, null);
+        mainDashboard.innerHTML = '';
+        const studentHTML = await httpPromise('GET', 'http://localhost:8090/_dist/student/details?id=' + studentId, null);
         mainDashboard.innerHTML = studentHTML;
     } catch (e) {
-        pushNotification("ERROR: "+JSON.stringify(e.response));
+        pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
 }
@@ -39,11 +42,11 @@ async function classroomDetails(classroomId) {
     // try to loging for error return an error message
     try {
         const mainDashboard = document.getElementById("main-dashboard");
-        mainDashboard.innerHTML='';
-        const classroomHTML = await httpPromise('GET', 'http://localhost:8090/_dist/classroom/details?id='+classroomId, null);
+        mainDashboard.innerHTML = '';
+        const classroomHTML = await httpPromise('GET', 'http://localhost:8090/_dist/classroom/details?id=' + classroomId, null);
         mainDashboard.innerHTML = classroomHTML;
     } catch (e) {
-        pushNotification("ERROR: "+JSON.stringify(e.response));
+        pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
 }
@@ -64,7 +67,7 @@ async function putDetails(id, collection) {
     const birthdate = document.forms["details_form"]["inputBirthdate"].value;
     const postalCode = document.forms["details_form"]["inputPostal"].value;
 
-    
+
     // try to loging for error return an error message
     try {
         // example create data
@@ -85,7 +88,7 @@ async function putDetails(id, collection) {
 
     } catch (e) {
         console.error(e);
-        pushNotification("ERROR: "+JSON.stringify(e.response.data));
+        pushNotification("ERROR: " + JSON.stringify(e.response.data));
     }
 }
 
@@ -129,7 +132,7 @@ async function createNewStudent() {
     const birthdate = document.forms["new_student_form"]["birthdate"].value;
     const postalCode = document.forms["new_student_form"]["postalCode"].value;
 
-    
+
     // try to loging for error return an error message
     try {
         // example create data
@@ -149,7 +152,7 @@ async function createNewStudent() {
         pushNotification('Successfully created New Entry!');
 
     } catch (e) {
-        pushNotification("ERROR: "+JSON.stringify(e.response.data));
+        pushNotification("ERROR: " + JSON.stringify(e.response.data));
     }
 }
 
@@ -194,13 +197,13 @@ async function loadAllStudents() {
         </tr>`
     });
 
-    $(document).ready(function() {
-        var table = $('#dataTable').DataTable( {
+    $(document).ready(function () {
+        var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
-        } );
-    } );
-    
+            buttons: ['copy', 'excel', 'pdf', 'colvis']
+        });
+    });
+
 }
 
 ///////
@@ -221,47 +224,55 @@ async function loadAllTeachers() {
         </tr>`
     });
 
-    $(document).ready(function() {
-        var table = $('#dataTable').DataTable( {
+    $(document).ready(function () {
+        var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
-        } );
-    } );
+            buttons: ['copy', 'excel', 'pdf', 'colvis']
+        });
+    });
 }
 
 ///////
 // EVENT: LOAD TEACHER CALENDAR ON DETAILS PAGE
 // TODO: REPLACE DUMMY DATA WITH ACTUAL TEACHER CALL DATA
-function drawTeacherCallendar() {
-  // Ensure Google Charts is loaded before drawing
-  google.charts.load('current', { packages: ['calendar'] })
-    .then(() => {
-      const dataTable = new google.visualization.DataTable();
-      dataTable.addColumn({ type: 'date', id: 'Date' });
-      dataTable.addColumn({ type: 'number', id: 'Calls' });
+function drawTeacherCallendar(schedule, year) {
 
-      // Example teacher call data
-      dataTable.addRows([
-        [new Date(2025, 0, 3), 4],
-        [new Date(2025, 0, 4), 2],
-        [new Date(2025, 0, 5), 6],
-        [new Date(2025, 0, 6), 1],
-        [new Date(2025, 0, 7), 5]
-      ]);
+    // Create the calendar chart
+    // Ensure Google Charts is loaded before drawing
+    google.charts.load('current', { packages: ['calendar'] })
+        .then(() => {
+            const dataTable = new google.visualization.DataTable();
+            dataTable.addColumn({ type: 'date', id: 'Date' });
+            dataTable.addColumn({ type: 'number', id: 'Calls' });
+            
+            // for each weekday that we need to mark in the calendar 
+            schedule.forEach((session) => {
+                const sessionDates = getWeekdayDatesInYear(session["day"], year);
+                for (let i = 0; i < 12; i++) {
+                    sessionDates[i.toString()].forEach((date) => {
+                        dataTable.addRow([new Date(year, i, date), 6]); // Assuming 6 calls for each date
+                    });
+                }
+            });
 
-      const chart = new google.visualization.Calendar(
-        document.getElementById('teacher_calendar')
-      );
+            const chart = new google.visualization.Calendar(
+                document.getElementById('teacher_calendar')
+            );
 
-      const options = {
-        title: 'Teacher Calendar',
-        calendar: {
-          cellSize: 15
-        }
-      };
+            const options = {
+                colorAxis: {
+                    minValue: 0,
+                    maxValue: 10,
+                    colors: ['#e0f2f1', '#004d40']
+                },
+                title: 'Teacher Calendar',
+                calendar: {
+                    cellSize: 15,
+                }
+            };
 
-      chart.draw(dataTable, options);
-    });
+            chart.draw(dataTable, options);
+        });
 }
 
 ///////
@@ -283,25 +294,25 @@ async function loadAllClassrooms() {
         </tr>`
     });
 
-    $(document).ready(function() {
-        var table = $('#dataTable').DataTable( {
+    $(document).ready(function () {
+        var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: [ 'copy', 'excel', 'pdf', 'colvis' ]
-        } );
-    } );
+            buttons: ['copy', 'excel', 'pdf', 'colvis']
+        });
+    });
 }
 
 // UTIL
 function getAuthHeader() {
-    const headers = {Authorization:pb.authStore.token.trim()}
+    const headers = { Authorization: pb.authStore.token.trim() }
     return JSON.stringify(headers)
 }
 
 function httpPromise(method, url, data) {
     return new Promise((resolve, reject) => {
         const xhttp = new XMLHttpRequest();
-        xhttp.onload = function() {
-            if(this.status > 299) {
+        xhttp.onload = function () {
+            if (this.status > 299) {
                 reject(this.response);
             } else {
                 resolve(this.response);
@@ -324,4 +335,33 @@ function pushNotification(data) {
         ${data}
         </div>
     </div>`
+}
+
+function getWeekdayDatesInYear(targetWeekday, year) {
+    //sanity check
+    if (typeof targetWeekday === 'string') {
+        const dayStrArray = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        targetWeekday = dayStrArray.indexOf(targetWeekday);
+    }
+
+    const result = {}; // { month: [dates] }
+
+    for (let month = 0; month < 12; month++) {
+        result[month] = [];
+
+        // Start from the first day of the month
+        const date = new Date(year, month, 1);
+        while (date.getMonth() === month) {
+            // JS: 0 = Sunday, 1 = Monday, ..., 6 = Saturday
+            const jsWeekday = date.getDay();
+
+            // Convert JS weekday to Monday-based (0 = Monday ... 6 = Sunday)
+            const mondayBasedWeekday = (jsWeekday + 6) % 7;
+            if (mondayBasedWeekday === targetWeekday) {
+                result[month].push(date.getDate()); // 1–31
+            }
+            date.setDate(date.getDate() + 1);
+        }
+    }
+    return result;
 }

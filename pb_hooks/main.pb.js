@@ -148,16 +148,9 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
     const teachersId = httpContext.request.url.query().get("id");
     const record = $app.findRecordById("teacher", teachersId);
 
-    const scheduleArray = JSON.parse(record.get("schedule"))
+    const scheduleArray = JSON.parse(record.get("schedule"));
     const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
     const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ birthdate.getDate();
-    const scheduleMonday = scheduleArray.filter((v) => v.day === "Monday").map((v) => v.hour).join("| ");
-    const scheduleTuesday = scheduleArray.filter((v) => v.day === "Tuesday").map((v) => v.hour).join("| ");
-    const scheduleWednesday = scheduleArray.filter((v) => v.day === "Wednesday").map((v) => v.hour).join("| ");
-    const scheduleThursday = scheduleArray.filter((v) => v.day === "Thursday").map((v) => v.hour).join("| ");
-    const scheduleFriday = scheduleArray.filter((v) => v.day === "Friday").map((v) => v.hour).join("| ");
-    const scheduleSaturday = scheduleArray.filter((v) => v.day === "Saturday").map((v) => v.hour).join("| ");
-    const scheduleSunday = scheduleArray.filter((v) => v.day === "Sunday").map((v) => v.hour).join("| ");
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
@@ -177,13 +170,7 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
             "state": record.get("state"),
             "postal_code": record.get("postal_code"),
             "email": record.email(),
-            "schedule_monday": scheduleMonday,
-            "schedule_tuesday": scheduleTuesday,
-            "schedule_wednesday": scheduleWednesday,
-            "schedule_thursday": scheduleThursday,
-            "schedule_friday": scheduleFriday,
-            "schedule_saturday": scheduleSaturday,
-            "schedule_sunday": scheduleSunday,
+            "schedule": JSON.stringify(scheduleArray),
             "sb_student": "active"
         });
         // Once generated return the HTML contents
