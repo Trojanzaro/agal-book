@@ -20,7 +20,7 @@
       <div class="card shadow-sm">
         <div class="card-body">
           <h6 class="text-muted">Total Course Fee</h6>
-          <h4 id="totalFee">€0</h4>
+          <h4 id="totalFee">€500</h4>
         </div>
       </div>
     </div>
@@ -29,7 +29,7 @@
       <div class="card shadow-sm border-success">
         <div class="card-body">
           <h6 class="text-muted">Paid So Far</h6>
-          <h4 class="text-success" id="paidAmount">€0</h4>
+          <h4 class="text-success" id="paidAmount">€250</h4>
         </div>
       </div>
     </div>
@@ -50,9 +50,9 @@
     <div class="progress" style="height: 20px;">
       <div
         id="paymentProgress"
-        class="progress-bar bg-success"
+        class="progress-bar progress-bar-striped progress-bar-animated"
         role="progressbar"
-        style="width: 0%">
+        style="width: 50%">
       </div>
     </div>
   </div>
@@ -71,7 +71,18 @@
           </tr>
         </thead>
         <tbody id="paymentTable">
-          <!-- Filled by JS -->
+          <tr>
+            <td>2024-01-15</td>
+            <td>€200</td>
+            <td>Credit Card</td>
+            <td><span class="badge bg-success">Completed</span></td>
+          </tr>
+          <tr>
+            <td>2024-02-15</td>
+            <td>€50</td>
+            <td>Bank Transfer</td>
+            <td><span class="badge bg-success">Completed</span></td>
+          </tr>
         </tbody>
       </table>
     </div>
