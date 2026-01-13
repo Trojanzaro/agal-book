@@ -16,14 +16,20 @@
   </h2>
   <div id="notifications-list">
 
-    <div class="card">
-      <h5 class="card-header">{{.created}}</h5>
+    {{/* Notification Card Example */}}
+    {{ range $index, $notif := .notifications }}
+    <div class="card" id="notification_{{ $index }}">
+      <h5 class="card-header">{{ $notif.created }}</h5>
       <div class="card-body">
-        <h5 class="card-title">{{.title}}</h5>
-        <p class="card-text">{{.body_text|raw}}</p>
-        <a href="#" class="btn btn-primary">Close</a>
+        <h5 class="card-title">{{ $notif.title }} <span class="{{ $notif.type_b }}"> {{ $notif.type }}</span></h5>
+        <p class="card-text">{{ $notif.body_text|raw }}</p>
+        <a href="#" class="btn btn-primary" onclick="document.getElementById('notification_{{ $index }}').innerHTML='';">Close</a>
+      </div>
+      <div class="card-footer text-muted">
       </div>
     </div>
+    <br />
+    {{ end }}
 
   </div>
 </div>
