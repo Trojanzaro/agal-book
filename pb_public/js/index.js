@@ -146,7 +146,9 @@ async function createNewStudent() {
             "postal_code": postalCode,
             "address": address,
             "city": city,
-            "state": state
+            "state": state,
+            "parent_1": JSON.stringify({"first_name": "", "last_name": "", "phone": "", "email": ""}),
+            "parent_2": JSON.stringify({"first_name": "", "last_name": "", "phone": "", "email": ""})
         };
         const record = await pb.collection('student').create(data);
         pushNotification('Successfully created New Entry!');
