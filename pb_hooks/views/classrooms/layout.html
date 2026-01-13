@@ -1,7 +1,4 @@
-<!--Autoload all classrooms-->
-<script>
-  loadAllClassrooms()
-</script>
+
 
 {{ block "navbar" .}}
 {{ end }}
@@ -26,3 +23,10 @@
   </table>
 </div>
 <!--END MAIN-->
+
+<!--Autoload all classrooms-->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    loadAllClassrooms();
+  });
+</script>

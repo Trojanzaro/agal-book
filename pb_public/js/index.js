@@ -166,9 +166,6 @@ async function logout() {
 ///////
 // EVENT: CTRL: LOGIN
 async function login() {
-    // SUCCESS: SET BODY HX-HEADERS
-    document.getElementById("body_ID").setAttribute("hx-headers", getAuthHeader());
-
     // SUCCESS: CLEAR LOGIN FORM
     document.getElementById("UI_MAIN").innerHTML = '';
 
@@ -176,12 +173,40 @@ async function login() {
     let nav = window.localStorage.getItem('nav');
     nav = nav !== null ? nav : "dashboard";
     window.localStorage.setItem('nav', nav);
-    htmx.trigger("#UI_MAIN_HTMX", "loginAccept");
+    try {
+        const mainDashboard = document.getElementById("UI_MAIN");
+        mainDashboard.innerHTML = '';
+        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=dashboard', null);
+        mainDashboard.innerHTML = dashboard;
+
+    } catch (e) {
+        pushNotification("ERROR: " + JSON.stringify(e.response));
+        console.error(e);
+    }
+}
+
+async function initializeApp() {
+    if (pb.authStore.isValid) {
+        login();
+    } else {
+        // LOAD LOGIN PAGE
+        try {
+            const mainLogin = document.getElementById("UI_MAIN");
+            mainLogin.innerHTML = '';
+            const loginHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/login', null);
+            mainLogin.innerHTML = loginHTML;
+
+        } catch (e) {
+            pushNotification("ERROR: " + JSON.stringify(e.response));
+            console.error(e);
+        }
+    }
 }
 
 ///////
 // EVENT: CTRL: LOAD ALL STUDENTS
 async function loadAllStudents() {
+    console.log("Loading Students...");
     // you can also fetch all records at once via getFullList
     const records = await pb.collection('student').getFullList({
         sort: '-created',
@@ -209,6 +234,7 @@ async function loadAllStudents() {
 ///////
 // EVENT: CTRL: LOAD ALL TEACHERS
 async function loadAllTeachers() {
+    console.log("Loading Teachers...");
     // you can also fetch all records at once via getFullList
     const records = await pb.collection('teacher').getFullList({
         sort: '-created',
@@ -279,6 +305,7 @@ function drawTeacherCallendar(schedule, year) {
 // EVENT: LOAD CLASSROOM DETAILS PAGE
 //
 async function loadAllClassrooms() {
+    console.log("Loading Classrooms...");
     const records = await pb.collection('classroom').getFullList({
         sort: '-created',
         expand: 'teacher'
@@ -303,6 +330,27 @@ async function loadAllClassrooms() {
 }
 
 // UTIL
+async function dashboardNavActive(nav) {
+    console.log("Navigating to:", nav);
+    try {
+        const mainDashboard = document.getElementById("UI_MAIN");
+        mainDashboard.innerHTML = '';
+        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav, null);
+        mainDashboard.innerHTML = dashboard;
+
+    } catch (e) {
+        pushNotification("ERROR: " + JSON.stringify(e.response));
+        console.error(e);
+    }
+    if (nav === 'students') {
+        loadAllStudents();
+    } else if (nav === 'teachers') {
+        loadAllTeachers();
+    } else if (nav === 'classrooms') {
+        loadAllClassrooms();
+    }   
+}
+
 function getAuthHeader() {
     const headers = { Authorization: pb.authStore.token.trim() }
     return JSON.stringify(headers)

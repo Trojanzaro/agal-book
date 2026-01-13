@@ -8,15 +8,14 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarToggler">
             <div>
-                <a class="navbar-brand" href="#" hx-get="http://192.168.191.216:8090/_dist/dashboard?wd=dashboard"
-                    hx-target="#UI_MAIN" hx-on:click="window.localStorage.setItem('nav','dashboard')">
-                    <img src="logo.png" alt width="30" height="24" class="d-inline-block align-text-top">
+                <a class="navbar-brand" href="#" onclick="window.localStorage.setItem('nav','dashboard');dashboardNavActive('dashboard');">
+                    <img src="./logo.png" alt width="30" height="24" class="d-inline-block align-text-top">
                     Agal - Book
                 </a>
             </div>
         </div>
         <div class="d-flex">
-            <img src="user_profile.png" class="rounded-circle" alt="Cinque Terre" width="50" height="50">
+            <img src="./user_profile.png" class="rounded-circle" alt="Cinque Terre" width="50" height="50">
             <button id="btn_logout" class="btn btn-outline-warning" onclick="logout()">Log
                 out</button>
         </div>

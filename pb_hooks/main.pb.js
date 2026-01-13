@@ -39,9 +39,6 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
             "read": element.get("read")
         })
     });
-    const notificationsCount = notifications.filter(n => n.read === false).length;
-    console.log("NOTIFICATIONS COUNT: "+notificationsCount);
-    console.log("NOTIFICATIONS: "+JSON.stringify(notifications));
 
     httpContext.response.header().set("Hx-Trigger", "loginAccept")
     // wrapped in try watch for any internal problem so that nothing get returned to client

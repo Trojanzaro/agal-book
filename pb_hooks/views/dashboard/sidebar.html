@@ -1,6 +1,6 @@
 {{define "sidebar"}}
 <!--SIDEBAR-->
-<div class="position-fixed shadow" hx-trigger="loginAccept" id="UI_SIDEBAR_HTMX">
+<div class="position-fixed shadow" id="UI_SIDEBAR_HTMX">
   <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-secondary" style="width: 280px;">
     <br />
     <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
@@ -12,29 +12,25 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto" style="margin-bottom: 30rem!important;">
       <li class="nav-item">
-        <a href="#" class="nav-link text-white {{.sb_dashboard}}" hx-get="http://192.168.191.216:8090/_dist/dashboard?wd=dashboard"
-          hx-target="#UI_MAIN" hx-on:click="window.localStorage.setItem('nav','dashboard')"><!--...active" aria-current="page"-->
+        <a href="#" class="nav-link text-white {{.sb_dashboard}}" onclick="window.localStorage.setItem('nav','dashboard');dashboardNavActive('dashboard')"><!--...active" aria-current="page"-->
           <i class="fas fa-window-restore"></i>
           Dashboard
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_students}}" hx-get="http://192.168.191.216:8090/_dist/dashboard?wd=students"
-          hx-target="#UI_MAIN" hx-on:click="window.localStorage.setItem('nav','students')">
+        <a href="#" class="nav-link text-white {{.sb_students}}" onclick="window.localStorage.setItem('nav','students');dashboardNavActive('students')">
           <i class="fas fa-book-reader"></i>
           Students
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_teachers}}" hx-get="http://192.168.191.216:8090/_dist/dashboard?wd=teachers"
-          hx-target="#UI_MAIN" hx-on:click="window.localStorage.setItem('nav','teachers')">
+        <a href="#" class="nav-link text-white {{.sb_teachers}}" onclick="window.localStorage.setItem('nav','teachers');dashboardNavActive('teachers')">
           <i class="fas fa-user-graduate"></i>
           Teachers
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_classrooms}}" hx-get="http://192.168.191.216:8090/_dist/dashboard?wd=classrooms"
-          hx-target="#UI_MAIN" hx-on:click="window.localStorage.setItem('nav','classrooms')">
+        <a href="#" class="nav-link text-white {{.sb_classrooms}}" onclick="window.localStorage.setItem('nav','classrooms');dashboardNavActive('classrooms')">
           <i class="fas fa-graduation-cap"></i>
           Classrooms
         </a>

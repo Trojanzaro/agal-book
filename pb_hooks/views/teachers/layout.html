@@ -1,7 +1,3 @@
-<!--Autoload all teachers-->
-<script>
-  loadAllTeachers()
-</script>
 
 {{ block "navbar" .}}
 {{ end }}
@@ -9,6 +5,15 @@
 
 {{ block "sidebar" .}}
 {{ end }}
+
+<!--Autoload all teachers-->
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    console.log("Loading Teachers...");
+    loadAllTeachers();
+  });
+</script>
+
 
 <!--MAIN-->
 <div class="main-dashboard" id="main-dashboard">
