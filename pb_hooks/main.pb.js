@@ -40,7 +40,6 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
         })
     });
 
-    httpContext.response.header().set("Hx-Trigger", "loginAccept")
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
@@ -76,7 +75,8 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
     const studentsId = httpContext.request.url.query().get("id");
     const record = $app.findRecordById("student", studentsId);
     const birthdate = new Date(record.get("birthdate").string().replace(" ", 'T'));
-    const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ birthdate.getDate();
+    console.log("BIRTHDATE: "+typeof birthdate.getDate());
+    const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ String(birthdate.getDate()).padStart(2,'0');
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
@@ -147,7 +147,7 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
 
     const scheduleArray = JSON.parse(record.get("schedule"));
     const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
-    const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ birthdate.getDate();
+    const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ String(birthdate.getDate()).padStart(2,'0');
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
