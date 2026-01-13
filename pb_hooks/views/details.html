@@ -131,7 +131,7 @@
     <tbody id="tbodyClassroomStudents">
         {{ range $index, $element := .students }}
         <tr>
-            <td><a href='javascript:studentDetails("{{ .Get "id"}}");' >{{ .Get "first_name" }} {{ .Get "last_name" }}</a></td>
+            <td><a href='javascript:studentDetails("{{ .Get "id"}}");sidebarNavActive("students");' >{{ .Get "first_name" }} {{ .Get "last_name" }}</a></td>
             <td>{{ .Get "birthdate" }}</td>
             <td>{{ .Get "email" }}</td>
             <td>{{ .Get "created" }}</td>

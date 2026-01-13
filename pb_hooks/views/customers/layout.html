@@ -1,0 +1,84 @@
+{{ block "navbar" .}}
+{{ end }}
+
+
+{{ block "sidebar" .}}
+{{ end }}
+
+<div class="container py-5">
+
+  <!-- Student Info -->
+  <div class="mb-4">
+    <h3>Payment Overview</h3>
+    <p class="text-muted mb-0">Student: <strong>Maria Ivanova</strong></p>
+    <p class="text-muted">Course: English B2 - Semester 1</p>
+  </div>
+
+  <!-- Payment Summary Cards -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h6 class="text-muted">Total Course Fee</h6>
+          <h4 id="totalFee">€0</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-success">
+        <div class="card-body">
+          <h6 class="text-muted">Paid So Far</h6>
+          <h4 class="text-success" id="paidAmount">€0</h4>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card shadow-sm border-danger">
+        <div class="card-body">
+          <h6 class="text-muted">Outstanding Balance</h6>
+          <h4 class="text-danger" id="unpaidAmount">€0</h4>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="mb-4">
+    <label class="form-label">Payment Progress</label>
+    <div class="progress" style="height: 20px;">
+      <div
+        id="paymentProgress"
+        class="progress-bar bg-success"
+        role="progressbar"
+        style="width: 0%">
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment History -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="mb-3">Payment History</h5>
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="paymentTable">
+          <!-- Filled by JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>

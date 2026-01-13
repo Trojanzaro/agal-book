@@ -261,6 +261,32 @@ async function loadAllTeachers() {
 }
 
 ///////
+// EVENT: CTRL: LOAD ALL CUSTOMERS
+async function loadAllCustomers() {
+    console.log("Loading Customers...");
+    // const records = await pb.collection('customers').getFullList({
+    //     sort: '-created',
+    // });
+
+    // records.forEach(element => {
+    //     document.getElementById("tbodyCustomers").innerHTML += `<tr>\
+    //         <td><a href="javascript:customerDetails('${element.id}');" >${element.first_name}</a></td>\
+    //         <td><a href="javascript:customerDetails('${element.id}');" >${element.last_name}</a></td>\
+    //         <td>${element.email}</td>\
+    //         <td>${element.phone_number}</td>\
+    //     </tr>`
+    // }
+    // );
+
+    // $(document).ready(function () {
+    //     var table = $('#dataTable').DataTable({
+    //         lengthChange: true,
+    //         buttons: ['copy', 'excel', 'pdf', 'colvis']
+    //     });
+    // });
+}
+
+///////
 // EVENT: LOAD TEACHER CALENDAR ON DETAILS PAGE
 // TODO: REPLACE DUMMY DATA WITH ACTUAL TEACHER CALL DATA
 function drawTeacherCallendar(schedule, year) {
@@ -317,7 +343,7 @@ async function loadAllClassrooms() {
         const age = ((new Date()).getFullYear() - new Date(element?.birthdate).getFullYear())
         document.getElementById("tbodyClassrooms").innerHTML += `<tr>\
             <td><a href="javascript:classroomDetails('${element.id}');" >${element.name}</a></td>\
-            <td><a href="javascript:teacherDetails('${element.expand.teacher.id}');" >${element.expand.teacher.first_name} ${element.expand.teacher.last_name}</a></td>\
+            <td><a href="javascript:teacherDetails('${element.expand.teacher.id}');sidebarNavActive('teachers');" >${element.expand.teacher.first_name} ${element.expand.teacher.last_name}</a></td>\
             <td>${element.level}</td>\
             <td>${element.room}</td>\
         </tr>`
@@ -350,7 +376,20 @@ async function dashboardNavActive(nav) {
         loadAllTeachers();
     } else if (nav === 'classrooms') {
         loadAllClassrooms();
-    }   
+    } else if( nav === 'customers'){ 
+        loadAllCustomers();
+    } 
+}
+
+function sidebarNavActive(nav) {
+    const navItems = ['dashboard', 'students', 'teachers', 'classrooms', 'customers'];
+    navItems.forEach(item => {
+        if (item !== nav) {
+            document.getElementById(item + '_a_id').setAttribute('class', 'nav-link text-white');
+        } else {
+            document.getElementById(item + '_a_id').setAttribute('class', 'nav-link text-white active');
+        }
+    }); 
 }
 
 function getAuthHeader() {

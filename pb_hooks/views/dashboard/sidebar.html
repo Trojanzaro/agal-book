@@ -7,37 +7,36 @@
       <svg class="bi me-2" width="40" height="32">
         <use xlink:href="#bootstrap" />
       </svg>
-      <span class="fs-4">Sidebar</span>
+      <!-- <span class="fs-4">Sidebar</span> -->
     </a>
     <hr>
     <ul class="nav nav-pills flex-column mb-auto" style="margin-bottom: 30rem!important;">
       <li class="nav-item">
-        <a href="#" class="nav-link text-white {{.sb_dashboard}}" onclick="window.localStorage.setItem('nav','dashboard');dashboardNavActive('dashboard')"><!--...active" aria-current="page"-->
+        <a id="dashboard_a_id" href="#" class="nav-link text-white {{.sb_dashboard}}" onclick="window.localStorage.setItem('nav','dashboard');dashboardNavActive('dashboard')"><!--...active" aria-current="page"-->
           <i class="fas fa-window-restore"></i>
           Dashboard
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_students}}" onclick="window.localStorage.setItem('nav','students');dashboardNavActive('students')">
+        <a id="students_a_id" href="#" class="nav-link text-white {{.sb_students}}" onclick="window.localStorage.setItem('nav','students');dashboardNavActive('students')">
           <i class="fas fa-book-reader"></i>
           Students
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_teachers}}" onclick="window.localStorage.setItem('nav','teachers');dashboardNavActive('teachers')">
+        <a id="teachers_a_id" href="#" class="nav-link text-white {{.sb_teachers}}" onclick="window.localStorage.setItem('nav','teachers');dashboardNavActive('teachers')">
           <i class="fas fa-user-graduate"></i>
           Teachers
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_classrooms}}" onclick="window.localStorage.setItem('nav','classrooms');dashboardNavActive('classrooms')">
+        <a id="classrooms_a_id" href="#" class="nav-link text-white {{.sb_classrooms}}" onclick="window.localStorage.setItem('nav','classrooms');dashboardNavActive('classrooms')">
           <i class="fas fa-graduation-cap"></i>
           Classrooms
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_customers}}"
-          >
+        <a id="customers_a_id" href="#" class="nav-link text-white {{.sb_customers}}" onclick="window.localStorage.setItem('nav','customers');dashboardNavActive('customers')">
           <i class="fas fa-award"></i>
           Customers
         </a>
