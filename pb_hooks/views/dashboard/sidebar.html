@@ -12,28 +12,28 @@
     <hr>
     <ul class="nav nav-pills flex-column mb-auto" style="margin-bottom: 30rem!important;">
       <li class="nav-item">
-        <a href="#" class="nav-link text-white {{.sb_dashboard}}" hx-get="http://localhost:8090/_dist/dashboard?wd=dashboard"
+        <a href="#" class="nav-link text-white {{.sb_dashboard}}" hx-get="http://192.168.191.216:8090/_dist/dashboard?wd=dashboard"
           hx-target="#UI_MAIN" hx-on:click="window.localStorage.setItem('nav','dashboard')"><!--...active" aria-current="page"-->
           <i class="fas fa-window-restore"></i>
           Dashboard
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_students}}" hx-get="http://localhost:8090/_dist/dashboard?wd=students"
+        <a href="#" class="nav-link text-white {{.sb_students}}" hx-get="http://192.168.191.216:8090/_dist/dashboard?wd=students"
           hx-target="#UI_MAIN" hx-on:click="window.localStorage.setItem('nav','students')">
           <i class="fas fa-book-reader"></i>
           Students
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_teachers}}" hx-get="http://localhost:8090/_dist/dashboard?wd=teachers"
+        <a href="#" class="nav-link text-white {{.sb_teachers}}" hx-get="http://192.168.191.216:8090/_dist/dashboard?wd=teachers"
           hx-target="#UI_MAIN" hx-on:click="window.localStorage.setItem('nav','teachers')">
           <i class="fas fa-user-graduate"></i>
           Teachers
         </a>
       </li>
       <li>
-        <a href="#" class="nav-link text-white {{.sb_classrooms}}" hx-get="http://localhost:8090/_dist/dashboard?wd=classrooms"
+        <a href="#" class="nav-link text-white {{.sb_classrooms}}" hx-get="http://192.168.191.216:8090/_dist/dashboard?wd=classrooms"
           hx-target="#UI_MAIN" hx-on:click="window.localStorage.setItem('nav','classrooms')">
           <i class="fas fa-graduation-cap"></i>
           Classrooms
