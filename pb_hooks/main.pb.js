@@ -30,14 +30,23 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
     const notifications = []
     let records = $app.findAllRecords("notification");
 
+    const notifCategories = ["info", "warning", "alert"];
+    const notifBadges = ["badge rounded-pill bg-primary", "badge rounded-pill bg-warning text-dark", "badge rounded-pill bg-danger"];
     records.forEach(element => {
+        
         notifications.push({
             "id": element.id,
             "title": element.get("title"),  
             "body_text": element.get("body_text"),
             "created": element.get("created"),
-            "read": element.get("read")
+            "read": element.get("read"),
+            "type": element.get("type"),
+            "type_b": notifBadges[notifCategories.indexOf(element.get("type"))]
         })
+    });
+
+    notifications.sort((a, b) => {
+        return new Date(b.created) - new Date(a.created);
     });
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
@@ -46,11 +55,9 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
         const data = {}
         data["sb_"+workinDirectory] = "active"; // sillyhack to set "active" sidebar item based on working directory
 
-        const date = new Date(notifications[0]?.created ?? ""); //this will probably crash
-
-        data["created"] = date.toDateString();
-        data["body_text"] = notifications[0]?.body_text ?? "";
-        data["title"] = notifications[0]?.title ?? "";
+        notifications.forEach((notif, index) => {
+            data["notifications"] = notifications;
+        });
 
         const html = $template.loadFiles(
             `${__hooks}/views/${workinDirectory}/layout.html`,
