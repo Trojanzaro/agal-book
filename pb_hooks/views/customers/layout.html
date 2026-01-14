@@ -5,13 +5,31 @@
 {{ block "sidebar" .}}
 {{ end }}
 
+<div class="main-dashboard" id="main-dashboard">
+  <h1>Customers</h1>
+  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">New <i class="fas fa-file-alt">  </i></button>
+  <br/><br/>
+  <table id="dataTable" class="table table-striped" style="width:100%">
+    <thead>
+      <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Age</th>
+        <th>Phone</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyCustomers">
+    </tbody>
+  </table>
+</div>
+
 <div class="container py-5">
 
   <!-- Student Info -->
   <div class="mb-4">
     <h3>Payment Overview</h3>
-    <p class="text-muted mb-0">Student: <strong>Maria Ivanova</strong></p>
-    <p class="text-muted">Course: English B2 - Semester 1</p>
+    <p class="text-muted mb-0">Student: <strong id="student_name">placeholder</strong></p>
+    <p class="text-muted">Course: placeholder</p>
   </div>
 
   <!-- Payment Summary Cards -->
@@ -52,7 +70,7 @@
         id="paymentProgress"
         class="progress-bar progress-bar-striped progress-bar-animated"
         role="progressbar"
-        style="width: 50%">
+        style="width: 0%">
       </div>
     </div>
   </div>
@@ -70,8 +88,7 @@
             <th>Status</th>
           </tr>
         </thead>
-        <tbody id="paymentTable">
-          <tr>
+        <!-- <tr>
             <td>2024-01-15</td>
             <td>€200</td>
             <td>Credit Card</td>
@@ -82,7 +99,8 @@
             <td>€50</td>
             <td>Bank Transfer</td>
             <td><span class="badge bg-success">Completed</span></td>
-          </tr>
+          </tr> -->
+        <tbody id="paymentTable">
         </tbody>
       </table>
     </div>
@@ -90,6 +108,70 @@
 
 </div>
 
-<script src="script.js"></script>
+<!--NEW ENTRY MODAL-->
+<div class="modal" tabindex="-1" id="newCustomerModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Customer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- <p>Modal body text goes here.</p> -->
+        <form class="row g-3" name="new_customer_form">
+          <div class="col-md-4">
+            <label for="validationDefault01" class="form-label">First name</label>
+            <input type="text" class="form-control" id="firstName" value="Mark" required>
+          </div>
+          <div class="col-md-4">
+            <label for="validationDefault02" class="form-label">Last name</label>
+            <input type="text" class="form-control" id="lastName" value="Otto" required>
+          </div>
+          <div class="col-md-4">
+            <label for="validationDefaultUsername" class="form-label">E-mail</label>
+            <div class="input-group">
+              <span class="input-group-text" id="inputGroupPrepend2">@</span>
+              <input type="email" class="form-control" id="email"  aria-describedby="inputGroupPrepend2" required>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <label  class="form-label">Address</label>
+            <input type="text" class="form-control" id="address" required>
+          </div>
+          <div class="col-md-6">
+            <label  class="form-label">City</label>
+            <input type="text" class="form-control" id="city" required>
+          </div>
+          <div class="col-md-3">
+            <label for="validationDefault04" class="form-label">State</label>
+            <input type="text" class="form-control" id="state" required>
+          </div>
+          <div class="col-md-3">
+            <label for="validationDefault05" class="form-label">Postal Code</label>
+            <input type="text" class="form-control" id="postalCode" required>
+          </div>
+          <div class="col-6">
+            <label  class="form-label">Phone 1</label>
+            <input type="text" class="form-control" id="phone1" required>
+            <label  class="form-label">Phone 2</label>
+            <input type="text" class="form-control" id="phone2" required>
+          </div>
+          <div class="col-6">
+            <label for="birthdate">Birthdate</label>
+            <input id="birthdate" class="form-control" type="date" />
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewCustomer();">Create new</button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--END MODAL-->
+
 </body>
 </html>
