@@ -52,6 +52,48 @@ async function classroomDetails(classroomId) {
 }
 
 ///////
+// EVENT: USER: CLICK CUSTOMER DETAILS
+async function customerDetails(customerId) {
+
+    const record = await pb.collection('customer').getOne(customerId, {
+        expand: 'payments'
+    });
+
+    console.log(record);
+    document.getElementById("paymentTable").innerHTML = '';
+    
+    let totalFee = 0;
+    let paidAmount = 0;
+
+    record.expand.payments.forEach(payment => {
+        totalFee = payment.payment_amount;
+        paidAmount += payment.payment_amount;
+
+        const unpaidAmount = totalFee - paidAmount;
+
+        document.getElementById("totalFee").innerText = '€' + totalFee;
+        document.getElementById("paidAmount").innerText = '€' + paidAmount;
+        document.getElementById("unpaidAmount").innerText = '€' + unpaidAmount;
+
+        document.getElementById("paymentTable").innerHTML += `<tr>\
+            <td>${payment.created}</td>\
+            <td>€${payment.payment_amount}</td>\
+            <td>DIRECT</td>\
+            <td><span class="badge bg-success">Completed</span></td>\
+        </tr>`;
+
+        document.getElementById("paymentProgress").style.width = ((paidAmount / totalFee) * 100) + '%';
+        //console.log(payment);
+    });
+}
+
+async function testCLICK(customerId) {
+    const record = await pb.collection('customer').getOne(customerId, {
+        expand: 'payments'
+    });
+}
+
+///////
 // EVENT: USER: CLICK SUBMIT STUDENT/TEACHER DETAILS
 async function putDetails(id, collection) {
 
@@ -159,6 +201,47 @@ async function createNewStudent() {
 }
 
 ///////
+// EVENT: USER: CLICK NEW CUSTOMER
+async function createNewCustomer() {
+
+    //get form data
+    const firstName = document.forms["new_customer_form"]["firstName"].value;
+    const lastName = document.forms["new_customer_form"]["lastName"].value;
+    const email = document.forms["new_customer_form"]["email"].value;
+    const city = document.forms["new_customer_form"]["city"].value;
+    const state = document.forms["new_customer_form"]["state"].value;
+    const address = document.forms["new_customer_form"]["address"].value;
+    const phone1 = document.forms["new_customer_form"]["phone1"].value;
+    const phone2 = document.forms["new_customer_form"]["phone2"].value;
+    const birthdate = document.forms["new_customer_form"]["birthdate"].value;
+    const postalCode = document.forms["new_customer_form"]["postalCode"].value;
+
+
+    // try to loging for error return an error message
+    try {
+        // example create data
+        const data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "birthdate": birthdate,
+            "phone_number": phone1,
+            "email": email,
+            "phone_number_2": phone2,
+            "postal_code": postalCode,
+            "address": address,
+            "city": city,
+            "state": state
+        };
+        const record = await pb.collection('customer').create(data);
+        pushNotification('Successfully created New Entry!');
+
+    } catch (e) {
+        pushNotification("ERROR: " + JSON.stringify(e.response.data));
+    }
+}
+
+
+///////
 // EVENT: CTRL: LOGOUT
 async function logout() {
     await pb.authStore.clear();
@@ -264,31 +347,34 @@ async function loadAllTeachers() {
 // EVENT: CTRL: LOAD ALL CUSTOMERS
 async function loadAllCustomers() {
     console.log("Loading Customers...");
-    // const records = await pb.collection('customers').getFullList({
-    //     sort: '-created',
-    // });
+    const records = await pb.collection('customer').getFullList({
+        sort: '-created',
+    });
 
-    // records.forEach(element => {
-    //     document.getElementById("tbodyCustomers").innerHTML += `<tr>\
-    //         <td><a href="javascript:customerDetails('${element.id}');" >${element.first_name}</a></td>\
-    //         <td><a href="javascript:customerDetails('${element.id}');" >${element.last_name}</a></td>\
-    //         <td>${element.email}</td>\
-    //         <td>${element.phone_number}</td>\
-    //     </tr>`
-    // }
-    // );
+    records.forEach(element => {
+        document.getElementById("tbodyCustomers").innerHTML += `<tr>\
+            <td><a href="javascript:customerDetails('${element.id}');" >${element.first_name}</a></td>\
+            <td><a href="javascript:customerDetails('${element.id}');" >${element.last_name}</a></td>\
+            <td>${element.email}</td>\
+            <td>${element.phone_number}</td>\
+        </tr>`
+    }
+    );
 
-    // $(document).ready(function () {
-    //     var table = $('#dataTable').DataTable({
-    //         lengthChange: true,
-    //         buttons: ['copy', 'excel', 'pdf', 'colvis']
-    //     });
-    // });
+    document.getElementById("totalFee").innerText = '€0.00'; // Placeholder for total fee calculation
+    document.getElementById("paidAmount").innerText = '€0.00'; // Placeholder for paid amount calculation
+    document.getElementById("unpaidAmount").innerText = '€0.00'; // Placeholder for outstanding amount calculation
+
+    $(document).ready(function () {
+        var table = $('#dataTable').DataTable({
+            lengthChange: true,
+            buttons: ['copy', 'excel', 'pdf', 'colvis']
+        });
+    });
 }
 
 ///////
 // EVENT: LOAD TEACHER CALENDAR ON DETAILS PAGE
-// TODO: REPLACE DUMMY DATA WITH ACTUAL TEACHER CALL DATA
 function drawTeacherCallendar(schedule, year) {
 
     // Create the calendar chart
