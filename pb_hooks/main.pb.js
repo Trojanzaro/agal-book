@@ -215,3 +215,44 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
     }
 }, $apis.requireAuth("users"));
+
+//////////
+// router get assignment file
+routerAdd("GET", "/_dist/assignment/file", (httpContext) => {
+    
+    // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
+    const assignmentId = httpContext.request.url.query().get("id");
+    const record = $app.findRecordById("assignment_test", assignmentId);
+
+    const fileName = record.get("attachment");
+    const fileKey = record.baseFilesPath() + "/" + record.get("attachment");
+    const fullPath = "pb_data/storage/" + fileKey;
+    
+    let fsys, reader, content;
+
+    try {
+          fsys = $app.newFilesystem();
+
+        // ✅ READ AS BYTES (not reader)
+        const bytes = $os.readFile(fullPath);
+
+        httpContext.response.header().set(
+            "Content-Disposition",
+            `inline; filename="${fileName}"`
+        );
+
+        httpContext.response.header().set(
+            "Content-Type",
+            "application/octet-stream"
+        );
+
+        // ✅ Write bytes
+        httpContext.response.write(bytes);
+        return;
+    } finally {
+        reader?.close();
+        fsys?.close();
+    }
+}, $apis.requireAuth("users"));
+
+//////////

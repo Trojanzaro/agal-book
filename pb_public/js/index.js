@@ -540,3 +540,39 @@ function getWeekdayDatesInYear(targetWeekday, year) {
     }
     return result;
 }
+
+// functionto get file from server
+async function getFileFromServer(id) {
+    try {
+        const response = await fetch("http://192.168.191.216:8090/_dist/assignment/file?id=" + id, {
+            headers: {
+                'Authorization': pb.authStore.token.trim()
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const blob = await response.blob();
+        // Create a temporary download URL
+        const url = URL.createObjectURL(blob);
+
+        // Create a hidden <a> element
+        const a = document.createElement("a");
+        a.href = url;
+
+        // Optional: set filename
+        const disposition = response.headers.get("Content-Disposition");
+        const filename = disposition?.match(/filename="(.+)"/)?.[1] ?? "download";
+        a.download = filename;
+
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+        throw error;
+    }
+}
