@@ -13,8 +13,7 @@ async function teacherDetails(teacherId) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
-    const scheduleData = document.getElementById("schedule").value;
-    console.log("Schedule Data:", scheduleData);    
+    const scheduleData = document.getElementById("schedule").value; 
     const schedule = JSON.parse(scheduleData);
     drawTeacherCallendar(schedule, 2026);
 }
@@ -55,18 +54,74 @@ async function classroomDetails(classroomId) {
 // EVENT: USER: CLICK CUSTOMER DETAILS
 async function customerDetails(customerId) {
 
-    const record = await pb.collection('customer').getOne(customerId, {
-        expand: 'payments'
+    // reset all data placeholders
+    document.getElementById("paymentTable").innerHTML = '';
+    document.getElementById("tbodyStudents").innerHTML = '';
+    document.getElementById("paymentProgress").style.width = '0%';
+    document.getElementById("totalFee").innerText = '€0.00';
+    document.getElementById("paidAmount").innerText = '€0.00';
+    document.getElementById("unpaidAmount").innerText = '€0.00';
+    document.getElementById("card_studnet_name").innerText = '';
+    document.getElementById("card_classroom_name").innerText = '';
+
+    // get customer/parent payment details
+    const customer = await pb.collection('customer').getOne(customerId);
+
+    // get customer related students
+    const relatedStudents = await pb.collection('student').getFullList({
+        filter: `parent_1 = "${customerId}" || parent_2 = "${customerId}"`,
+        sort: '-created',
     });
 
-    console.log(record);
-    document.getElementById("paymentTable").innerHTML = '';
-    
-    let totalFee = 0;
-    let paidAmount = 0;
+    document.getElementById("tbodyStudents").innerHTML = '';
+    relatedStudents.forEach(student => {
+        const age = ((new Date()).getFullYear() - new Date(student.birthdate).getFullYear())
+        document.getElementById("tbodyStudents").innerHTML += `<tr>\
+            <td><a href="javascript:studentFees('${student.id}','${customerId}','${customer.first_name}','${student.first_name + ' ' + student.last_name}');" >${student.first_name}</a></td>\
+            <td><a href="javascript:studentFees('${student.id}','${customerId}','${customer.first_name}','${student.first_name + ' ' + student.last_name}');" >${student.last_name}</a></td>\
+            <td>${age}</td>\
+            <td>${student.phone_number}</td>\
+        </tr>`
+    });
 
-    record.expand.payments.forEach(payment => {
-        totalFee = payment.payment_amount;
+
+}
+
+///////
+// EVENT: USER: CLICK CUSTOMER -> STUDENT DETAILS
+async function studentFees(studentId, customerId, customerName, studentName) {
+
+    // reset all data placeholders
+    document.getElementById("paymentTable").innerHTML = '';
+    document.getElementById("paymentProgress").style.width = '0%';
+    document.getElementById("totalFee").innerText = '€0.00';
+    document.getElementById("paidAmount").innerText = '€0.00';
+    document.getElementById("unpaidAmount").innerText = '€0.00';
+    document.getElementById("card_studnet_name").innerText = '';
+    document.getElementById("card_classroom_name").innerText = '';
+
+    // get classroom for students to get fee details
+    const classroom = await pb.collection('classroom').getFullList({
+        sort: '-created',
+        filter: `students ~ "${studentId}"`,
+    });
+
+    // get payments for student under this customer
+    const payments = await pb.collection('payment').getFullList({
+        sort: '-created',
+        filter: `payment_student = "${studentId}" && payment_parent = "${customerId}"`,
+    });
+
+    // replace layout placeholders with data
+    document.getElementById("card_studnet_name").innerText = studentName;
+    document.getElementById("card_classroom_name").innerText = classroom[0] ? classroom[0].name : 'N/A';
+
+    // fill the payments table
+    document.getElementById("paymentTable").innerHTML = '';
+    let totalFee = classroom[0].fee;
+    let paidAmount = 0;
+    // populate payments
+    payments.forEach(payment => {
         paidAmount += payment.payment_amount;
 
         const unpaidAmount = totalFee - paidAmount;
@@ -77,21 +132,18 @@ async function customerDetails(customerId) {
 
         document.getElementById("paymentTable").innerHTML += `<tr>\
             <td>${payment.created}</td>\
+            <td>${customerName}</td>\
             <td>€${payment.payment_amount}</td>\
             <td>DIRECT</td>\
             <td><span class="badge bg-success">Completed</span></td>\
         </tr>`;
 
+        // payment progrees bar
         document.getElementById("paymentProgress").style.width = ((paidAmount / totalFee) * 100) + '%';
-        //console.log(payment);
+
     });
 }
 
-async function testCLICK(customerId) {
-    const record = await pb.collection('customer').getOne(customerId, {
-        expand: 'payments'
-    });
-}
 
 ///////
 // EVENT: USER: CLICK SUBMIT STUDENT/TEACHER DETAILS
@@ -173,6 +225,8 @@ async function createNewStudent() {
     const phone2 = document.forms["new_student_form"]["phone2"].value;
     const birthdate = document.forms["new_student_form"]["birthdate"].value;
     const postalCode = document.forms["new_student_form"]["postalCode"].value;
+    const parent1 = document.forms["new_student_form"]["parentSelect1"].value?? '';
+    const parent2 = document.forms["new_student_form"]["parentSelect2"].value?? '';
 
 
     // try to loging for error return an error message
@@ -189,8 +243,8 @@ async function createNewStudent() {
             "address": address,
             "city": city,
             "state": state,
-            "parent_1": JSON.stringify({"first_name": "", "last_name": "", "phone": "", "email": ""}),
-            "parent_2": JSON.stringify({"first_name": "", "last_name": "", "phone": "", "email": ""})
+            "parent_1": parent1,
+            "parent_2": parent2
         };
         const record = await pb.collection('student').create(data);
         pushNotification('Successfully created New Entry!');
@@ -306,6 +360,7 @@ async function loadAllStudents() {
             <td>${element.phone_number}</td>\
         </tr>`
     });
+    loadAllParentsForSelect();
 
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
@@ -315,6 +370,25 @@ async function loadAllStudents() {
     });
 
 }
+
+///////
+// EVENT: CTRL: LOAD ALL PARENTS FOR SELECT
+async function loadAllParentsForSelect() {
+    console.log("Loading Parents for Select...");
+    // you can also fetch all records at once via getFullList
+    const records = await pb.collection('customer').getFullList({
+        sort: '-created',
+    });
+
+    records.forEach(element => {
+        document.getElementById("parentSelect1").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+    });
+
+    records.forEach(element => {
+        document.getElementById("parentSelect2").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+    });
+}
+
 
 ///////
 // EVENT: CTRL: LOAD ALL TEACHERS
@@ -539,4 +613,40 @@ function getWeekdayDatesInYear(targetWeekday, year) {
         }
     }
     return result;
+}
+
+// functionto get file from server
+async function getFileFromServer(id) {
+    try {
+        const response = await fetch("http://192.168.191.216:8090/_dist/assignment/file?id=" + id, {
+            headers: {
+                'Authorization': pb.authStore.token.trim()
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        const blob = await response.blob();
+        // Create a temporary download URL
+        const url = URL.createObjectURL(blob);
+
+        // Create a hidden <a> element
+        const a = document.createElement("a");
+        a.href = url;
+
+        // Optional: set filename
+        const disposition = response.headers.get("Content-Disposition");
+        const filename = disposition?.match(/filename="(.+)"/)?.[1] ?? "download";
+        a.download = filename;
+
+        document.body.appendChild(a);
+        a.click();
+
+        // Cleanup
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error('There has been a problem with your fetch operation:', error);
+        throw error;
+    }
 }

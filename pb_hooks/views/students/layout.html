@@ -1,6 +1,7 @@
 <!--Autoload all students-->
 <script>
   loadAllStudents()
+  loadAllParentsForSelect()
 </script>
 
 {{ block "navbar" .}}
@@ -81,6 +82,19 @@
           <div class="col-6">
             <label for="birthdate">Birthdate</label>
             <input id="birthdate" class="form-control" type="date" />
+          </div>
+          <hr />
+          <div class="col-12">
+            <h5>Assign Parent 1</h5>
+            <select class="form-select" id="parentSelect1" aria-label="Parent select">
+              <option value="" selected>Select Parent</option>
+            </select>
+          </div>
+          <div class="col-12">
+            <h5>Assign Parent 2</h5>
+            <select class="form-select" id="parentSelect2" aria-label="Parent select">
+              <option value="" selected>Select Parent</option>
+            </select>
           </div>
           <div class="col-12">
             <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewStudent();">Create new</button>

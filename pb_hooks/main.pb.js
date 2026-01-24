@@ -81,38 +81,62 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
     const studentsId = httpContext.request.url.query().get("id");
     const record = $app.findRecordById("student", studentsId);
+
     const birthdate = new Date(record.get("birthdate").string().replace(" ", 'T'));
-    console.log("BIRTHDATE: "+typeof birthdate.getDate());
     const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ String(birthdate.getDate()).padStart(2,'0');
+
+    let renderValues = {};
+    // generate html template
+    renderValues = {
+        "id": studentsId,
+        "col": "student",
+        "first_name": record.get("first_name"),
+        "last_name": record.get("last_name"),
+        "phone1": record.get("phone_number"),
+        "birth_date": birthdateStr,
+        "phone2": record.get("phone_number_2"),
+        "address": record.get("address"),
+        "city": record.get("city"),
+        "state": record.get("state"),
+        "postal_code": record.get("postal_code"),
+        "email": record.email(),
+        "sb_student": "active",
+        "student_bool": "true"
+    };
+            
+    console.log("asdfasdf:"+ record.get("parent_1"));
+    console.log("asdfasdf22222:"+ JSON.stringify(record.get("parent_2")));
+
+    if(record.get("parent_1") !== ""){
+        //get the parent1 details
+        const parent1 = $app.findRecordById("customer", record.get("parent_1"));
+        //add values to render table
+        console.log("parent1 phone: "+parent1.get("phone_number")); 
+        renderValues["parent1_first_name"] = parent1.get("first_name");
+        renderValues["parent1_last_name"] = parent1.get("last_name");
+        renderValues["parent1_phone"] = parent1.get("phone_number");
+        renderValues["parent1_email"] = parent1.email();
+        renderValues["parent1_address"] = parent1.get("address");
+    } 
+    if(record.get("parent_2") !== ""){
+        //get the parent2 details
+        const parent2 = $app.findRecordById("customer", record.get("parent_2"));
+        //add values to render table
+        renderValues["parent2_first_name"] = parent2.get("first_name");
+        renderValues["parent2_last_name"] = parent2.get("last_name");
+        renderValues["parent2_phone"] = parent2.get("phone_number");
+        renderValues["parent2_email"] = parent2.email();
+        renderValues["parent2_address"] = parent2.get("address");
+    }
+
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
+        
+        console.log("RENDER VALUES: "+JSON.stringify(renderValues));
         const html = $template.loadFiles(
             `${__hooks}/views/details.html`
-        ).render({
-            "id": studentsId,
-            "col": "student",
-            "first_name": record.get("first_name"),
-            "last_name": record.get("last_name"),
-            "phone1": record.get("phone_number"),
-            "birth_date": birthdateStr,
-            "phone2": record.get("phone_number_2"),
-            "address": record.get("address"),
-            "city": record.get("city"),
-            "state": record.get("state"),
-            "postal_code": record.get("postal_code"),
-            "email": record.email(),
-            "sb_student": "active",
-            "student_bool": "true",
-            "parent1_first_name": JSON.parse(record.get("parent_1"))["first_name"],
-            "parent1_last_name": JSON.parse(record.get("parent_1"))["last_name"],
-            "parent1_phone": JSON.parse(record.get("parent_1"))["phone"],
-            "parent1_email": JSON.parse(record.get("parent_1"))["email"],
-            "parent2_first_name": JSON.parse(record.get("parent_2"))["first_name"],
-            "parent2_last_name": JSON.parse(record.get("parent_2"))["last_name"],
-            "parent2_phone": JSON.parse(record.get("parent_2"))["phone"],
-            "parent2_email": JSON.parse(record.get("parent_2"))["email"]
-        });
+        ).render(renderValues);
         // Once generated return the HTML contents
         return httpContext.html(200, html);
     } catch(e) {
@@ -131,19 +155,20 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
 //
 // [
 //   {
-//     "classroom": "luy7iz275helf7y",
-//     "day": "Monday",
-//     "hour": "16:00-18:00"
+//     "classroom": "3o2ktfriv7jyeps",
+//     "day": "Tuesday",
+//     "hours": [
+//       "16:00",
+//       "19:00"
+//     ]
 //   },
 //   {
-//     "classroom": "2ea6ez2029afeiy",
-//     "day": "Monday",
-//     "hour": "18:00-20:00"
-//   }
-//   {
-//     "classroom": "luy7iz275helf7y",
-//     "day": "Tuesday",
-//     "hour": "16:00-18:00"
+//     "classroom": "3o2ktfriv7jyeps",
+//     "day": "Thursday",
+//     "hours": [
+//       "18:00",
+//       "19:00"
+//     ]
 //   }
 // ]
 routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
@@ -194,7 +219,9 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
     const classroomId = httpContext.request.url.query().get("id");
     const record = $app.findRecordById("classroom", classroomId);
     const studentsArray = $app.findRecordsByIds("student", record.get("students"));
-    console.log("STUDENTS ARRAY: "+studentsArray);
+    const teacherRecord = $app.findRecordById("teacher", record.get("teacher"));
+    const assignments = $app.findRecordsByFilter("assignment","classroom='"+classroomId+"'");
+    console.log(JSON.stringify(assignments));
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
@@ -203,8 +230,12 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
             `${__hooks}/views/details.html`
         ).render({
             "id": classroomId,
+            "classroom_name": record.get("name"),
+            "assigned_teacher": teacherRecord.get("first_name")+" "+teacherRecord.get("last_name"),
+            "room": record.get("room"),
             "col": "classroom",
             "students":studentsArray,
+            "assignments": assignments,
             "sb_classroom": "active",
             "classroom_bool": "true"
         });
@@ -215,3 +246,46 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
     }
 }, $apis.requireAuth("users"));
+
+//////////
+// router get assignment file
+routerAdd("GET", "/_dist/assignment/file", (httpContext) => {
+    
+    // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
+    const assignmentId = httpContext.request.url.query().get("id");
+    const record = $app.findRecordById("assignment", assignmentId);
+
+    const fileName = record.get("attachment");
+    const fileKey = record.baseFilesPath() + "/" + record.get("attachment");
+    const fullPath = "pb_data/storage/" + fileKey;
+
+    console.log("FULL PATH: "+fullPath);
+    
+    let fsys, reader, content;
+
+    try {
+          fsys = $app.newFilesystem();
+
+        // ✅ READ AS BYTES (not reader)
+        const bytes = $os.readFile(fullPath);
+
+        httpContext.response.header().set(
+            "Content-Disposition",
+            `inline; filename="${fileName}"`
+        );
+
+        httpContext.response.header().set(
+            "Content-Type",
+            "application/octet-stream"
+        );
+
+        // ✅ Write bytes
+        httpContext.response.write(bytes);
+        return;
+    } finally {
+        reader?.close();
+        fsys?.close();
+    }
+});
+
+//////////

@@ -21,6 +21,20 @@
     <tbody id="tbodyCustomers">
     </tbody>
   </table>
+  <hr />
+  <h1>Students</h1>
+  <table id="dataTable2" class="table table-striped" style="width:100%">
+    <thead>
+      <tr>
+        <th>First Name</th>
+        <th>Last Name</th>
+        <th>Age</th>
+        <th>Phone</th>
+      </tr>
+    </thead>
+    <tbody id="tbodyStudents">
+    </tbody>
+  </table>
 </div>
 
 <div class="container py-5">
@@ -28,8 +42,8 @@
   <!-- Student Info -->
   <div class="mb-4">
     <h3>Payment Overview</h3>
-    <p class="text-muted mb-0">Student: <strong id="student_name">placeholder</strong></p>
-    <p class="text-muted">Course: placeholder</p>
+    <p class="text-muted mb-0">Student: <strong id="card_studnet_name"></strong></p>
+    <p class="text-muted">Course: <span id="card_classroom_name"></span></p>
   </div>
 
   <!-- Payment Summary Cards -->
@@ -83,23 +97,12 @@
         <thead>
           <tr>
             <th>Date</th>
+            <th>Parent</th>
             <th>Amount</th>
             <th>Method</th>
             <th>Status</th>
           </tr>
         </thead>
-        <!-- <tr>
-            <td>2024-01-15</td>
-            <td>€200</td>
-            <td>Credit Card</td>
-            <td><span class="badge bg-success">Completed</span></td>
-          </tr>
-          <tr>
-            <td>2024-02-15</td>
-            <td>€50</td>
-            <td>Bank Transfer</td>
-            <td><span class="badge bg-success">Completed</span></td>
-          </tr> -->
         <tbody id="paymentTable">
         </tbody>
       </table>
