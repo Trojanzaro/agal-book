@@ -42,7 +42,7 @@
     </div>
     <!--TEACHER CALENDAR-->
     {{if not .student_bool}}
-        <div id="teacher_calendar" style="width: 1000px; "></div>
+    <div id="teacher_calendar" style="width: 1000px; "></div>
     {{ end }}
     <div class="col-12">
         <button id="editbtn" type="button" class="btn btn-outline-warning"
@@ -51,7 +51,8 @@
     <div class="col-12">
         <button id="submitEditbtn" type="button" class="btn btn-primary" onclick="putDetails('{{.id}}', '{{.col}}')"
             disabled>Submit</button>
-        <button type="button" class="btn btn-danger" onclick="dashboardNavActive(window.localStorage.getItem('nav'))">Cancel</button>
+        <button type="button" class="btn btn-danger"
+            onclick="dashboardNavActive(window.localStorage.getItem('nav'))">Cancel</button>
     </div>
 </form>
 
@@ -101,43 +102,91 @@
     </div>
 
     {{end}}
-<!--CLASSROOM DATA-->
+    <!--CLASSROOM DATA-->
 
 {{if .classroom_bool}}
-<h3>Classroom Information</h3>
-<dl class="row">
-    <dt class="col-sm-3">Classroom Name</dt>
-    <dd class="col-sm-9">{{.classroom_name}}</dd>
-    <dt class="col-sm-3">Description</dt>
-    <dd class="col-sm-9">{{.description}}</dd>
-    <dt class="col-sm-3">Created</dt>
-    <dd class="col-sm-9">{{.created}}</dd>
-</dl>
+    <h3>Classroom Information</h3>
+    <dl class="row">
+        <dt class="col-sm-3">Classroom Name</dt>
+        <dd class="col-sm-9">{{.classroom_name}}</dd>
+        <dt class="col-sm-3">Assigned Teacher</dt>
+        <dd class="col-sm-9">{{.assigned_teacher}}</dd>
+        <dt class="col-sm-3">Room</dt>
+        <dd class="col-sm-9">{{.room}}</dd>
+    </dl>
+
+    <!--CLASSROOM STUDENTS-->
+
+    <h3>Students in this Classroom</h3>
+    <table id="dataTable" class="table table-striped" style="width:100%">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Age</th>
+                <th>Email</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody id="tbodyClassroomStudents">
+            {{ range $index, $element := .students }}
+            <tr>
+                <td><a href='javascript:studentDetails("{{ .Get "id"}}");sidebarNavActive("students");'>{{ .Get
+                        "first_name" }} {{ .Get "last_name" }}</a></td>
+                <td>{{ .Get "birthdate" }}</td>
+                <td>{{ .Get "email" }}</td>
+                <td>{{ .Get "created" }}</td>
+            </tr>
+            {{ end }}
+        </tbody>
+    </table>
+
+    <hr />
+
+    <h3>Assignments</h3>
+
+    {{ if .assignments }}
+    <div class="accordion" id="assignmentsAccordion">
+        {{ range $i, $a := .assignments }}
+        <div class="accordion-item">
+            <h2 class="accordion-header" id="heading{{$i}}">
+                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#collapse{{$i}}">
+                    {{ .Get "title" }} {{ .Get "created"}}
+                </button>
+            </h2>
+
+            <div id="collapse{{$i}}" class="accordion-collapse collapse">
+                <div class="accordion-body">
+
+                    <!-- Rich text body -->
+                    <div class="mb-3">
+                        {{ .Get "assignment_body" | raw }}
+                    </div>
+
+                    <!-- Attachments -->
+                    {{ if .Get "attachment" }}
+                    <h6>Attachment</h6>
+                    <ul>
+                        <li>
+                            <a href="/_dist/assignment/file?id={{ .Get "id" }}" target="_blank">
+                                {{ .Get "attachment" }}
+                            </a>
+                        </li>
+                    </ul>
+                    {{ end }}
+
+                    <small class="text-muted">
+                        Created: {{ .Get "created" }}
+                    </small>
+
+                </div>
+            </div>
+        </div>
+        {{ end }}
+    </div>
+    {{ else }}
+    <p class="text-muted">No assignments yet.</p>
 {{ end }}
 
-<!--CLASSROOM STUDENTS-->
-
-{{if .classroom_bool}}
-<h3>Students in this Classroom</h3>
-<table id="dataTable" class="table table-striped" style="width:100%">
-    <thead>
-        <tr>
-            <th>Student Name</th>
-            <th>Age</th>
-            <th>Email</th>
-            <th>Created</th>
-        </tr>
-    </thead>
-    <tbody id="tbodyClassroomStudents">
-        {{ range $index, $element := .students }}
-        <tr>
-            <td><a href='javascript:studentDetails("{{ .Get "id"}}");sidebarNavActive("students");' >{{ .Get "first_name" }} {{ .Get "last_name" }}</a></td>
-            <td>{{ .Get "birthdate" }}</td>
-            <td>{{ .Get "email" }}</td>
-            <td>{{ .Get "created" }}</td>
-        </tr>
-        {{ end }}
-    </tbody>
-</table>
-{{ end }}       
+{{ end }}
     <!--END MAIN-->
