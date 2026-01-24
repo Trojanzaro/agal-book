@@ -187,6 +187,20 @@ async function putDetails(id, collection) {
 }
 
 ///////
+// EVENT: CLOCK ASSIGNMENT
+function showAssignment(index) {
+    document.querySelectorAll('[id^="assignment-preview-"]').forEach(el => {
+        el.classList.add('d-none');
+    });
+    document.getElementById('assignment-preview-' + index).classList.remove('d-none');
+
+    document.querySelectorAll('#assignmentList .list-group-item').forEach(el => {
+        el.classList.remove('active');
+    });
+    document.querySelectorAll('#assignmentList .list-group-item')[index].classList.add('active');
+}
+
+///////
 // EVENT: USER: CLICK LOGIN
 async function loginButton(_t) {
 

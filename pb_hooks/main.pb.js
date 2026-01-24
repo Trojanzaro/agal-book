@@ -103,15 +103,11 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
         "sb_student": "active",
         "student_bool": "true"
     };
-            
-    console.log("asdfasdf:"+ record.get("parent_1"));
-    console.log("asdfasdf22222:"+ JSON.stringify(record.get("parent_2")));
 
     if(record.get("parent_1") !== ""){
         //get the parent1 details
         const parent1 = $app.findRecordById("customer", record.get("parent_1"));
         //add values to render table
-        console.log("parent1 phone: "+parent1.get("phone_number")); 
         renderValues["parent1_first_name"] = parent1.get("first_name");
         renderValues["parent1_last_name"] = parent1.get("last_name");
         renderValues["parent1_phone"] = parent1.get("phone_number");
@@ -133,7 +129,6 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
     try {
         //generate templates base on working directory path
         
-        console.log("RENDER VALUES: "+JSON.stringify(renderValues));
         const html = $template.loadFiles(
             `${__hooks}/views/details.html`
         ).render(renderValues);
@@ -221,7 +216,7 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
     const studentsArray = $app.findRecordsByIds("student", record.get("students"));
     const teacherRecord = $app.findRecordById("teacher", record.get("teacher"));
     const assignments = $app.findRecordsByFilter("assignment","classroom='"+classroomId+"'");
-    console.log(JSON.stringify(assignments));
+
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
@@ -258,8 +253,6 @@ routerAdd("GET", "/_dist/assignment/file", (httpContext) => {
     const fileName = record.get("attachment");
     const fileKey = record.baseFilesPath() + "/" + record.get("attachment");
     const fullPath = "pb_data/storage/" + fileKey;
-
-    console.log("FULL PATH: "+fullPath);
     
     let fsys, reader, content;
 
