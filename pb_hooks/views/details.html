@@ -104,8 +104,9 @@
     {{end}}
     <!--CLASSROOM DATA-->
 
-{{if .classroom_bool}}
+    {{if .classroom_bool}}
     <h3>Classroom Information</h3>
+    <input type="hidden" id="classroom_id" value="{{.classroom_id}}" />
     <dl class="row">
         <dt class="col-sm-3">Classroom Name</dt>
         <dd class="col-sm-9">{{.classroom_name}}</dd>
@@ -114,10 +115,13 @@
         <dt class="col-sm-3">Room</dt>
         <dd class="col-sm-9">{{.room}}</dd>
     </dl>
+    <hiddent id="classroomId" value="{{.classroom_id}}"></hiddent> 
 
     <!--CLASSROOM STUDENTS-->
 
     <h3>Students in this Classroom</h3>
+    <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#assignStudentModal">Assign
+        Student <i class="fas fa-file-alt"> </i></button>
     <table id="dataTable" class="table table-striped" style="width:100%">
         <thead>
             <tr>
@@ -145,48 +149,98 @@
     <h3>Assignments</h3>
 
     {{ if .assignments }}
-    <div class="accordion" id="assignmentsAccordion">
-        {{ range $i, $a := .assignments }}
-        <div class="accordion-item">
-            <h2 class="accordion-header" id="heading{{$i}}">
-                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#collapse{{$i}}">
-                    {{ .Get "title" }} {{ .Get "created"}}
-                </button>
-            </h2>
 
-            <div id="collapse{{$i}}" class="accordion-collapse collapse">
-                <div class="accordion-body">
+    <div class="mt-4">
+        <div class="row">
 
-                    <!-- Rich text body -->
-                    <div class="mb-3">
-                        {{ .Get "assignment_body" | raw }}
-                    </div>
+            <!-- Assignment list -->
+            <div class="col-md-4">
+                <div class="list-group" id="assignmentList">
+                    {{range $i, $a := .assignments}}
+                    <button type="button" class="list-group-item list-group-item-action {{if eq $i 0}}active{{end}}"
+                        onclick="showAssignment({{ $i }})">
+                        <strong>{{.Get "title"}}</strong><br>
+                        <small>{{.Get "created"}}</small>
+                    </button>
+                    {{end}}
+                </div>
+            </div>
 
-                    <!-- Attachments -->
-                    {{ if .Get "attachment" }}
-                    <h6>Attachment</h6>
-                    <ul>
-                        <li>
-                            <a href="/_dist/assignment/file?id={{ .Get "id" }}" target="_blank">
-                                {{ .Get "attachment" }}
+            <!-- Assignment preview -->
+            <div class="col-md-8">
+                {{range $i, $a := .assignments}}
+                <div id="assignment-preview-{{$i}}" class="{{if ne $i 0}}d-none{{end}}">
+
+                    <div class="card shadow-sm">
+                        <div class="card-body">
+
+                            <h5>{{.Get "title"}}</h5>
+                            <small class="text-muted">{{.Get "created"}}</small>
+
+                            <hr>
+                            {{.Get "assignment_body" | raw}}
+
+                            {{if .Get "attachment"}}
+                            <hr>
+                            <strong>Attachment</strong><br>
+                            <a href="/api/files/assignments/{{.Id}}/{{.Get " attachment"}}" target="_blank">
+                                📎 {{.Get "attachment"}}
                             </a>
-                        </li>
-                    </ul>
-                    {{ end }}
+                            {{end}}
 
-                    <small class="text-muted">
-                        Created: {{ .Get "created" }}
-                    </small>
+                        </div>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+
+    </script>
+
+
+    {{ else }}
+    <p class="text-muted">No assignments yet.</p>
+    {{ end }}
+
+    {{ end }}
+    <!--END MAIN-->
+
+    <!--ASSIGN STUDENT MODAL-->
+    <div class="modal" tabindex="-1" id="assignStudentModal">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Assign Student</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- <p>Modal body text goes here.</p> -->
+                    <form class="row g-3" name="assign_student_form">
+                        <div class="col-12">
+                            <h5>Assign Student</h5>
+                            <select class="form-select" id="studentsSelectAssign" aria-label="Parent select">
+                                <option value="" selected>Select Student</option>
+                            </select>
+                        </div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" class="btn btn-primary" onclick="assignStudent();" data-bs-dismiss="modal">
+                        Assign
+                    </button>
+
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        Cancel
+                    </button>
 
                 </div>
             </div>
         </div>
-        {{ end }}
     </div>
-    {{ else }}
-    <p class="text-muted">No assignments yet.</p>
-{{ end }}
-
-{{ end }}
-    <!--END MAIN-->
+    <!--END MODAL-->

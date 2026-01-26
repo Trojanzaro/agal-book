@@ -7,8 +7,9 @@
 
 <div class="main-dashboard" id="main-dashboard">
   <h1>Customers</h1>
-  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">New <i class="fas fa-file-alt">  </i></button>
-  <br/><br/>
+  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">New <i
+      class="fas fa-file-alt"> </i></button>
+  <br /><br />
   <table id="dataTable" class="table table-striped" style="width:100%">
     <thead>
       <tr>
@@ -37,7 +38,7 @@
   </table>
 </div>
 
-<div class="container py-5">
+<div class="container py-6">
 
   <!-- Student Info -->
   <div class="mb-4">
@@ -46,6 +47,9 @@
     <p class="text-muted">Course: <span id="card_classroom_name"></span></p>
   </div>
 
+  <!--NEW PAYMENT BUTTON -->
+  <button class="btn bs b-btn-xl btn-primary" id="payment_button" data-bs-toggle="modal" data-bs-target="#newPaymentModal" disabled="true">New Payment <i class="fas fa-file-alt"> </i></button>
+  <br /><br />
   <!-- Payment Summary Cards -->
   <div class="row g-3 mb-4">
     <div class="col-md-4">
@@ -80,10 +84,7 @@
   <div class="mb-4">
     <label class="form-label">Payment Progress</label>
     <div class="progress" style="height: 20px;">
-      <div
-        id="paymentProgress"
-        class="progress-bar progress-bar-striped progress-bar-animated"
-        role="progressbar"
+      <div id="paymentProgress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
         style="width: 0%">
       </div>
     </div>
@@ -176,5 +177,34 @@
 </div>
 <!--END MODAL-->
 
+<!--NEW PAYMENT MODAL-->
+<div class="modal" tabindex="-1" id="newPaymentModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Payment</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <!-- <p>Modal body text goes here.</p> -->
+        <form class="row g-3" name="new_payment_form">
+          <div class="col-md-6">
+            <label for="paymentAmount" class="form-label">Amount</label>
+            <input type="number" class="form-control" id="paymentAmount" required>
+            <input type="hidden" id="paymentStudentId"></input>
+            <input type="hidden" id="paymentParentId"></input>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addPayment();">Add</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+<!--END MODAL-->
+
 </body>
+
 </html>
