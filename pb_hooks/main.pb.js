@@ -232,7 +232,8 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
             "students":studentsArray,
             "assignments": assignments,
             "sb_classroom": "active",
-            "classroom_bool": "true"
+            "classroom_bool": "true",
+            "classroom_id": classroomId
         });
         // Once generated return the HTML contents
         return httpContext.html(200, html);
@@ -259,7 +260,7 @@ routerAdd("GET", "/_dist/assignment/file", (httpContext) => {
     try {
           fsys = $app.newFilesystem();
 
-        // ✅ READ AS BYTES (not reader)
+        // READ AS BYTES (not reader)
         const bytes = $os.readFile(fullPath);
 
         httpContext.response.header().set(
@@ -272,7 +273,7 @@ routerAdd("GET", "/_dist/assignment/file", (httpContext) => {
             "application/octet-stream"
         );
 
-        // ✅ Write bytes
+        // Write bytes
         httpContext.response.write(bytes);
         return;
     } finally {

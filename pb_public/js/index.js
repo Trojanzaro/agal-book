@@ -48,6 +48,7 @@ async function classroomDetails(classroomId) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
+    loadAllStudentsForAssign();
 }
 
 ///////
@@ -106,44 +107,119 @@ async function studentFees(studentId, customerId, customerName, studentName) {
         filter: `students ~ "${studentId}"`,
     });
 
-    // get payments for student under this customer
-    const payments = await pb.collection('payment').getFullList({
-        sort: '-created',
-        filter: `payment_student = "${studentId}" && payment_parent = "${customerId}"`,
-    });
+    // enable payment button only if student is assigned to a classroom
+    if (classroom.length !== 0) {
+        document.getElementById("payment_button").removeAttribute("disabled");
 
-    // replace layout placeholders with data
-    document.getElementById("card_studnet_name").innerText = studentName;
-    document.getElementById("card_classroom_name").innerText = classroom[0] ? classroom[0].name : 'N/A';
+        //get the rest of the data and populate accordingly
+        // get payments for student under this customer
+        const payments = await pb.collection('payment').getFullList({
+            sort: '-created',
+            filter: `payment_student = "${studentId}" && payment_parent = "${customerId}"`,
+        });
 
-    // fill the payments table
-    document.getElementById("paymentTable").innerHTML = '';
-    let totalFee = classroom[0].fee;
-    let paidAmount = 0;
-    // populate payments
-    payments.forEach(payment => {
-        paidAmount += payment.payment_amount;
+        // replace layout placeholders with data
+        document.getElementById("paymentStudentId").value = studentId;
+        document.getElementById("paymentParentId").value = customerId;
 
-        const unpaidAmount = totalFee - paidAmount;
 
-        document.getElementById("totalFee").innerText = '€' + totalFee;
-        document.getElementById("paidAmount").innerText = '€' + paidAmount;
-        document.getElementById("unpaidAmount").innerText = '€' + unpaidAmount;
+        // fill the payments table
+        document.getElementById("paymentTable").innerHTML = '';
+        let totalFee = classroom[0].fee;
+        let paidAmount = 0;
+        // populate payments
+        payments.forEach(payment => {
+            paidAmount += payment.payment_amount;
 
-        document.getElementById("paymentTable").innerHTML += `<tr>\
-            <td>${payment.created}</td>\
-            <td>${customerName}</td>\
-            <td>€${payment.payment_amount}</td>\
-            <td>DIRECT</td>\
-            <td><span class="badge bg-success">Completed</span></td>\
-        </tr>`;
+            const unpaidAmount = totalFee - paidAmount;
 
-        // payment progrees bar
-        document.getElementById("paymentProgress").style.width = ((paidAmount / totalFee) * 100) + '%';
+            document.getElementById("totalFee").innerText = '€' + totalFee;
+            document.getElementById("paidAmount").innerText = '€' + paidAmount;
+            document.getElementById("unpaidAmount").innerText = '€' + unpaidAmount;
 
-    });
+            document.getElementById("paymentTable").innerHTML += `<tr>\
+                <td>${payment.created}</td>\
+                <td>${customerName}</td>\
+                <td>€${payment.payment_amount}</td>\
+                <td>DIRECT</td>\
+                <td><span class="badge bg-success">Completed</span></td>\
+            </tr>`;
+
+            // payment progrees bar
+            document.getElementById("paymentProgress").style.width = ((paidAmount / totalFee) * 100) + '%';
+
+        });
+    } else {
+        document.getElementById("payment_button").setAttribute("disabled", "true");
+        pushNotification("Student is not assigned to a classroom yet. Cannot process payments.");
+    }
+
 }
 
+///////
+// EVENT: USER: CLICK ADD PAYMENT
+async function addPayment() {
+
+    //get form data
+    const amount = document.forms["new_payment_form"]["paymentAmount"].value;
+    const studentId = document.getElementById("paymentStudentId").value;
+    const customerId = document.getElementById("paymentParentId").value;
+
+    // try to loging for error return an error message
+    try {
+        // example create data
+        const data = {
+            "payment_amount": parseFloat(amount),
+            "payment_student": studentId,
+            "payment_parent": customerId,
+            "payment_method": "DIRECT"
+        };
+
+        console.log("Creating payment with data:", data);
+        const record = await pb.collection('payment').create(data);
+        pushNotification('Successfully created New Payment Entry!');
+
+        // refresh the student fees view
+        studentFees(studentId, customerId, '', document.getElementById("card_studnet_name").innerText);
+
+    } catch (e) {
+        pushNotification("ERROR: " + JSON.stringify(e.response.data));
+    }
+}
+
+
+///////
+// EVENT: CLASSROOM: CLICK ASSIGN STUDENTS
+async function assignStudent() {
+    const classroomId = document.getElementById("classroom_id").value;
+    //get form data
+    const selectedStudents = Array.from(document.getElementById("studentsSelectAssign").selectedOptions).map(option => option.value);
+    console.log("Selected Students to assign:", selectedStudents);
+
+    // try to loging for error return an error message
+    console.log("Assigning students to classroom:", classroomId);
+    try {
+        // get current classroom data
+        const classroom = await pb.collection('classroom').getOne(classroomId);
+
+        // merge current students with new selected students
+        const updatedStudents = Array.from(new Set([...classroom.students, ...selectedStudents]));
+
+        // update classroom with new students list
+        const data = {
+            "students": updatedStudents
+        };
+        const record = await pb.collection('classroom').update(classroomId, data);
+        pushNotification("Succesfully Assigned Students!");
+
+        // reload classroom details page
+        classroomDetails(classroomId);
+
+    } catch (e) {
+        console.error(e);
+        pushNotification("ERROR: " + JSON.stringify(e.response.data));
+    }
+}
 
 ///////
 // EVENT: USER: CLICK SUBMIT STUDENT/TEACHER DETAILS
@@ -403,6 +479,38 @@ async function loadAllParentsForSelect() {
     });
 }
 
+///////
+// EVENT: CTRL: LOAD ALL STUDENTS FOR ASSIGN
+async function loadAllStudentsForAssign() {
+    console.log("Loading Students for Assign...");
+    // fetch all students records at once via getFullList
+    const records = await pb.collection('student').getFullList({
+        sort: '-created',
+    });
+
+    // fetch all students in classrooms and filter them out
+    const assignedStudentsRecords = await pb.collection('classroom').getFullList({
+        sort: '-created',
+    });
+
+    const assignedStudentsIds = [];
+    assignedStudentsRecords.forEach(classroom => {
+        classroom.students.forEach(studentId => {
+            assignedStudentsIds.push(studentId);
+        });
+    });
+
+    // populate only unassigned students
+    records.forEach(element => {
+        if (!assignedStudentsIds.includes(element.id)) {
+            document.getElementById("studentsSelectAssign").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+        }
+    });
+    
+    // records.forEach(element => {
+    //     document.getElementById("studentsSelectAssign").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+    // });
+}
 
 ///////
 // EVENT: CTRL: LOAD ALL TEACHERS
