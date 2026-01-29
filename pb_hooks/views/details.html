@@ -91,7 +91,7 @@
     {{ end }}
     <div class="col-12">
         <button id="editbtn" type="button" class="btn btn-outline-warning"
-            onclick="$('#submitEditbtn').removeAttr('disabled')"><i class="fas fa-edit"></i></button>
+            onclick="enableDetailsEdit();$('#submitEditbtn').removeAttr('disabled')"><i class="fas fa-edit"></i></button>
     </div>
     <div class="col-12">
         <button id="submitEditbtn" type="button" class="btn btn-primary" onclick="putDetails('{{.id}}', '{{.col}}')"
@@ -119,30 +119,46 @@
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
         <dl class="row">
             <dt class="col-sm-3">First Name</dt>
-            <dd class="col-sm-9">{{.parent1_first_name}}</dd>
+                        <dd class="col-sm-9">
+                                <span id="parent1_display">{{.parent1_first_name}} {{.parent1_last_name}}</span>
+                                <select id="parentSelect1Detail" class="form-select d-none" aria-label="Parent select">
+                                    <option value="" selected>Unassigned</option>
+                                </select>
+                                <input type="hidden" id="parent1_id" value="{{.parent1_id}}" />
+                        </dd>
 
             <dt class="col-sm-3">Last Name</dt>
             <dd class="col-sm-9">
-                <p>{{.parent1_last_name}}</p>
+                <!-- displayed together above -->
             </dd>
 
             <dt class="col-sm-3">Phone</dt>
-            <dd class="col-sm-9">{{.parent1_phone}}</dd>
+            <dd class="col-sm-9">
+                <span id="parent1_phone_display">{{.parent1_phone}}</span>
+            </dd>
         </dl>
     </div>
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
         <!-- Parent/Guardian 2 -->
         <dl class="row">
             <dt class="col-sm-3">First Name</dt>
-            <dd class="col-sm-9">{{.parent2_first_name}}</dd>
+                        <dd class="col-sm-9">
+                                <span id="parent2_display">{{.parent2_first_name}} {{.parent2_last_name}}</span>
+                                <select id="parentSelect2Detail" class="form-select d-none" aria-label="Parent select">
+                                    <option value="" selected>Unassigned</option>
+                                </select>
+                                <input type="hidden" id="parent2_id" value="{{.parent2_id}}" />
+                        </dd>
 
             <dt class="col-sm-3">Last Name</dt>
             <dd class="col-sm-9">
-                <p>{{.parent2_last_name}}</p>
+                <!-- displayed together above -->
             </dd>
 
             <dt class="col-sm-3">Phone</dt>
-            <dd class="col-sm-9">{{.parent2_phone}}</dd>
+            <dd class="col-sm-9">
+                <span id="parent2_phone_display">{{.parent2_phone}}</span>
+            </dd>
         </dl>
     </div>
 
@@ -152,13 +168,30 @@
     {{if .classroom_bool}}
     <h3>Classroom Information</h3>
     <input type="hidden" id="classroom_id" value="{{.classroom_id}}" />
+    <div class="mb-2">
+        <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button" onclick="enableDetailsEdit();document.getElementById('submitClassroomBtn').removeAttribute('disabled')"><i class="fas fa-edit"></i> Edit</button>
+        <button id="submitClassroomBtn" class="btn btn-primary btn-sm" type="button" onclick="putDetails('{{.classroom_id}}','classroom')" disabled>Submit</button>
+        <button class="btn btn-secondary btn-sm" type="button" onclick="disableDetailsEdit();">Cancel</button>
+    </div>
     <dl class="row">
         <dt class="col-sm-3">Classroom Name</dt>
-        <dd class="col-sm-9">{{.classroom_name}}</dd>
+        <dd class="col-sm-9">
+            <span id="classroom_name_display">{{.classroom_name}}</span>
+            <input type="text" id="inputClassroomName" class="form-control d-none" value="{{.classroom_name}}" />
+        </dd>
         <dt class="col-sm-3">Assigned Teacher</dt>
-        <dd class="col-sm-9">{{.assigned_teacher}}</dd>
+        <dd class="col-sm-9">
+            <span id="classroom_teacher_display">{{.assigned_teacher}}</span>
+            <select id="classroomTeacherSelectDetail" class="form-select d-none">
+                <option value="">Unassigned</option>
+            </select>
+            <input type="hidden" id="assigned_teacher_id" value="{{.assigned_teacher_id}}" />
+        </dd>
         <dt class="col-sm-3">Room</dt>
-        <dd class="col-sm-9">{{.room}}</dd>
+        <dd class="col-sm-9">
+            <span id="classroom_room_display">{{.room}}</span>
+            <input type="text" id="inputClassroomRoom" class="form-control d-none" value="{{.room}}" />
+        </dd>
     </dl>
     <hiddent id="classroomId" value="{{.classroom_id}}"></hiddent> 
 
