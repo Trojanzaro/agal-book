@@ -107,6 +107,10 @@ async function studentFees(studentId, customerId, customerName, studentName) {
         filter: `students ~ "${studentId}"`,
     });
 
+    // replace layout placeholders with data
+    document.getElementById("card_studnet_name").innerText = studentName;
+    document.getElementById("card_classroom_name").innerText = classroom[0] ? classroom[0].name : 'N/A';
+
     // enable payment button only if student is assigned to a classroom
     if (classroom.length !== 0) {
         document.getElementById("payment_button").removeAttribute("disabled");
@@ -122,10 +126,11 @@ async function studentFees(studentId, customerId, customerName, studentName) {
         document.getElementById("paymentStudentId").value = studentId;
         document.getElementById("paymentParentId").value = customerId;
 
-
         // fill the payments table
-        document.getElementById("paymentTable").innerHTML = '';
-        let totalFee = classroom[0].fee;
+        document.getElementById("paymentTable").innerHTML = ''; // clear previous entries
+        let totalFee = classroom[0].fee; // get fee from classroom
+        document.getElementById("totalFee").innerText = '€' + totalFee; // set total fee
+        
         let paidAmount = 0;
         // populate payments
         payments.forEach(payment => {
@@ -133,7 +138,6 @@ async function studentFees(studentId, customerId, customerName, studentName) {
 
             const unpaidAmount = totalFee - paidAmount;
 
-            document.getElementById("totalFee").innerText = '€' + totalFee;
             document.getElementById("paidAmount").innerText = '€' + paidAmount;
             document.getElementById("unpaidAmount").innerText = '€' + unpaidAmount;
 
@@ -151,7 +155,6 @@ async function studentFees(studentId, customerId, customerName, studentName) {
         });
     } else {
         document.getElementById("payment_button").setAttribute("disabled", "true");
-        pushNotification("Student is not assigned to a classroom yet. Cannot process payments.");
     }
 
 }
@@ -384,6 +387,52 @@ async function createNewCustomer() {
     }
 }
 
+///////
+// EVENT: USER: CLICK NEW TEACHER
+async function createNewTeacher() {
+    const firstName = document.forms["new_teacher_form"]["teacherFirstName"].value;
+    const lastName = document.forms["new_teacher_form"]["teacherLastName"].value;
+    const email = document.forms["new_teacher_form"]["teacherEmail"].value;
+    const phone = document.forms["new_teacher_form"]["teacherPhone"].value || '';
+    const birthdate = document.forms["new_teacher_form"]["teacherBirthdate"].value || '';
+
+    try {
+        const data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "birthdate": birthdate,
+            "phone_number": phone,
+            "email": email
+        };
+        const record = await pb.collection('teacher').create(data);
+        pushNotification('Successfully created New Teacher!');
+    } catch (e) {
+        pushNotification("ERROR: " + JSON.stringify(e.response?.data || e.toString()));
+    }
+}
+
+///////
+// EVENT: USER: CLICK NEW CLASSROOM
+async function createNewClassroom() {
+    const name = document.forms["new_classroom_form"]["classroomName"].value;
+    const teacher = document.getElementById('classroomTeacher')?.value || '';
+    const room = document.forms["new_classroom_form"]["classroomRoom"].value || '';
+    try {
+        const data = {
+            "name": name,
+            "teacher": teacher,
+            "room": room
+        };
+        const record = await pb.collection('classroom').create(data);
+        pushNotification('Successfully created New Classroom!');
+    } catch (e) {
+        pushNotification("ERROR: " + JSON.stringify(e.response?.data || e.toString()));
+    }
+}
+
+
+
+
 
 ///////
 // EVENT: CTRL: LOGOUT
@@ -400,7 +449,7 @@ async function login() {
 
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
     let nav = window.localStorage.getItem('nav');
-    nav = nav !== null ? nav : "dashboard";
+
     window.localStorage.setItem('nav', nav);
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
