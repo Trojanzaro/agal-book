@@ -163,7 +163,8 @@ document.addEventListener('click', function (e) {
   }
 });
 
-function enableDetailsEdit() {
+function enableDetailsEdit(collection) {
+  if(collection === 'student|teacher') {  
 
       // student-only parent editing
     const p1Select = document.getElementById("parentSelect1Detail");
@@ -178,20 +179,19 @@ function enableDetailsEdit() {
     p2Select.classList.remove("d-none");
 
     loadParentOptions();
+  } else if (collection === 'classroom') {
+    console.log('Enabling classroom edit');
 
-  // document.querySelectorAll('.detail-editable').forEach(function (el) {
-  //   el.addEventListener('change', function (e) {
-  //     var target = e.target;
-  //     if (!target) return;
-  //     var recordId = target.dataset.recordId;
-  //     var colName = target.dataset.colName;
-  //     var newValue = target.value;
+    const teacherSelect = document.getElementById("classroomTeacherSelectDetail");
+    const teacherDisplay = document.getElementById("classroom_teacher_display");
 
-  //     if (recordId && colName) {
-  //       putDetails(recordId, { [colName]: newValue });
-  //     }
-  //   });
-  // });
+    if (!teacherSelect || !teacherDisplay) return;
+
+    teacherDisplay.classList.add("d-none");
+    teacherSelect.classList.remove("d-none");
+
+      loadClassroomOptions();
+  }
 }
 
 async function loadParentOptions() {
@@ -217,4 +217,50 @@ async function loadParentOptions() {
         p1Select.add(new Option(label, p.id, false, p.id === currentP1));
         p2Select.add(new Option(label, p.id, false, p.id === currentP2));
     });
+}
+
+async function loadClassroomOptions() {
+    const teacherSelect = document.getElementById("classroomTeacherSelectDetail");
+    if (!teacherSelect) return;
+
+    const currentTeacherId = document.getElementById("assigned_teacher_id")?.value;
+
+    // reset (keep "Unassigned")
+    teacherSelect.length = 1;
+
+    const teachers = await pb.collection("teacher").getFullList({
+        sort: "last_name"
+    });
+
+    teachers.forEach(t => {
+        const label = `${t.first_name} ${t.last_name}`;
+
+        teacherSelect.add(new Option(label, t.id, false, t.id === currentTeacherId));
+    });
+}
+
+function disableDetailsEdit() {
+  console.log('Disabling details edit');
+  document.getElementById('submitEditbtn')?.setAttribute('disabled', 'disabled');
+  document.getAnimations("submitClassroomBtn")?.setAttribute('disabled', 'disabled');
+    // student/teacher parent editing
+    const p1Select = document.getElementById("parentSelect1Detail");
+    const p2Select = document.getElementById("parentSelect2Detail");
+
+    if (p1Select && p2Select) {
+        document.getElementById("parent1_display")?.classList.remove("d-none");
+        document.getElementById("parent2_display")?.classList.remove("d-none");
+
+        p1Select.classList.add("d-none");
+        p2Select.classList.add("d-none");
+    }
+
+    // classroom editing
+    const classroomSelect = document.getElementById("classroomSelectDetail");
+    const classroomDisplay = document.getElementById("classroom_display");
+
+    if (classroomSelect && classroomDisplay) {
+        classroomDisplay.classList.remove("d-none");
+        classroomSelect.classList.add("d-none");
+    }
 }

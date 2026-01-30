@@ -228,44 +228,65 @@ async function assignStudent() {
 // EVENT: USER: CLICK SUBMIT STUDENT/TEACHER DETAILS
 async function putDetails(id, collection) {
 
+    if(collection === 'student' || collection === 'teacher') {
     //get form data
-    const firstName = document.forms["details_form"]["inputFirstname"].value;
-    const lastName = document.forms["details_form"]["inputLastname"].value;
-    const email = document.forms["details_form"]["inputEmail"].value;
-    const city = document.forms["details_form"]["inputCity"].value;
-    const state = document.forms["details_form"]["inputState"].value;
-    const address = document.forms["details_form"]["inputAddress"].value;
-    const phone1 = document.forms["details_form"]["inputPhone1"].value;
-    const phone2 = document.forms["details_form"]["inputPhone2"].value;
-    const birthdate = document.forms["details_form"]["inputBirthdate"].value;
-    const postalCode = document.forms["details_form"]["inputPostal"].value;
+        const firstName = document.forms["details_form"]["inputFirstname"].value;
+        const lastName = document.forms["details_form"]["inputLastname"].value;
+        const email = document.forms["details_form"]["inputEmail"].value;
+        const city = document.forms["details_form"]["inputCity"].value;
+        const state = document.forms["details_form"]["inputState"].value;
+        const address = document.forms["details_form"]["inputAddress"].value;
+        const phone1 = document.forms["details_form"]["inputPhone1"].value;
+        const phone2 = document.forms["details_form"]["inputPhone2"].value;
+        const birthdate = document.forms["details_form"]["inputBirthdate"].value;
+        const postalCode = document.forms["details_form"]["inputPostal"].value;
 
 
-    // try to loging for error return an error message
-    try {
-        // example create data
-        const data = {
-            "first_name": firstName,
-            "last_name": lastName,
-            "birthdate": birthdate,
-            "phone_number": phone1,
-            "email": email,
-            "phone_number_2": phone2,
-            "postal_code": postalCode,
-            "address": address,
-            "city": city,
-            "state": state,
-            "parent_1": document.getElementById("parentSelect1Detail")?.value ?? '',
-            "parent_2": document.getElementById("parentSelect2Detail")?.value ?? ''
-        };
-        
-        const record = await pb.collection(collection).update(id, data);
-        pushNotification("Succesfully Updated Entry!");
+        // try to loging for error return an error message
+        try {
+            // example create data
+            const data = {
+                "first_name": firstName,
+                "last_name": lastName,
+                "birthdate": birthdate,
+                "phone_number": phone1,
+                "email": email,
+                "phone_number_2": phone2,
+                "postal_code": postalCode,
+                "address": address,
+                "city": city,
+                "state": state,
+                "parent_1": document.getElementById("parentSelect1Detail")?.value ?? '',
+                "parent_2": document.getElementById("parentSelect2Detail")?.value ?? ''
+            };
+            
+            const record = await pb.collection(collection).update(id, data);
+            pushNotification("Succesfully Updated Entry!");
 
-    } catch (e) {
-        console.error(e);
-        pushNotification("ERROR: " + JSON.stringify(e.response.data));
+        } catch (e) {
+            console.error(e);
+            pushNotification("ERROR: " + JSON.stringify(e.response.data));
+        }
+    } else if(collection === 'classroom') {
+        //get form data
+        const name = document.getElementById('inputClassroomName')?.value || '';
+        const teacher = document.getElementById('classroomTeacherSelectDetail')?.value || '';
+        const room = document.getElementById('inputClassroomRoom')?.value || '';
+        // try to loging for error return an error message
+        try {
+            const data = {
+                "name": name,
+                "teacher": teacher,
+                "room": room
+            };
+            const record = await pb.collection('classroom').update(id, data);
+            pushNotification("Succesfully Updated Classroom Entry!");
+        } catch (e) {
+            console.error(e);
+            pushNotification("ERROR: " + JSON.stringify(e.response.data));
+        }
     }
+    
 }
 
 ///////
