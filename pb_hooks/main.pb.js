@@ -214,7 +214,20 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
     const classroomId = httpContext.request.url.query().get("id");
     const record = $app.findRecordById("classroom", classroomId);
     const studentsArray = $app.findRecordsByIds("student", record.get("students"));
-    const teacherRecord = $app.findRecordById("teacher", record.get("teacher"));
+
+    // teacher with dummy data in case of error
+    const dummyCollection = $app.findCollectionByNameOrId("teacher");
+
+    let teacherRecord = new Record(dummyCollection);
+
+    try {
+        teacherRecord = $app.findRecordById("teacher", record.get("teacher"));
+    } catch(e) {   
+        console.log("error"+e);
+        teacherRecord.set("first_name", "N/A");
+        teacherRecord.set("last_name", "N/A");
+    }
+    console.log("teacherRecord", teacherRecord);
     const assignments = $app.findRecordsByFilter("assignment","classroom='"+classroomId+"'");
 
 

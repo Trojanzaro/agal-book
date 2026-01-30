@@ -167,3 +167,35 @@ document.addEventListener('click', function (e) {
     handleCreateAssignment();
   }
 });
+
+function enableDetailsEdit() {  
+  document.querySelectorAll('.detail-editable').forEach(function (el) {
+    el.addEventListener('change', function (e) {
+      var target = e.target;
+      if (!target) return;
+      var recordId = target.dataset.recordId;
+      var colName = target.dataset.colName;
+      var newValue = target.value;
+
+      if (recordId && colName) {
+        putDetails(recordId, { [colName]: newValue });
+      }
+    });
+  });
+}
+
+function disableDetailsEdit() {  
+  document.querySelectorAll('.detail-editable').forEach(function (el) {
+    el.removeEventListener('change', function (e) {
+      var target = e.target;
+      if (!target) return;
+      var recordId = target.dataset.recordId;
+      var colName = target.dataset.colName;
+      var newValue = target.value;
+
+      if (recordId && colName) {
+        putDetails(recordId, { [colName]: newValue });
+      }
+    });
+  });
+}

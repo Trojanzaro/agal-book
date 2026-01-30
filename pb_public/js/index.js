@@ -598,6 +598,7 @@ async function loadAllCustomers() {
 
     records.forEach(element => {
         document.getElementById("tbodyCustomers").innerHTML += `<tr>\
+            <td>${element.id}</td>\
             <td><a href="javascript:customerDetails('${element.id}');" >${element.first_name}</a></td>\
             <td><a href="javascript:customerDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${element.email}</td>\
@@ -671,13 +672,26 @@ async function loadAllClassrooms() {
     });
 
     records.forEach(element => {
-        const age = ((new Date()).getFullYear() - new Date(element?.birthdate).getFullYear())
-        document.getElementById("tbodyClassrooms").innerHTML += `<tr>\
-            <td><a href="javascript:classroomDetails('${element.id}');" >${element.name}</a></td>\
-            <td><a href="javascript:teacherDetails('${element.expand.teacher.id}');sidebarNavActive('teachers');" >${element.expand.teacher.first_name} ${element.expand.teacher.last_name}</a></td>\
-            <td>${element.level}</td>\
-            <td>${element.room}</td>\
-        </tr>`
+    const teacher = element.expand?.teacher;
+
+    const teacherCell = teacher
+        ? `<a href="javascript:teacherDetails('${teacher.id}');sidebarNavActive('teachers');">
+              ${teacher.first_name} ${teacher.last_name}
+           </a>`
+        : `<span class="text-muted">No teacher assigned</span>`;
+
+        document.getElementById("tbodyClassrooms").innerHTML += `
+            <tr>
+                <td>
+                    <a href="javascript:classroomDetails('${element.id}');">
+                        ${element.name}
+                    </a>
+                </td>
+                <td>${teacherCell}</td>
+                <td>${element.level}</td>
+                <td>${element.room}</td>
+            </tr>
+        `;
     });
 
     $(document).ready(function () {
