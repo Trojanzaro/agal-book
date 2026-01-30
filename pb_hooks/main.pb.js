@@ -248,7 +248,9 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
             "assignments": assignments,
             "sb_classroom": "active",
             "classroom_bool": "true",
-            "classroom_id": classroomId
+            "classroom_id": classroomId,
+            "level": record.get("level"),
+            "fee": record.get("fee")
         });
         // Once generated return the HTML contents
         return httpContext.html(200, html);

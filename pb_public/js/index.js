@@ -714,6 +714,7 @@ async function loadAllClassrooms() {
                 <td>${teacherCell}</td>
                 <td>${element.level}</td>
                 <td>${element.room}</td>
+                <td>${element.fee}</td>
             </tr>
         `;
     });

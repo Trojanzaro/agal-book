@@ -242,7 +242,7 @@ async function loadClassroomOptions() {
 function disableDetailsEdit() {
   console.log('Disabling details edit');
   document.getElementById('submitEditbtn')?.setAttribute('disabled', 'disabled');
-  document.getAnimations("submitClassroomBtn")?.setAttribute('disabled', 'disabled');
+  document.getElementById("submitClassroomBtn")?.setAttribute('disabled', 'disabled');
     // student/teacher parent editing
     const p1Select = document.getElementById("parentSelect1Detail");
     const p2Select = document.getElementById("parentSelect2Detail");
