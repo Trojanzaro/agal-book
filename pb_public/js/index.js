@@ -254,8 +254,11 @@ async function putDetails(id, collection) {
             "postal_code": postalCode,
             "address": address,
             "city": city,
-            "state": state
+            "state": state,
+            "parent_1": document.getElementById("parentSelect1Detail")?.value ?? '',
+            "parent_2": document.getElementById("parentSelect2Detail")?.value ?? ''
         };
+        
         const record = await pb.collection(collection).update(id, data);
         pushNotification("Succesfully Updated Entry!");
 

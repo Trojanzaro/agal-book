@@ -117,10 +117,20 @@
 <div class="tab-content" id="nav-tabContent">
     <!-- Parent/Guardian 1 -->
     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0">
+
+                <!--display parent ID-->
+                <input type="hidden" id="parent1_id" value="{{.parent1_id}}" />
+
         <dl class="row">
+            
             <dt class="col-sm-3">First Name</dt>
                         <dd class="col-sm-9">
-                                <span id="parent1_display">{{.parent1_first_name}} {{.parent1_last_name}}</span>
+
+                            <!--PARENT1 SELECTION-->
+                            <span id="parent1_display">...</span>
+                            <select id="parentSelect1Detail" class="form-select d-none"></select>
+
+                                <span id="parent1_display">{{.parent1_first_name}}</span>
                                 <select id="parentSelect1Detail" class="form-select d-none" aria-label="Parent select">
                                     <option value="" selected>Unassigned</option>
                                 </select>
@@ -129,7 +139,7 @@
 
             <dt class="col-sm-3">Last Name</dt>
             <dd class="col-sm-9">
-                <!-- displayed together above -->
+                <span id="parent1_last_name_display">{{.parent1_last_name}}</span>
             </dd>
 
             <dt class="col-sm-3">Phone</dt>
@@ -139,11 +149,20 @@
         </dl>
     </div>
     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab" tabindex="0">
-        <!-- Parent/Guardian 2 -->
+
+                <!-- parent ID-->
+                <input type="hidden" id="parent2_id" value="{{.parent2_id}}" />
+
         <dl class="row">
             <dt class="col-sm-3">First Name</dt>
                         <dd class="col-sm-9">
-                                <span id="parent2_display">{{.parent2_first_name}} {{.parent2_last_name}}</span>
+
+                                        <!--PARENT2 SELECTION-->
+                                        <span id="parent2_display">...</span>
+                                        <select id="parentSelect2Detail" class="form-select d-none"></select>
+
+
+                                <span id="parent2_display">{{.parent2_first_name}}</span>
                                 <select id="parentSelect2Detail" class="form-select d-none" aria-label="Parent select">
                                     <option value="" selected>Unassigned</option>
                                 </select>
@@ -152,7 +171,7 @@
 
             <dt class="col-sm-3">Last Name</dt>
             <dd class="col-sm-9">
-                <!-- displayed together above -->
+                <span id="parent2_last_name_display">{{.parent2_last_name}}</span>
             </dd>
 
             <dt class="col-sm-3">Phone</dt>

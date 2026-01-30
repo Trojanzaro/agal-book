@@ -7,11 +7,6 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 });
 
-// Placeholder for AJAX update; projects can implement putDetails(id, col)
-function putDetails(id, col) {
-  console.log('putDetails called', id, col);
-  // implement fetch/POST to update record
-}
 
 // small HTML escaper for inserting user strings into the DOM
 function escapeHtml(str) {
@@ -168,34 +163,58 @@ document.addEventListener('click', function (e) {
   }
 });
 
-function enableDetailsEdit() {  
-  document.querySelectorAll('.detail-editable').forEach(function (el) {
-    el.addEventListener('change', function (e) {
-      var target = e.target;
-      if (!target) return;
-      var recordId = target.dataset.recordId;
-      var colName = target.dataset.colName;
-      var newValue = target.value;
+function enableDetailsEdit() {
 
-      if (recordId && colName) {
-        putDetails(recordId, { [colName]: newValue });
-      }
-    });
-  });
+      // student-only parent editing
+    const p1Select = document.getElementById("parentSelect1Detail");
+    const p2Select = document.getElementById("parentSelect2Detail");
+
+    if (!p1Select || !p2Select) return;
+
+    document.getElementById("parent1_display")?.classList.add("d-none");
+    document.getElementById("parent2_display")?.classList.add("d-none");
+
+    p1Select.classList.remove("d-none");
+    p2Select.classList.remove("d-none");
+
+    loadParentOptions();
+
+  // document.querySelectorAll('.detail-editable').forEach(function (el) {
+  //   el.addEventListener('change', function (e) {
+  //     var target = e.target;
+  //     if (!target) return;
+  //     var recordId = target.dataset.recordId;
+  //     var colName = target.dataset.colName;
+  //     var newValue = target.value;
+
+  //     if (recordId && colName) {
+  //       putDetails(recordId, { [colName]: newValue });
+  //     }
+  //   });
+  // });
 }
 
-function disableDetailsEdit() {  
-  document.querySelectorAll('.detail-editable').forEach(function (el) {
-    el.removeEventListener('change', function (e) {
-      var target = e.target;
-      if (!target) return;
-      var recordId = target.dataset.recordId;
-      var colName = target.dataset.colName;
-      var newValue = target.value;
+async function loadParentOptions() {
+    const p1Select = document.getElementById("parentSelect1Detail");
+    const p2Select = document.getElementById("parentSelect2Detail");
 
-      if (recordId && colName) {
-        putDetails(recordId, { [colName]: newValue });
-      }
+    if (!p1Select || !p2Select) return;
+
+    const currentP1 = document.getElementById("parent1_id")?.value;
+    const currentP2 = document.getElementById("parent2_id")?.value;
+
+    // reset (keep "Unassigned")
+    p1Select.length = 1;
+    p2Select.length = 1;
+
+    const parents = await pb.collection("customer").getFullList({
+        sort: "last_name"
     });
-  });
+
+    parents.forEach(p => {
+        const label = `${p.first_name} ${p.last_name}`;
+
+        p1Select.add(new Option(label, p.id, false, p.id === currentP1));
+        p2Select.add(new Option(label, p.id, false, p.id === currentP2));
+    });
 }

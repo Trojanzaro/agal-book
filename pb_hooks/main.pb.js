@@ -113,6 +113,7 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
         renderValues["parent1_phone"] = parent1.get("phone_number");
         renderValues["parent1_email"] = parent1.email();
         renderValues["parent1_address"] = parent1.get("address");
+        renderValues["parent1_id"] = parent1.id;
     } 
     if(record.get("parent_2") !== ""){
         //get the parent2 details
@@ -123,6 +124,7 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
         renderValues["parent2_phone"] = parent2.get("phone_number");
         renderValues["parent2_email"] = parent2.email();
         renderValues["parent2_address"] = parent2.get("address");
+        renderValues["parent2_id"] = parent2.id;
     }
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
