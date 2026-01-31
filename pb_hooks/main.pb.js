@@ -113,6 +113,7 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
         renderValues["parent1_phone"] = parent1.get("phone_number");
         renderValues["parent1_email"] = parent1.email();
         renderValues["parent1_address"] = parent1.get("address");
+        renderValues["parent1_id"] = parent1.id;
     } 
     if(record.get("parent_2") !== ""){
         //get the parent2 details
@@ -123,6 +124,7 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
         renderValues["parent2_phone"] = parent2.get("phone_number");
         renderValues["parent2_email"] = parent2.email();
         renderValues["parent2_address"] = parent2.get("address");
+        renderValues["parent2_id"] = parent2.id;
     }
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
@@ -214,7 +216,20 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
     const classroomId = httpContext.request.url.query().get("id");
     const record = $app.findRecordById("classroom", classroomId);
     const studentsArray = $app.findRecordsByIds("student", record.get("students"));
-    const teacherRecord = $app.findRecordById("teacher", record.get("teacher"));
+
+    // teacher with dummy data in case of error
+    const dummyCollection = $app.findCollectionByNameOrId("teacher");
+
+    let teacherRecord = new Record(dummyCollection);
+
+    try {
+        teacherRecord = $app.findRecordById("teacher", record.get("teacher"));
+    } catch(e) {   
+        console.log("error"+e);
+        teacherRecord.set("first_name", "N/A");
+        teacherRecord.set("last_name", "N/A");
+    }
+    console.log("teacherRecord", teacherRecord);
     const assignments = $app.findRecordsByFilter("assignment","classroom='"+classroomId+"'");
 
 
@@ -233,7 +248,9 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
             "assignments": assignments,
             "sb_classroom": "active",
             "classroom_bool": "true",
-            "classroom_id": classroomId
+            "classroom_id": classroomId,
+            "level": record.get("level"),
+            "fee": record.get("fee")
         });
         // Once generated return the HTML contents
         return httpContext.html(200, html);

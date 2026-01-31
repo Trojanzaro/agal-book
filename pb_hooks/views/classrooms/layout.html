@@ -10,6 +10,8 @@
 <!--MAIN-->
 <div class="main-dashboard" id="main-dashboard">
   <h1>Classrooms</h1>
+  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newClassroomModal">New  <i class="fas fa-file-alt">  </i></button>
+    <br/><br/>
   <table id="dataTable" class="table table-striped" style="width:100%">
     <thead>
       <tr>
@@ -17,6 +19,7 @@
         <th>Assigned Teacher</th>
         <th>Level</th>
         <th>Room</th>
+        <th>Fee</th>
       </tr>
     </thead>
     <tbody id="tbodyClassrooms">
@@ -31,3 +34,45 @@
     loadAllClassrooms();
   });
 </script>
+
+<!-- NEW CLASSROOM MODAL (used by the 'New' button above) -->
+<div class="modal" tabindex="-1" id="newClassroomModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">New Classroom</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="row g-3" name="new_classroom_form">
+          <div class="col-md-12">
+            <label class="form-label">Classroom name</label>
+            <input type="text" class="form-control" id="classroomName" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Assigned Teacher (optional)</label>
+            <input type="text" class="form-control" id="classroomTeacher" placeholder="teacher id or name">
+          </div>
+           <div class="col-md-6">
+            <label class="form-label">Level</label>
+            <input type="text" class="form-control" id="classroomLevel" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Fee</label>
+            <input type="text" class="form-control" id="classroomFee" required>
+          </div>
+          <div class="col-md-6">
+            <label class="form-label">Room</label>
+            <input type="text" class="form-control" id="classroomRoom">
+          </div>
+          <div class="col-12">
+            <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewClassroom();">Create new</button>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>

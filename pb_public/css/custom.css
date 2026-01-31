@@ -1,0 +1,9 @@
+/* Custom styles for detail presentation */
+.detail-avatar { width:120px; height:120px; object-fit:cover; }
+.card .list-group-item strong { min-width: 140px; display:inline-block; }
+@media (max-width: 767px) {
+  .detail-avatar { width:96px; height:96px; }
+  .main-dashboard { padding-left: 1rem; padding-right: 1rem; }
+}
+
+.detail-card-actions { gap: .5rem; }
