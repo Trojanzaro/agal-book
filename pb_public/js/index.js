@@ -6,7 +6,7 @@ async function teacherDetails(teacherId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const teacherHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/teacher/details?id=' + teacherId, null);
+        const teacherHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/teacher/details?id=' + teacherId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = teacherHTML;
 
     } catch (e) {
@@ -26,7 +26,7 @@ async function studentDetails(studentId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const studentHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/student/details?id=' + studentId, null);
+        const studentHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/student/details?id=' + studentId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = studentHTML;
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
@@ -42,7 +42,7 @@ async function classroomDetails(classroomId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const classroomHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/classroom/details?id=' + classroomId, null);
+        const classroomHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/classroom/details?id=' + classroomId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = classroomHTML;
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
@@ -455,9 +455,6 @@ async function createNewClassroom() {
 }
 
 
-
-
-
 ///////
 // EVENT: CTRL: LOGOUT
 async function logout() {
@@ -472,13 +469,13 @@ async function login() {
     document.getElementById("UI_MAIN").innerHTML = '';
 
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
-    let nav = window.localStorage.getItem('nav');
+    window.localStorage.setItem('nav', window.localStorage.getItem('nav') || 'dashboard');
+    window.localStorage.setItem('language', window.localStorage.getItem('language') || 'en');
 
-    window.localStorage.setItem('nav', nav);
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=dashboard', null);
+        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=dashboard&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
@@ -733,7 +730,7 @@ async function dashboardNavActive(nav) {
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav, null);
+        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
@@ -859,4 +856,14 @@ async function getFileFromServer(id) {
         console.error('There has been a problem with your fetch operation:', error);
         throw error;
     }
+}
+
+function getLanguage() {
+    const lang = window.localStorage.getItem('language') || 'en';
+    return lang;
+}
+
+function changeLanguage(lang) {
+    window.localStorage.setItem('language', lang);
+    window.location.reload();
 }
