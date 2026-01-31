@@ -107,6 +107,10 @@ async function studentFees(studentId, customerId, customerName, studentName) {
         filter: `students ~ "${studentId}"`,
     });
 
+    // replace layout placeholders with data
+    document.getElementById("card_studnet_name").innerText = studentName;
+    document.getElementById("card_classroom_name").innerText = classroom[0] ? classroom[0].name : 'N/A';
+
     // enable payment button only if student is assigned to a classroom
     if (classroom.length !== 0) {
         document.getElementById("payment_button").removeAttribute("disabled");
@@ -122,10 +126,11 @@ async function studentFees(studentId, customerId, customerName, studentName) {
         document.getElementById("paymentStudentId").value = studentId;
         document.getElementById("paymentParentId").value = customerId;
 
-
         // fill the payments table
-        document.getElementById("paymentTable").innerHTML = '';
-        let totalFee = classroom[0].fee;
+        document.getElementById("paymentTable").innerHTML = ''; // clear previous entries
+        let totalFee = classroom[0].fee; // get fee from classroom
+        document.getElementById("totalFee").innerText = '€' + totalFee; // set total fee
+        
         let paidAmount = 0;
         // populate payments
         payments.forEach(payment => {
@@ -133,7 +138,6 @@ async function studentFees(studentId, customerId, customerName, studentName) {
 
             const unpaidAmount = totalFee - paidAmount;
 
-            document.getElementById("totalFee").innerText = '€' + totalFee;
             document.getElementById("paidAmount").innerText = '€' + paidAmount;
             document.getElementById("unpaidAmount").innerText = '€' + unpaidAmount;
 
@@ -151,7 +155,6 @@ async function studentFees(studentId, customerId, customerName, studentName) {
         });
     } else {
         document.getElementById("payment_button").setAttribute("disabled", "true");
-        pushNotification("Student is not assigned to a classroom yet. Cannot process payments.");
     }
 
 }
@@ -225,41 +228,65 @@ async function assignStudent() {
 // EVENT: USER: CLICK SUBMIT STUDENT/TEACHER DETAILS
 async function putDetails(id, collection) {
 
+    if(collection === 'student' || collection === 'teacher') {
     //get form data
-    const firstName = document.forms["details_form"]["inputFirstname"].value;
-    const lastName = document.forms["details_form"]["inputLastname"].value;
-    const email = document.forms["details_form"]["inputEmail"].value;
-    const city = document.forms["details_form"]["inputCity"].value;
-    const state = document.forms["details_form"]["inputState"].value;
-    const address = document.forms["details_form"]["inputAddress"].value;
-    const phone1 = document.forms["details_form"]["inputPhone1"].value;
-    const phone2 = document.forms["details_form"]["inputPhone2"].value;
-    const birthdate = document.forms["details_form"]["inputBirthdate"].value;
-    const postalCode = document.forms["details_form"]["inputPostal"].value;
+        const firstName = document.forms["details_form"]["inputFirstname"].value;
+        const lastName = document.forms["details_form"]["inputLastname"].value;
+        const email = document.forms["details_form"]["inputEmail"].value;
+        const city = document.forms["details_form"]["inputCity"].value;
+        const state = document.forms["details_form"]["inputState"].value;
+        const address = document.forms["details_form"]["inputAddress"].value;
+        const phone1 = document.forms["details_form"]["inputPhone1"].value;
+        const phone2 = document.forms["details_form"]["inputPhone2"].value;
+        const birthdate = document.forms["details_form"]["inputBirthdate"].value;
+        const postalCode = document.forms["details_form"]["inputPostal"].value;
 
 
-    // try to loging for error return an error message
-    try {
-        // example create data
-        const data = {
-            "first_name": firstName,
-            "last_name": lastName,
-            "birthdate": birthdate,
-            "phone_number": phone1,
-            "email": email,
-            "phone_number_2": phone2,
-            "postal_code": postalCode,
-            "address": address,
-            "city": city,
-            "state": state
-        };
-        const record = await pb.collection(collection).update(id, data);
-        pushNotification("Succesfully Updated Entry!");
+        // try to loging for error return an error message
+        try {
+            // example create data
+            const data = {
+                "first_name": firstName,
+                "last_name": lastName,
+                "birthdate": birthdate,
+                "phone_number": phone1,
+                "email": email,
+                "phone_number_2": phone2,
+                "postal_code": postalCode,
+                "address": address,
+                "city": city,
+                "state": state,
+                "parent_1": document.getElementById("parentSelect1Detail")?.value ?? '',
+                "parent_2": document.getElementById("parentSelect2Detail")?.value ?? ''
+            };
+            
+            const record = await pb.collection(collection).update(id, data);
+            pushNotification("Succesfully Updated Entry!");
 
-    } catch (e) {
-        console.error(e);
-        pushNotification("ERROR: " + JSON.stringify(e.response.data));
+        } catch (e) {
+            console.error(e);
+            pushNotification("ERROR: " + JSON.stringify(e.response.data));
+        }
+    } else if(collection === 'classroom') {
+        //get form data
+        const name = document.getElementById('inputClassroomName')?.value || '';
+        const teacher = document.getElementById('classroomTeacherSelectDetail')?.value || '';
+        const room = document.getElementById('inputClassroomRoom')?.value || '';
+        // try to loging for error return an error message
+        try {
+            const data = {
+                "name": name,
+                "teacher": teacher,
+                "room": room
+            };
+            const record = await pb.collection('classroom').update(id, data);
+            pushNotification("Succesfully Updated Classroom Entry!");
+        } catch (e) {
+            console.error(e);
+            pushNotification("ERROR: " + JSON.stringify(e.response.data));
+        }
     }
+    
 }
 
 ///////
@@ -384,6 +411,52 @@ async function createNewCustomer() {
     }
 }
 
+///////
+// EVENT: USER: CLICK NEW TEACHER
+async function createNewTeacher() {
+    const firstName = document.forms["new_teacher_form"]["teacherFirstName"].value;
+    const lastName = document.forms["new_teacher_form"]["teacherLastName"].value;
+    const email = document.forms["new_teacher_form"]["teacherEmail"].value;
+    const phone = document.forms["new_teacher_form"]["teacherPhone"].value || '';
+    const birthdate = document.forms["new_teacher_form"]["teacherBirthdate"].value || '';
+
+    try {
+        const data = {
+            "first_name": firstName,
+            "last_name": lastName,
+            "birthdate": birthdate,
+            "phone_number": phone,
+            "email": email
+        };
+        const record = await pb.collection('teacher').create(data);
+        pushNotification('Successfully created New Teacher!');
+    } catch (e) {
+        pushNotification("ERROR: " + JSON.stringify(e.response?.data || e.toString()));
+    }
+}
+
+///////
+// EVENT: USER: CLICK NEW CLASSROOM
+async function createNewClassroom() {
+    const name = document.forms["new_classroom_form"]["classroomName"].value;
+    const teacher = document.getElementById('classroomTeacher')?.value || '';
+    const room = document.forms["new_classroom_form"]["classroomRoom"].value || '';
+    try {
+        const data = {
+            "name": name,
+            "teacher": teacher,
+            "room": room
+        };
+        const record = await pb.collection('classroom').create(data);
+        pushNotification('Successfully created New Classroom!');
+    } catch (e) {
+        pushNotification("ERROR: " + JSON.stringify(e.response?.data || e.toString()));
+    }
+}
+
+
+
+
 
 ///////
 // EVENT: CTRL: LOGOUT
@@ -400,7 +473,7 @@ async function login() {
 
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
     let nav = window.localStorage.getItem('nav');
-    nav = nav !== null ? nav : "dashboard";
+
     window.localStorage.setItem('nav', nav);
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
@@ -549,6 +622,7 @@ async function loadAllCustomers() {
 
     records.forEach(element => {
         document.getElementById("tbodyCustomers").innerHTML += `<tr>\
+            <td>${element.id}</td>\
             <td><a href="javascript:customerDetails('${element.id}');" >${element.first_name}</a></td>\
             <td><a href="javascript:customerDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${element.email}</td>\
@@ -622,13 +696,27 @@ async function loadAllClassrooms() {
     });
 
     records.forEach(element => {
-        const age = ((new Date()).getFullYear() - new Date(element?.birthdate).getFullYear())
-        document.getElementById("tbodyClassrooms").innerHTML += `<tr>\
-            <td><a href="javascript:classroomDetails('${element.id}');" >${element.name}</a></td>\
-            <td><a href="javascript:teacherDetails('${element.expand.teacher.id}');sidebarNavActive('teachers');" >${element.expand.teacher.first_name} ${element.expand.teacher.last_name}</a></td>\
-            <td>${element.level}</td>\
-            <td>${element.room}</td>\
-        </tr>`
+    const teacher = element.expand?.teacher;
+
+    const teacherCell = teacher
+        ? `<a href="javascript:teacherDetails('${teacher.id}');sidebarNavActive('teachers');">
+              ${teacher.first_name} ${teacher.last_name}
+           </a>`
+        : `<span class="text-muted">No teacher assigned</span>`;
+
+        document.getElementById("tbodyClassrooms").innerHTML += `
+            <tr>
+                <td>
+                    <a href="javascript:classroomDetails('${element.id}');">
+                        ${element.name}
+                    </a>
+                </td>
+                <td>${teacherCell}</td>
+                <td>${element.level}</td>
+                <td>${element.room}</td>
+                <td>${element.fee}</td>
+            </tr>
+        `;
     });
 
     $(document).ready(function () {
