@@ -166,17 +166,21 @@ document.addEventListener('click', function (e) {
 function enableDetailsEdit(collection) {
   if(collection === 'student|teacher') {  
 
-      // student-only parent editing
+    // student-only parent editing
     const p1Select = document.getElementById("parentSelect1Detail");
     const p2Select = document.getElementById("parentSelect2Detail");
+    const p1Display = document.getElementById("parent1_display");
+    const p2Display = document.getElementById("parent2_display");
+    const submitBtn = document.getElementById('submitEditbtn');
 
-    if (!p1Select || !p2Select) return;
+    console.log('Enabling student/teacher edit');
+    submitBtn.removeAttribute('disabled');
 
-    document.getElementById("parent1_display")?.classList.add("d-none");
-    document.getElementById("parent2_display")?.classList.add("d-none");
+    if (p1Display) p1Display.classList.add("d-none");
+    if (p2Display) p2Display.classList.add("d-none");
 
-    p1Select.classList.remove("d-none");
-    p2Select.classList.remove("d-none");
+    if (p1Select) p1Select.classList.remove("d-none");
+    if (p2Select) p2Select.classList.remove("d-none");
 
     loadParentOptions();
   } else if (collection === 'classroom') {
@@ -243,6 +247,7 @@ function disableDetailsEdit() {
   console.log('Disabling details edit');
   document.getElementById('submitEditbtn')?.setAttribute('disabled', 'disabled');
   document.getElementById("submitClassroomBtn")?.setAttribute('disabled', 'disabled');
+  
     // student/teacher parent editing
     const p1Select = document.getElementById("parentSelect1Detail");
     const p2Select = document.getElementById("parentSelect2Detail");
@@ -256,8 +261,8 @@ function disableDetailsEdit() {
     }
 
     // classroom editing
-    const classroomSelect = document.getElementById("classroomSelectDetail");
-    const classroomDisplay = document.getElementById("classroom_display");
+    const classroomSelect = document.getElementById("classroomTeacherSelectDetail");
+    const classroomDisplay = document.getElementById("classroom_teacher_display");
 
     if (classroomSelect && classroomDisplay) {
         classroomDisplay.classList.remove("d-none");

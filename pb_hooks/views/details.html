@@ -8,7 +8,7 @@
                     <h4 class="mb-1">{{.first_name}} {{.last_name}}</h4>
                     <div class="text-muted mb-2">{{if .student_bool}}Student{{else}}Teacher{{end}}</div>
                     <div class="d-flex flex-column detail-card-actions">
-                        <button class="btn btn-primary" onclick="enableDetailsEdit('student|teacher');$('#submitEditbtn').removeAttr('disabled')">Edit</button>
+                        <button id="editbtn" class="btn btn-primary" onclick="enableDetailsEdit('student|teacher');$('#submitEditbtn').removeAttr('disabled');$('#editbtn').attr('disabled', true)">Edit</button>
                         <a href="/message/{{.id}}" class="btn btn-outline-secondary">Message</a>
                     </div>
                 </div>
@@ -127,11 +127,8 @@
                         <dd class="col-sm-9">
 
                             <!--PARENT1 SELECTION-->
-                            <span id="parent1_display">...</span>
-                            <select id="parentSelect1Detail" class="form-select d-none"></select>
-
-                                <span id="parent1_display">{{.parent1_first_name}}</span>
-                                <select id="parentSelect1Detail" class="form-select d-none" aria-label="Parent select">
+                            <span id="parent1_display">{{.parent1_first_name}}</span>
+                            <select id="parentSelect1Detail" class="form-select d-none" aria-label="Parent select">
                                     <option value="" selected>Unassigned</option>
                                 </select>
                                 <input type="hidden" id="parent1_id" value="{{.parent1_id}}" />
@@ -156,12 +153,7 @@
         <dl class="row">
             <dt class="col-sm-3">First Name</dt>
                         <dd class="col-sm-9">
-
                                         <!--PARENT2 SELECTION-->
-                                        <span id="parent2_display">...</span>
-                                        <select id="parentSelect2Detail" class="form-select d-none"></select>
-
-
                                 <span id="parent2_display">{{.parent2_first_name}}</span>
                                 <select id="parentSelect2Detail" class="form-select d-none" aria-label="Parent select">
                                     <option value="" selected>Unassigned</option>
@@ -188,7 +180,7 @@
     <h3>Classroom Information</h3>
     <input type="hidden" id="classroom_id" value="{{.classroom_id}}" />
     <div class="mb-2">
-        <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button" onclick="enableDetailsEdit('classroom');document.getElementById('submitClassroomBtn').removeAttribute('disabled')"><i class="fas fa-edit"></i> Edit</button>
+        <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button" onclick="enableDetailsEdit('classroom');document.getElementById('submitClassroomBtn').removeAttribute('disabled');$('#editbtn').attr('disabled', true)"><i class="fas fa-edit"></i> Edit</button>
         <button id="submitClassroomBtn" class="btn btn-primary btn-sm" type="button" onclick="putDetails('{{.classroom_id}}','classroom')" disabled>Submit</button>
         <button class="btn btn-secondary btn-sm" type="button" onclick="disableDetailsEdit();">Cancel</button>
     </div>
