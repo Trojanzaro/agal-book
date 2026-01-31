@@ -17,16 +17,16 @@
 
 <!--MAIN-->
 <div class="main-dashboard" id="main-dashboard">
-  <h1>Teachers</h1>
-  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newTeacherModal">New  <i class="fas fa-file-alt">  </i></button>
+  <h1>{{.en_teachers}} {{.gr_teachers}}</h1>
+  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newTeacherModal">{{.en_new_entry_btn}} {{.gr_new_entry_btn}}  <i class="fas fa-file-alt">  </i></button>
     <br/><br/>
   <table id="dataTable" class="table table-striped" style="width:100%">
     <thead>
       <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Age</th>
-        <th>Phone</th>
+        <th>{{.en_first_name}} {{.gr_first_name}}</th>
+        <th>{{.en_last_name}} {{.gr_last_name}}</th>
+        <th>{{.en_age}} {{.gr_age}}</th>
+        <th>{{.en_phone}} {{.gr_phone}}</th>
       </tr>
     </thead>
     <tbody id="tbodyTeachers">
@@ -45,11 +45,11 @@
       <div class="modal-body">
         <form class="row g-3" name="new_teacher_form">
           <div class="col-md-6">
-            <label class="form-label">First name</label>
+            <label class="form-label">{{.en_first_name}} {{.gr_first_name}}</label>
             <input type="text" class="form-control" id="teacherFirstName" required>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Last name</label>
+            <label class="form-label">{{.en_last_name}} {{.gr_last_name}}</label>
             <input type="text" class="form-control" id="teacherLastName" required>
           </div>
           <div class="col-md-12">
@@ -57,11 +57,11 @@
             <input type="email" class="form-control" id="teacherEmail" required>
           </div>
           <div class="col-md-6">
-            <label class="form-label">Phone</label>
+            <label class="form-label">{{.en_phone}} {{.gr_phone}}</label>
             <input type="text" class="form-control" id="teacherPhone">
           </div>
           <div class="col-md-6">
-            <label class="form-label">Birthdate</label>
+            <label class="form-label">{{.en_birthdate}} {{.gr_birthdate}}</label>
             <input type="date" class="form-control" id="teacherBirthdate">
           </div>
           <div class="col-12">
