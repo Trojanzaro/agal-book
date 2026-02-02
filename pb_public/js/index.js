@@ -13,7 +13,7 @@ async function teacherDetails(teacherId) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
-    const scheduleData = document.getElementById("schedule").value; 
+    const scheduleData = document.getElementById("schedule").value || '[]'; 
     const schedule = JSON.parse(scheduleData);
     drawTeacherCallendar(schedule, 2026);
 }
@@ -525,7 +525,10 @@ async function loadAllStudents() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: ['copy', 'excel', 'pdf', 'colvis']
+            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+            }
         });
     });
 
@@ -604,7 +607,10 @@ async function loadAllTeachers() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: ['copy', 'excel', 'pdf', 'colvis']
+            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+            }
         });
     });
 }
@@ -635,7 +641,10 @@ async function loadAllCustomers() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: ['copy', 'excel', 'pdf', 'colvis']
+            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+            }
         });
     });
 }
@@ -680,7 +689,38 @@ function drawTeacherCallendar(schedule, year) {
 
             chart.draw(dataTable, options);
         });
+        drawChart() ;
 }
+
+  function drawChart() {
+    //google.charts.setOnLoadCallback(drawChart);
+    google.charts.load("current", {packages:["timeline"]}).then(function() {
+      var container = document.getElementById('example5.2');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
+
+        dataTable.addColumn({ type: 'string', id: 'Room' });
+        dataTable.addColumn({ type: 'string', id: 'Name' });
+        dataTable.addColumn({ type: 'date', id: 'Start' });
+        dataTable.addColumn({ type: 'date', id: 'End' });
+        dataTable.addRows([
+        [ 'Magnolia Room',  'CSS Fundamentals',    new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
+        [ 'Magnolia Room',  'Intro JavaScript',    new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+        [ 'Magnolia Room',  'Advanced JavaScript', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
+        [ 'Gladiolus Room', 'Intermediate Perl',   new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+        [ 'Gladiolus Room', 'Advanced Perl',       new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+        [ 'Gladiolus Room', 'Applied Perl',        new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
+        [ 'Petunia Room',   'Google Charts',       new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+        [ 'Petunia Room',   'Closure',             new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+        [ 'Petunia Room',   'App Engine',          new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]]);
+
+        var options = {
+            timeline: { singleColor: 'rgb(117, 13, 155)' },
+        };
+
+        chart.draw(dataTable, options);
+    });    
+  }
 
 ///////
 // EVENT: LOAD CLASSROOM DETAILS PAGE
@@ -719,7 +759,10 @@ async function loadAllClassrooms() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: ['copy', 'excel', 'pdf', 'colvis']
+            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+            }
         });
     });
 }

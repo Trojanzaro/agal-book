@@ -8,8 +8,8 @@
                     <h4 class="mb-1">{{.first_name}} {{.last_name}}</h4>
                     <div class="text-muted mb-2">{{if .student_bool}}Student{{else}}Teacher{{end}}</div>
                     <div class="d-flex flex-column detail-card-actions">
-                        <button id="editbtn" class="btn btn-primary" onclick="enableDetailsEdit('student|teacher');$('#submitEditbtn').removeAttr('disabled');$('#editbtn').attr('disabled', true)">Edit</button>
-                        <a href="/message/{{.id}}" class="btn btn-outline-secondary">Message</a>
+                        <button id="editbtn" class="btn btn-primary" onclick="enableDetailsEdit('student|teacher');$('#submitEditbtn').removeAttr('disabled');$('#editbtn').attr('disabled', true);$('#editCancelBtn').removeAttr('disabled').removeAttr('disabled');">{{._edit_btn}}</button>
+                        <button id="editCancelBtn" class="btn btn-danger" onclick="$('#editbtn').removeAttr('disabled');$('#editCancelBtn').attr('disabled', true);$('#submitEditbtn').attr('disabled', true);" disabled>{{._cancel_btn}}</button>
                     </div>
                 </div>
 
@@ -30,11 +30,11 @@
                             <div>{{.email}}</div>
                         </li>
                         <li class="list-group-item d-flex">
-                            <strong class="me-2" style="width:140px">{{.en_phone}} {{.gr_phone}}</strong>
+                            <strong class="me-2" style="width:140px">{{._phone}} </strong>
                             <div>{{.phone1}}</div>
                         </li>
                         <li class="list-group-item d-flex">
-                            <strong class="me-2" style="width:140px">{{.en_address}} {{.gr_address}}</strong>
+                            <strong class="me-2" style="width:140px">{{._address}} </strong>
                             <div>{{.address}}, {{.city}} {{.postal_code}}</div>
                         </li>
                     </ul>
@@ -49,15 +49,15 @@
     <input type="hidden" value="{{.id}}" id="id" />
     <input type="hidden" value="{{.schedule}}" id="schedule" />
     <div class="col-md-6">
-        <label for="inputFirstname" class="form-label">{{.en_first_name}} {{.gr_first_name}}</label>
+        <label for="inputFirstname" class="form-label">{{._first_name}} </label>
         <input type="text" class="form-control" id="inputFirstname" value="{{.first_name}}">
     </div>
     <div class="col-md-6">
-        <label for="inputLastname" class="form-label">{{.en_last_name}} {{.gr_last_name}}</label>
+        <label for="inputLastname" class="form-label">{{._last_name}} </label>
         <input type="text" class="form-control" id="inputLastname" value="{{.last_name}}">
     </div>
     <div class="col-md-6">
-        <label for="birthdate" class="form-label">{{.en_birthdate}} {{.gr_birthdate}}</label>
+        <label for="birthdate" class="form-label">{{._birthdate}} </label>
         <input class="form-control" type="date" id="inputBirthdate" value="{{.birth_date}}" />
     </div>
     <div class="col-md-6">
@@ -65,29 +65,30 @@
         <input type="email" class="form-control" id="inputEmail" value="{{.email}}">
     </div>
     <div class="col-12">
-        <label class="form-label">{{.en_phone}} {{.gr_phone}}</label>
+        <label class="form-label">{{._phone}} </label>
         <input type="text" class="form-control" id="inputPhone1" value="{{.phone1}}">
         <input type="text" class="form-control" id="inputPhone2" value="{{.phone2}}">
     </div>
     <div class="col-12">
-        <label for="inputAddress" class="form-label">{{.en_address}} {{.gr_address}}</label>
+        <label for="inputAddress" class="form-label">{{._address}} </label>
         <input type="text" class="form-control" id="inputAddress" value="{{.address}}">
     </div>
     <div class="col-md-6">
-        <label for="inputCity" class="form-label">{{.en_city}} {{.gr_city}}</label>
+        <label for="inputCity" class="form-label">{{._city}} </label>
         <input type="text" class="form-control" id="inputCity" value="{{.city}}">
     </div>
     <div class="col-md-4">
-        <label for="inputState" class="form-label">{{.en_state}} {{.gr_state}}</label>
+        <label for="inputState" class="form-label">{{._state}} </label>
         <input type="text" class="form-control" id="inputState" value="{{.state}}">
     </div>
     <div class="col-md-2">
-        <label for="inputPostal" class="form-label">{{.en_postal_code}} {{.gr_postal_code}}</label>
+        <label for="inputPostal" class="form-label">{{._postal_code}} </label>
         <input type="text" class="form-control" id="inputPostal" value="{{.postal_code}}">
     </div>
     <!--TEACHER CALENDAR-->
     {{if not .student_bool}}
         <div id="teacher_calendar" style="width: 1000px; "></div>
+<div id="example5.2" ></div>
     {{ end }}
     <!-- <div class="col-12">
         <button id="editbtn" type="button" class="btn btn-outline-warning"
@@ -95,9 +96,9 @@
     </div> -->
     <div class="col-12">
         <button id="submitEditbtn" type="button" class="btn btn-primary" onclick="putDetails('{{.id}}', '{{.col}}')"
-            disabled>Submit</button>
+            disabled>{{._submit_btn}}</button>
         <button type="button" class="btn btn-danger"
-            onclick="dashboardNavActive(window.localStorage.getItem('nav'))">Cancel</button>
+            onclick="dashboardNavActive(window.localStorage.getItem('nav'))">{{._cancel_btn}}</button>
     </div>
 </form>
 
@@ -110,9 +111,9 @@
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
-            role="tab" aria-controls="nav-home" aria-selected="true">{{.en_customer_parent_guardian}} {{.gr_customer_parent_guardian}} 1</button>
+            role="tab" aria-controls="nav-home" aria-selected="true">{{._customer_parent_guardian}}  1</button>
         <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile" type="button"
-            role="tab" aria-controls="nav-profile" aria-selected="false">{{.en_customer_parent_guardian}} {{.gr_customer_parent_guardian}} 2</button>
+            role="tab" aria-controls="nav-profile" aria-selected="false">{{._customer_parent_guardian}}  2</button>
 </nav>
 <div class="tab-content" id="nav-tabContent">
     <!-- Parent/Guardian 1 -->
@@ -123,7 +124,7 @@
 
         <dl class="row">
             
-            <dt class="col-sm-3">{{.en_first_name}} {{.gr_first_name}}</dt>
+            <dt class="col-sm-3">{{._first_name}} </dt>
                         <dd class="col-sm-9">
 
                             <!--PARENT1 SELECTION-->
@@ -134,12 +135,12 @@
                                 <input type="hidden" id="parent1_id" value="{{.parent1_id}}" />
                         </dd>
 
-            <dt class="col-sm-3">{{.en_last_name}} {{.gr_last_name}}</dt>
+            <dt class="col-sm-3">{{._last_name}} </dt>
             <dd class="col-sm-9">
                 <span id="parent1_last_name_display">{{.parent1_last_name}}</span>
             </dd>
 
-            <dt class="col-sm-3">{{.en_phone}} {{.gr_phone}}</dt>
+            <dt class="col-sm-3">{{._phone}} </dt>
             <dd class="col-sm-9">
                 <span id="parent1_phone_display">{{.parent1_phone}}</span>
             </dd>
@@ -151,7 +152,7 @@
                 <input type="hidden" id="parent2_id" value="{{.parent2_id}}" />
 
         <dl class="row">
-            <dt class="col-sm-3">{{.en_first_name}} {{.gr_first_name}}</dt>
+            <dt class="col-sm-3">{{._first_name}} </dt>
                         <dd class="col-sm-9">
                                         <!--PARENT2 SELECTION-->
                                 <span id="parent2_display">{{.parent2_first_name}}</span>
@@ -161,12 +162,12 @@
                                 <input type="hidden" id="parent2_id" value="{{.parent2_id}}" />
                         </dd>
 
-            <dt class="col-sm-3">{{.en_last_name}} {{.gr_last_name}}</dt>
+            <dt class="col-sm-3">{{._last_name}} </dt>
             <dd class="col-sm-9">
                 <span id="parent2_last_name_display">{{.parent2_last_name}}</span>
             </dd>
 
-            <dt class="col-sm-3">{{.en_phone}} {{.gr_phone}}</dt>
+            <dt class="col-sm-3">{{._phone}} </dt>
             <dd class="col-sm-9">
                 <span id="parent2_phone_display">{{.parent2_phone}}</span>
             </dd>
@@ -177,38 +178,38 @@
     <!--CLASSROOM DATA-->
 
     {{if .classroom_bool}}
-    <h3>{{.en_classroom_info}} {{.gr_classroom_info}}</h3>
+    <h3>{{._classroom_info}} </h3>
     <input type="hidden" id="classroom_id" value="{{.classroom_id}}" />
     <div class="mb-2">
-        <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button" onclick="enableDetailsEdit('classroom');document.getElementById('submitClassroomBtn').removeAttribute('disabled');$('#editbtn').attr('disabled', true)"><i class="fas fa-edit"></i> Edit</button>
-        <button id="submitClassroomBtn" class="btn btn-primary btn-sm" type="button" onclick="putDetails('{{.classroom_id}}','classroom')" disabled>Submit</button>
-        <button class="btn btn-secondary btn-sm" type="button" onclick="disableDetailsEdit();">Cancel</button>
+        <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button" onclick="enableDetailsEdit('classroom');document.getElementById('submitClassroomBtn').removeAttribute('disabled');$('#editbtn').attr('disabled', true)"><i class="fas fa-edit"></i> {{._edit_btn}}</button>
+        <button id="submitClassroomBtn" class="btn btn-primary btn-sm" type="button" onclick="putDetails('{{.classroom_id}}','classroom')" disabled>{{._submit_btn}}</button>
+        <button class="btn btn-secondary btn-sm" type="button" onclick="disableDetailsEdit();">{{._cancel_btn}}</button>
     </div>
     <dl class="row">
-        <dt class="col-sm-3">{{.en_class_name_str}} {{.gr_class_name_str}}</dt>
+        <dt class="col-sm-3">{{._class_name_str}} </dt>
         <dd class="col-sm-9">
             <span id="classroom_name_display">{{.classroom_name}}</span>
             <input type="text" id="inputClassroomName" class="form-control d-none" value="{{.classroom_name}}" />
         </dd>
-        <dt class="col-sm-3">{{.en_assigned_teacher_str}} {{.gr_assigned_teacher_str}}</dt>
+        <dt class="col-sm-3">{{._assigned_teacher_str}} </dt>
         <dd class="col-sm-9">
-            <span id="classroom_teacher_display">{{.assigned_teacher}}</span>
+            <a href="javascript:teacherDetails('{{.assigned_teacher_id}}');sidebarNavActive('teachers');"><span id="classroom_teacher_display">{{.assigned_teacher}}</span></a>
             <select id="classroomTeacherSelectDetail" class="form-select d-none">
                 <option value="">Unassigned</option>
             </select>
             <input type="hidden" id="assigned_teacher_id" value="{{.assigned_teacher_id}}" />
         </dd>
-        <dt class="col-sm-3">{{.en_room_str}} {{.gr_room_str}}</dt>
+        <dt class="col-sm-3">{{._room_str}} </dt>
         <dd class="col-sm-9">
             <span id="classroom_room_display">{{.room}}</span>
             <input type="text" id="inputClassroomRoom" class="form-control d-none" value="{{.room}}" />
         </dd>
-        <dt class="col-sm-3">{{.en_level_str}} {{.gr_level_str}}</dt>
+        <dt class="col-sm-3">{{._level_str}} </dt>
         <dd class="col-sm-9">
             <span id="classroom_level_display">{{.level}}</span>
             <input type="text" id="inputClassroomLevel" class="form-control d-none" value="{{.level}}" />
         </dd>
-        <dt class="col-sm-3">{{.en_fee_str}} {{.gr_fee_str}}</dt>
+        <dt class="col-sm-3">{{._fee_str}} </dt>
         <dd class="col-sm-9">
             <span id="classroom_fee_display">{{.fee}}</span>
             <input type="text" id="inputClassroomFee" class="form-control d-none" value="{{.fee}}" />
@@ -218,15 +219,15 @@
 
     <!--CLASSROOM STUDENTS-->
 
-    <h3>{{.en_students_in_classroom}} {{.gr_students_in_classroom}}</h3>
-    <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#assignStudentModal">{{.en_assign_student_btn}} {{.gr_assign_student_btn}} <i class="fas fa-file-alt"> </i></button>
+    <h3>{{._students_in_classroom}} </h3>
+    <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#assignStudentModal">{{._assign_student_btn}} <i class="fas fa-book-reader"></i></button>
     <table id="dataTable" class="table table-striped" style="width:100%">
         <thead>
             <tr>
-                <th>{{.en_student_name}} {{.gr_student_name}}</th>
-                <th>{{.en_age}} {{.gr_age}}</th>
+                <th>{{._student_name}} </th>
+                <th>{{._age}} </th>
                 <th>Email</th>
-                <th>{{.en_created}} {{.gr_created}}</th>
+                <th>{{._created}} </th>
             </tr>
         </thead>
         <tbody id="tbodyClassroomStudents">
@@ -245,9 +246,9 @@
     <hr />
 
         <div class="d-flex justify-content-between align-items-center">
-            <h3 class="mb-0">{{.en_assignments_str}} {{.gr_assignments_str}}</h3>
+            <h3 class="mb-0">{{._assignments_str}} </h3>
             <div>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newAssignmentModal">{{.en_new_assignment_btn}} {{.gr_new_assignment_btn}} </button>
+                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newAssignmentModal">{{._new_assignment_btn}} <i class="fas fa-file-alt"> </i> </button>
             </div>
         </div>
 
@@ -314,16 +315,16 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title">Assign Student</h5>
+                    <h5 class="modal-title">{{._assign_student_modal_title}}</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <!-- <p>Modal body text goes here.</p> -->
                     <form class="row g-3" name="assign_student_form">
                         <div class="col-12">
-                            <h5>Assign Student</h5>
+                            <h5>{{._assign_student_modal_title}}</h5>
                             <select class="form-select" id="studentsSelectAssign" aria-label="Parent select">
-                                <option value="" selected>Select Student</option>
+                                <option value="" selected>{{._select_student}}</option>
                             </select>
                         </div>
 
@@ -332,11 +333,11 @@
                 <div class="modal-footer">
 
                     <button type="button" class="btn btn-primary" onclick="assignStudent();" data-bs-dismiss="modal">
-                        Assign
+                        {{._assign_btn}}
                     </button>
 
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                        Cancel
+                        {{._cancel_btn}}
                     </button>
 
                 </div>
@@ -350,31 +351,31 @@
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title">New Assignment</h5>
+                        <h5 class="modal-title">{{._new_assignment}}</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form id="newAssignmentForm">
                             <input type="hidden" id="assignment_classroom_id" value="{{.classroom_id}}" />
                             <div class="mb-3">
-                                <label class="form-label">Title</label>
+                                <label class="form-label">{{._title}}</label>
                                 <input class="form-control" id="assignment_title" />
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Body</label>
+                                <label class="form-label">{{._body}}</label>
                                 <div class="assignment-editor-wrapper">
                                     <div id="assignment_editor"></div>
                                 </div>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Attachment</label>
+                                <label class="form-label">{{._attachment}}</label>
                                 <input type="file" class="form-control" id="assignment_attachment" />
                             </div>
                         </form>
                     </div>
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-primary" id="createAssignmentBtn">Create</button>
+                        <button type="button" class="btn btn-primary" id="createAssignmentBtn">{{._create_new_btn}}</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{._cancel_btn}}</button>
                     </div>
                 </div>
             </div>

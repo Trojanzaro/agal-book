@@ -186,13 +186,16 @@ function enableDetailsEdit(collection) {
   } else if (collection === 'classroom') {
     console.log('Enabling classroom edit');
 
-    const teacherSelect = document.getElementById("classroomTeacherSelectDetail");
-    const teacherDisplay = document.getElementById("classroom_teacher_display");
+    document.getElementById("classroomTeacherSelectDetail").classList.remove("d-none");
+    document.getElementById("classroom_teacher_display").classList.add("d-none");
+    document.getElementById("inputClassroomName").classList.remove("d-none");
+    document.getElementById("inputClassroomRoom").classList.remove("d-none");
+    document.getElementById("inputClassroomLevel").classList.remove("d-none");
+    document.getElementById("inputClassroomFee").classList.remove("d-none");
 
     if (!teacherSelect || !teacherDisplay) return;
 
-    teacherDisplay.classList.add("d-none");
-    teacherSelect.classList.remove("d-none");
+    document.getElementById("submitClassroomBtn")?.removeAttribute('disabled');
 
       loadClassroomOptions();
   }
@@ -265,7 +268,11 @@ function disableDetailsEdit() {
     const classroomDisplay = document.getElementById("classroom_teacher_display");
 
     if (classroomSelect && classroomDisplay) {
-        classroomDisplay.classList.remove("d-none");
-        classroomSelect.classList.add("d-none");
+      document.getElementById("classroomTeacherSelectDetail").classList.add("d-none");
+      document.getElementById("classroom_teacher_display").classList.remove("d-none");
+      document.getElementById("inputClassroomName").classList.add("d-none");
+      document.getElementById("inputClassroomRoom").classList.add("d-none");
+      document.getElementById("inputClassroomLevel").classList.add("d-none");
+      document.getElementById("inputClassroomFee").classList.add("d-none");
     }
 }

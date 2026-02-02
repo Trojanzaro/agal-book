@@ -58,7 +58,7 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
 
         const localizationMap = {};
         localizationRecords.forEach(r => {
-            localizationMap[lang + r.get("string_id")] = r.get(lang + "_text");
+            localizationMap[r.get("string_id")] = r.get(lang + "_text");
         });
 
         //generate templates base on working directory path
@@ -101,7 +101,7 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
 
     const localizationMap = {};
         localizationRecords.forEach(r => {
-        localizationMap[lang + r.get("string_id")] = r.get(lang + "_text");
+        localizationMap[r.get("string_id")] = r.get(lang + "_text");
     });
 
 
@@ -205,7 +205,7 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
 
     const localizationMap = {};
         localizationRecords.forEach(r => {
-        localizationMap[lang + r.get("string_id")] = r.get(lang + "_text");
+        localizationMap[r.get("string_id")] = r.get(lang + "_text");
     });
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
@@ -269,7 +269,7 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
 
     const localizationMap = {};
         localizationRecords.forEach(r => {
-        localizationMap[lang + r.get("string_id")] = r.get(lang + "_text");
+        localizationMap[r.get("string_id")] = r.get(lang + "_text");
     });
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
@@ -281,6 +281,7 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
             "id": classroomId,
             "classroom_name": record.get("name"),
             "assigned_teacher": teacherRecord.get("first_name")+" "+teacherRecord.get("last_name"),
+            "assigned_teacher_id": teacherRecord.id,
             "room": record.get("room"),
             "col": "classroom",
             "students":studentsArray,

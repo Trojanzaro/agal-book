@@ -9,17 +9,17 @@
 
 <!--MAIN-->
 <div class="main-dashboard" id="main-dashboard">
-  <h1>{{.en_classroom_str}} {{.gr_classroom_str}}</h1>
-  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newClassroomModal">{{.en_new_entry_btn}} {{.gr_new_entry_btn}}  <i class="fas fa-file-alt">  </i></button>
+  <h1>{{._classroom_str}} </h1>
+  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newClassroomModal">{{._new_entry_btn}}   <i class="fas fa-file-alt">  </i></button>
     <br/><br/>
   <table id="dataTable" class="table table-striped" style="width:100%">
     <thead>
       <tr>
-        <th>{{.en_class_name_str}} {{.gr_class_name_str}}</th>
-        <th>{{.en_assigned_teacher_str}} {{.gr_assigned_teacher_str}}</th>
-        <th>{{.en_level_str}} {{.gr_level_str}}</th>
-        <th>{{.en_room_str}} {{.gr_room_str}}</th>
-        <th>{{.en_fee_str}} {{.gr_fee_str}}</th>
+        <th>{{._class_name_str}} </th>
+        <th>{{._assigned_teacher_str}} </th>
+        <th>{{._level_str}} </th>
+        <th>{{._room_str}} </th>
+        <th>{{._fee_str}} </th>
       </tr>
     </thead>
     <tbody id="tbodyClassrooms">
@@ -40,38 +40,39 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">_classroom_modal_title}} {{.gr_new_classroom_modal_title}}</h5>
+        <h5 class="modal-title">{{._classroom_modal_title}} </h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form class="row g-3" name="new_classroom_form">
           <div class="col-md-12">
-            <label class="form-label">{{.en_classroom_name_label}} {{.gr_classroom_name_label}}</label>
+            <label class="form-label">{{._classroom_name_label}} </label>
             <input type="text" class="form-control" id="classroomName" required>
           </div>
           <div class="col-md-6">
-            <label class="form-label">{{.en_assigned_teacher_label}} {{.gr_assigned_teacher_label}}</label>
+            <label class="form-label">{{._assigned_teacher_label}} </label>
             <input type="text" class="form-control" id="classroomTeacher" placeholder="teacher id or name">
           </div>
            <div class="col-md-6">
-            <label class="form-label">{{.en_level_label}} {{.gr_level_label}}</label>
+            <label class="form-label">{{._level_label}} </label>
             <input type="text" class="form-control" id="classroomLevel" required>
           </div>
           <div class="col-md-6">
-            <label class="form-label">{{.en_fee_label}} {{.gr_fee_label}}</label>
+            <label class="form-label">{{._fee_label}} </label>
             <input type="text" class="form-control" id="classroomFee" required>
           </div>
           <div class="col-md-6">
-            <label class="form-label">{{.en_room_label}} {{.gr_room_label}}</label>
+            <label class="form-label">{{._room_label}} </label>
             <input type="text" class="form-control" id="classroomRoom">
           </div>
           <div class="col-12">
-            <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewClassroom();">{{.en_create_new_btn}} {{.gr_create_new_btn}}</button>
+            
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{.en_cancel_btn}} {{.gr_cancel_btn}}</button>
+        <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewClassroom();">{{._create_new_btn}} </button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{._cancel_btn}} </button>
       </div>
     </div>
   </div>
