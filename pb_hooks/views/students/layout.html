@@ -13,16 +13,16 @@
 
 <!--MAIN-->
   <div class="main-dashboard" id="main-dashboard">
-    <h1>Students</h1>
-    <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newStudentModal">New  <i class="fas fa-file-alt">  </i></button>
+    <h1>{{._students}} </h1>
+    <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newStudentModal">{{._new_entry_btn}}  <i class="fas fa-file-alt">  </i></button>
     <br/><br/>
     <table id="dataTable" class="table table-striped" style="width:100%">
       <thead>
         <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Age</th>
-          <th>Phone</th>
+          <th>{{._first_name}} </th>
+          <th>{{._last_name}} </th>
+          <th>{{._age}} </th>
+          <th>{{._phone}} </th>
         </tr>
       </thead>
       <tbody id="tbodyStudents">
@@ -36,18 +36,18 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">New Student</h5>
+        <h5 class="modal-title">{{._new_student_modal_title}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <!-- <p>Modal body text goes here.</p> -->
         <form class="row g-3" name="new_student_form">
           <div class="col-md-4">
-            <label for="validationDefault01" class="form-label">First name</label>
+            <label for="validationDefault01" class="form-label">{{._first_name}} </label>
             <input type="text" class="form-control" id="firstName" value="Mark" required>
           </div>
           <div class="col-md-4">
-            <label for="validationDefault02" class="form-label">Last name</label>
+            <label for="validationDefault02" class="form-label">{{._last_name}} </label>
             <input type="text" class="form-control" id="lastName" value="Otto" required>
           </div>
           <div class="col-md-4">
@@ -58,51 +58,51 @@
             </div>
           </div>
           <div class="col-md-6">
-            <label  class="form-label">Address</label>
+            <label  class="form-label">{{._address}}</label>
             <input type="text" class="form-control" id="address" required>
           </div>
           <div class="col-md-6">
-            <label  class="form-label">City</label>
+            <label  class="form-label">{{._city}}</label>
             <input type="text" class="form-control" id="city" required>
           </div>
           <div class="col-md-3">
-            <label for="validationDefault04" class="form-label">State</label>
+            <label for="validationDefault04" class="form-label">{{._state}}</label>
             <input type="text" class="form-control" id="state" required>
           </div>
           <div class="col-md-3">
-            <label for="validationDefault05" class="form-label">Postal Code</label>
+            <label for="validationDefault05" class="form-label">{{._postal_code}}</label>
             <input type="text" class="form-control" id="postalCode" required>
           </div>
           <div class="col-6">
-            <label  class="form-label">Phone 1</label>
+            <label  class="form-label">{{._phone}}</label>
             <input type="text" class="form-control" id="phone1" required>
-            <label  class="form-label">Phone 2</label>
+            <label  class="form-label">{{._phone2}}</label>
             <input type="text" class="form-control" id="phone2" required>
           </div>
           <div class="col-6">
-            <label for="birthdate">Birthdate</label>
+            <label for="birthdate">{{._birthdate}}</label>
             <input id="birthdate" class="form-control" type="date" />
           </div>
           <hr />
           <div class="col-12">
-            <h5>Assign Parent 1</h5>
+            <h5>{{._assign_parent}} 1</h5>
             <select class="form-select" id="parentSelect1" aria-label="Parent select">
-              <option value="" selected>Select Parent</option>
+              <option value="" selected>{{._select_parent}}</option>
             </select>
           </div>
           <div class="col-12">
-            <h5>Assign Parent 2</h5>
+            <h5>{{._assign_parent}} 2</h5>
             <select class="form-select" id="parentSelect2" aria-label="Parent select">
-              <option value="" selected>Select Parent</option>
+              <option value="" selected>{{._select_parent}}</option>
             </select>
           </div>
           <div class="col-12">
-            <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewStudent();">Create new</button>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewStudent();">{{._create_new_btn}}</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{._cancel_btn}}</button>
       </div>
     </div>
   </div>

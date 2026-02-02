@@ -1,7 +1,7 @@
 # agal-book
-A brutally simple CMS system with Go based backend and a frontend written in HTML JavaScript, CSS (bootstrap) htmx
+A brutally simple CMS system with Go based backend and a frontend written in HTML JavaScript, CSS (bootstrap)
 + [Pocketbase](https://pocketbase.io/), lightweight-**BaaS**: auth inc. [Oauth2](https://datatracker.ietf.org/doc/html/rfc6749).
-+ [htmx](https://htmx.org/) : -> HTML, CSS, JavaScript [Bootstarp 5](https://getbootstrap.com/docs/5.3/getting-started/introduction/).
++ HTML, CSS, JavaScript [Bootstarp 5](https://getbootstrap.com/docs/5.3/getting-started/introduction/).
 
 
 
@@ -26,6 +26,7 @@ Contained in the project directory is that main **requirements** for pocketbase
  /pb_data # - contains, stores your application data, uploaded files, etc. (in .gitignore)
  /pb_migrations # - contains JS migration files with your collection changes (can be safely committed in your repository).
  /pb_hooks # contains the JS/Go code that can run on pocketbases bin as a backend
+ /pb_public # contains all the static html, css, javascript code to be served from the server
 ```
 You can even write custom migration scripts. For more info check the JS migrations [docs](https://pocketbase.io/docs/js-migrations).
 
@@ -67,12 +68,10 @@ Simply **copy** and **REPLACE** the newly downloaded/extracted `pocketbase` exec
  # drwxr-xr-x 3 usr usr 4096 Ιαν 22 21:34 pb_hooks
  # drwxr-xr-x 2 usr usr 4096 Ιαν 23 19:14 pb_migrations
 
-
  -rwxr-xr-x 1 usr usr 47833088 Ιαν 16 11:02 pocketbase
 
-
-# -rw-r--r-- 1 usr usr 3046 Ιαν 27 02:14 README.md
-# -rw-r--r-- 1 usr usr 15116 Ιαν 19 05:12 user_profile.png
+ # -rw-r--r-- 1 usr usr 3046 Ιαν 27 02:14 README.md
+ # -rw-r--r-- 1 usr usr 15116 Ιαν 19 05:12 user_profile.png
 ```
 
 
@@ -107,7 +106,6 @@ Information about the User Interface/experience/design/development
 ## HTML, CSS, JS
 - [ ] [Bootstarp 5](https://getbootstrap.com/docs/5.3/getting-started/introduction/)
 - [ ] JavaScript: Model, controller,etc
-- [ ] htmx: State Management
 
 
 ## GitFlow
