@@ -6,32 +6,32 @@
 {{ end }}
 
 <div class="main-dashboard" id="main-dashboard">
-  <h1>Customers</h1>
-  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">New <i
+  <h1>{{._customers}} </h1>
+  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">{{._new_entry_btn}}  <i
       class="fas fa-file-alt"> </i></button>
   <br /><br />
   <table id="dataTable" class="table table-striped" style="width:100%">
     <thead>
       <tr>
         <th>ID</th>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Age</th>
-        <th>Phone</th>
+        <th>{{._first_name}} </th>
+        <th>{{._last_name}} </th>
+        <th>Email</th>
+        <th>{{._phone}} </th>
       </tr>
     </thead>
     <tbody id="tbodyCustomers">
     </tbody>
   </table>
   <hr />
-  <h1>Students</h1>
+  <h1>{{._students}} </h1>
   <table id="dataTable2" class="table table-striped" style="width:100%">
     <thead>
       <tr>
-        <th>First Name</th>
-        <th>Last Name</th>
-        <th>Age</th>
-        <th>Phone</th>
+        <th>{{._first_name}} </th>
+        <th>{{._last_name}} </th>
+        <th>{{._age}} </th>
+        <th>{{._phone}} </th>
       </tr>
     </thead>
     <tbody id="tbodyStudents">
@@ -43,20 +43,20 @@
 
   <!-- Student Info -->
   <div class="mb-4">
-    <h3>Payment Overview</h3>
-    <p class="text-muted mb-0">Student: <strong id="card_studnet_name"></strong></p>
-    <p class="text-muted">Course: <span id="card_classroom_name"></span></p>
+    <h3>{{._payment_overview}} </h3>
+    <p class="text-muted mb-0">{{._student_name}} : <strong id="card_studnet_name"></strong></p>
+    <p class="text-muted">{{._course}} : <span id="card_classroom_name"></span></p>
   </div>
 
   <!--NEW PAYMENT BUTTON -->
-  <button class="btn bs b-btn-xl btn-primary" id="payment_button" data-bs-toggle="modal" data-bs-target="#newPaymentModal" disabled="true">New Payment <i class="fas fa-file-alt"> </i></button>
+  <button class="btn bs b-btn-xl btn-primary" id="payment_button" data-bs-toggle="modal" data-bs-target="#newPaymentModal" disabled="true">{{._new_payment}} <i class="fa-solid fa-money-bill"></i></button>
   <br /><br />
   <!-- Payment Summary Cards -->
   <div class="row g-3 mb-4">
     <div class="col-md-4">
       <div class="card shadow-sm">
         <div class="card-body">
-          <h6 class="text-muted">Total Course Fee</h6>
+          <h6 class="text-muted">{{._total_course_fee}} </h6>
           <h4 id="totalFee">€500</h4>
         </div>
       </div>
@@ -65,7 +65,7 @@
     <div class="col-md-4">
       <div class="card shadow-sm border-success">
         <div class="card-body">
-          <h6 class="text-muted">Paid So Far</h6>
+          <h6 class="text-muted">{{._paid_so_far}} </h6>
           <h4 class="text-success" id="paidAmount">€250</h4>
         </div>
       </div>
@@ -74,7 +74,7 @@
     <div class="col-md-4">
       <div class="card shadow-sm border-danger">
         <div class="card-body">
-          <h6 class="text-muted">Outstanding Balance</h6>
+          <h6 class="text-muted">{{._outstanding_balance}} </h6>
           <h4 class="text-danger" id="unpaidAmount">€0</h4>
         </div>
       </div>
@@ -83,7 +83,7 @@
 
   <!-- Progress -->
   <div class="mb-4">
-    <label class="form-label">Payment Progress</label>
+    <label class="form-label">{{._payment_progress}} </label>
     <div class="progress" style="height: 20px;">
       <div id="paymentProgress" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar"
         style="width: 0%">
@@ -94,15 +94,15 @@
   <!-- Payment History -->
   <div class="card shadow-sm">
     <div class="card-body">
-      <h5 class="mb-3">Payment History</h5>
+      <h5 class="mb-3">{{._payment_history}} </h5>
       <table class="table table-striped">
         <thead>
           <tr>
-            <th>Date</th>
-            <th>Parent</th>
-            <th>Amount</th>
-            <th>Method</th>
-            <th>Status</th>
+            <th>{{._date}} </th>
+            <th>{{._customer_parent_guardian}} </th>
+            <th>{{._amount}} </th>
+            <th>{{._method}} </th>
+            <th>{{._status}} </th>
           </tr>
         </thead>
         <tbody id="paymentTable">
@@ -120,18 +120,18 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">New Customer</h5>
+        <h5 class="modal-title">{{._new_customer_modal_title}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <!-- <p>Modal body text goes here.</p> -->
         <form class="row g-3" name="new_customer_form">
           <div class="col-md-4">
-            <label for="validationDefault01" class="form-label">First name</label>
+            <label for="validationDefault01" class="form-label">{{._first_name}}</label>
             <input type="text" class="form-control" id="firstName" value="Mark" required>
           </div>
           <div class="col-md-4">
-            <label for="validationDefault02" class="form-label">Last name</label>
+            <label for="validationDefault02" class="form-label">{{._last_name}}</label>
             <input type="text" class="form-control" id="lastName" value="Otto" required>
           </div>
           <div class="col-md-4">
@@ -142,38 +142,39 @@
             </div>
           </div>
           <div class="col-md-6">
-            <label  class="form-label">Address</label>
+            <label  class="form-label">{{._address}}</label>
             <input type="text" class="form-control" id="address" required>
           </div>
           <div class="col-md-6">
-            <label  class="form-label">City</label>
+            <label  class="form-label">{{._city}}</label>
             <input type="text" class="form-control" id="city" required>
           </div>
           <div class="col-md-3">
-            <label for="validationDefault04" class="form-label">State</label>
+            <label for="validationDefault04" class="form-label">{{._state}}</label>
             <input type="text" class="form-control" id="state" required>
           </div>
           <div class="col-md-3">
-            <label for="validationDefault05" class="form-label">Postal Code</label>
+            <label for="validationDefault05" class="form-label">{{._postal_code}}</label>
             <input type="text" class="form-control" id="postalCode" required>
           </div>
           <div class="col-6">
-            <label  class="form-label">Phone 1</label>
+            <label  class="form-label">{{._phone}}</label>
             <input type="text" class="form-control" id="phone1" required>
-            <label  class="form-label">Phone 2</label>
+            <label  class="form-label">{{._phone2}}</label>
             <input type="text" class="form-control" id="phone2" required>
           </div>
           <div class="col-6">
-            <label for="birthdate">Birthdate</label>
+            <label for="birthdate">{{._birthdate}}</label>
             <input id="birthdate" class="form-control" type="date" />
           </div>
           <div class="col-12">
-            <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewCustomer();">Create new</button>
+            
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary" data-bs-dismiss="modal" type="button" onclick="createNewCustomer();">{{._create_new_btn}}</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{._cancel_btn}}</button>
       </div>
     </div>
   </div>
@@ -185,23 +186,23 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">New Payment</h5>
+        <h5 class="modal-title">{{._new_payment_modal_title}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <!-- <p>Modal body text goes here.</p> -->
         <form class="row g-3" name="new_payment_form">
           <div class="col-md-6">
-            <label for="paymentAmount" class="form-label">Amount</label>
-            <input type="number" class="form-control" id="paymentAmount" required>
+            <label for="paymentAmount" class="form-label">{{._amount}}</label>
+            <input type="number" placeholder="0.00 €" class="form-control" id="paymentAmount" required> 
             <input type="hidden" id="paymentStudentId"></input>
             <input type="hidden" id="paymentParentId"></input>
           </div>
         </form>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addPayment();">Add</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addPayment();">{{._add_btn}}</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{._cancel_btn}}</button>
       </div>
     </div>
   </div>

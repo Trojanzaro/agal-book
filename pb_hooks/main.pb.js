@@ -26,7 +26,8 @@ routerAdd("GET", "/_dist/login", (c) => {
 routerAdd("GET", "/_dist/dashboard", (httpContext) => {
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
     const workinDirectory = httpContext.request.url.query().get("wd")
-
+    
+    //get notifications
     const notifications = []
     let records = $app.findAllRecords("notification");
 
@@ -51,6 +52,15 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
+        // retrieve all the localization strings
+        const lang = httpContext.request.url.query().get("language") || "en";
+        const localizationRecords = $app.findAllRecords("local_strings");
+
+        const localizationMap = {};
+        localizationRecords.forEach(r => {
+            localizationMap[r.get("string_id")] = r.get(lang + "_text");
+        });
+
         //generate templates base on working directory path
         const data = {}
         data["sb_"+workinDirectory] = "active"; // sillyhack to set "active" sidebar item based on working directory
@@ -63,7 +73,7 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
             `${__hooks}/views/${workinDirectory}/layout.html`,
             `${__hooks}/views/dashboard/navbar.html`,
             `${__hooks}/views/dashboard/sidebar.html`,
-        ).render(data);
+        ).render({...data, ...localizationMap});
 
         // Once generated return the HTML contents
         return httpContext.html(200, html);
@@ -84,6 +94,16 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
 
     const birthdate = new Date(record.get("birthdate").string().replace(" ", 'T'));
     const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ String(birthdate.getDate()).padStart(2,'0');
+
+    // retrieve all the localization strings
+    const lang = httpContext.request.url.query().get("language") || "en";
+    const localizationRecords = $app.findAllRecords("local_strings");
+
+    const localizationMap = {};
+        localizationRecords.forEach(r => {
+        localizationMap[r.get("string_id")] = r.get(lang + "_text");
+    });
+
 
     let renderValues = {};
     // generate html template
@@ -133,7 +153,7 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
         
         const html = $template.loadFiles(
             `${__hooks}/views/details.html`
-        ).render(renderValues);
+        ).render({...renderValues, ...localizationMap});
         // Once generated return the HTML contents
         return httpContext.html(200, html);
     } catch(e) {
@@ -178,6 +198,16 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
     const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
     const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ String(birthdate.getDate()).padStart(2,'0');
 
+
+    // retrieve all the localization strings
+    const lang = httpContext.request.url.query().get("language") || "en";
+    const localizationRecords = $app.findAllRecords("local_strings");
+
+    const localizationMap = {};
+        localizationRecords.forEach(r => {
+        localizationMap[r.get("string_id")] = r.get(lang + "_text");
+    });
+
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
@@ -197,7 +227,8 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
             "postal_code": record.get("postal_code"),
             "email": record.email(),
             "schedule": JSON.stringify(scheduleArray),
-            "sb_student": "active"
+            "sb_student": "active",
+            ...localizationMap
         });
         // Once generated return the HTML contents
         return httpContext.html(200, html);
@@ -232,6 +263,14 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
     console.log("teacherRecord", teacherRecord);
     const assignments = $app.findRecordsByFilter("assignment","classroom='"+classroomId+"'");
 
+    // retrieve all the localization strings
+    const lang = httpContext.request.url.query().get("language") || "en";
+    const localizationRecords = $app.findAllRecords("local_strings");
+
+    const localizationMap = {};
+        localizationRecords.forEach(r => {
+        localizationMap[r.get("string_id")] = r.get(lang + "_text");
+    });
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
@@ -242,6 +281,7 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
             "id": classroomId,
             "classroom_name": record.get("name"),
             "assigned_teacher": teacherRecord.get("first_name")+" "+teacherRecord.get("last_name"),
+            "assigned_teacher_id": teacherRecord.id,
             "room": record.get("room"),
             "col": "classroom",
             "students":studentsArray,
@@ -250,7 +290,8 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
             "classroom_bool": "true",
             "classroom_id": classroomId,
             "level": record.get("level"),
-            "fee": record.get("fee")
+            "fee": record.get("fee"),
+            ...localizationMap
         });
         // Once generated return the HTML contents
         return httpContext.html(200, html);

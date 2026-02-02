@@ -6,14 +6,14 @@ async function teacherDetails(teacherId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const teacherHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/teacher/details?id=' + teacherId, null);
+        const teacherHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/teacher/details?id=' + teacherId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = teacherHTML;
 
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
-    const scheduleData = document.getElementById("schedule").value; 
+    const scheduleData = document.getElementById("schedule").value || '[]'; 
     const schedule = JSON.parse(scheduleData);
     drawTeacherCallendar(schedule, 2026);
 }
@@ -26,7 +26,7 @@ async function studentDetails(studentId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const studentHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/student/details?id=' + studentId, null);
+        const studentHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/student/details?id=' + studentId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = studentHTML;
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
@@ -42,7 +42,7 @@ async function classroomDetails(classroomId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const classroomHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/classroom/details?id=' + classroomId, null);
+        const classroomHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/classroom/details?id=' + classroomId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = classroomHTML;
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
@@ -272,12 +272,17 @@ async function putDetails(id, collection) {
         const name = document.getElementById('inputClassroomName')?.value || '';
         const teacher = document.getElementById('classroomTeacherSelectDetail')?.value || '';
         const room = document.getElementById('inputClassroomRoom')?.value || '';
+        const level = document.getElementById('inputClassroomLevel')?.value || '';
+        const fee = document.getElementById('inputClassroomFee')?.value || 0;
+
         // try to loging for error return an error message
         try {
             const data = {
                 "name": name,
                 "teacher": teacher,
-                "room": room
+                "room": room,
+                "level": level,
+                "fee": parseFloat(fee)
             };
             const record = await pb.collection('classroom').update(id, data);
             pushNotification("Succesfully Updated Classroom Entry!");
@@ -455,9 +460,6 @@ async function createNewClassroom() {
 }
 
 
-
-
-
 ///////
 // EVENT: CTRL: LOGOUT
 async function logout() {
@@ -472,13 +474,13 @@ async function login() {
     document.getElementById("UI_MAIN").innerHTML = '';
 
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
-    let nav = window.localStorage.getItem('nav');
+    window.localStorage.setItem('nav', window.localStorage.getItem('nav') || 'dashboard');
+    window.localStorage.setItem('language', window.localStorage.getItem('language') || 'en');
 
-    window.localStorage.setItem('nav', nav);
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=dashboard', null);
+        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=dashboard&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
@@ -528,7 +530,10 @@ async function loadAllStudents() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: ['copy', 'excel', 'pdf', 'colvis']
+            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+            }
         });
     });
 
@@ -607,7 +612,10 @@ async function loadAllTeachers() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: ['copy', 'excel', 'pdf', 'colvis']
+            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+            }
         });
     });
 }
@@ -638,7 +646,10 @@ async function loadAllCustomers() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: ['copy', 'excel', 'pdf', 'colvis']
+            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+            }
         });
     });
 }
@@ -683,7 +694,38 @@ function drawTeacherCallendar(schedule, year) {
 
             chart.draw(dataTable, options);
         });
+        drawChart() ;
 }
+
+  function drawChart() {
+    //google.charts.setOnLoadCallback(drawChart);
+    google.charts.load("current", {packages:["timeline"]}).then(function() {
+      var container = document.getElementById('example5.2');
+        var chart = new google.visualization.Timeline(container);
+        var dataTable = new google.visualization.DataTable();
+
+        dataTable.addColumn({ type: 'string', id: 'Room' });
+        dataTable.addColumn({ type: 'string', id: 'Name' });
+        dataTable.addColumn({ type: 'date', id: 'Start' });
+        dataTable.addColumn({ type: 'date', id: 'End' });
+        dataTable.addRows([
+        [ 'Magnolia Room',  'CSS Fundamentals',    new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
+        [ 'Magnolia Room',  'Intro JavaScript',    new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+        [ 'Magnolia Room',  'Advanced JavaScript', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
+        [ 'Gladiolus Room', 'Intermediate Perl',   new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+        [ 'Gladiolus Room', 'Advanced Perl',       new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+        [ 'Gladiolus Room', 'Applied Perl',        new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
+        [ 'Petunia Room',   'Google Charts',       new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
+        [ 'Petunia Room',   'Closure',             new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
+        [ 'Petunia Room',   'App Engine',          new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]]);
+
+        var options = {
+            timeline: { singleColor: 'rgb(117, 13, 155)' },
+        };
+
+        chart.draw(dataTable, options);
+    });    
+  }
 
 ///////
 // EVENT: LOAD CLASSROOM DETAILS PAGE
@@ -722,7 +764,10 @@ async function loadAllClassrooms() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
-            buttons: ['copy', 'excel', 'pdf', 'colvis']
+            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+            language: {
+                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+            }
         });
     });
 }
@@ -733,7 +778,7 @@ async function dashboardNavActive(nav) {
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav, null);
+        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
@@ -859,4 +904,14 @@ async function getFileFromServer(id) {
         console.error('There has been a problem with your fetch operation:', error);
         throw error;
     }
+}
+
+function getLanguage() {
+    const lang = window.localStorage.getItem('language') || 'en';
+    return lang;
+}
+
+function changeLanguage(lang) {
+    window.localStorage.setItem('language', lang);
+    window.location.reload();
 }
