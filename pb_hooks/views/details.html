@@ -181,7 +181,7 @@
     <h3>{{._classroom_info}} </h3>
     <input type="hidden" id="classroom_id" value="{{.classroom_id}}" />
     <div class="mb-2">
-        <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button" onclick="enableDetailsEdit('classroom');document.getElementById('submitClassroomBtn').removeAttribute('disabled');$('#editbtn').attr('disabled', true)"><i class="fas fa-edit"></i> {{._edit_btn}}</button>
+        <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button" onclick="enableDetailsEdit('classroom');$('#submitClassroomBtn').removeAttr('disabled');$('#editbtn').attr('disabled', true)"><i class="fas fa-edit"></i> {{._edit_btn}}</button>
         <button id="submitClassroomBtn" class="btn btn-primary btn-sm" type="button" onclick="putDetails('{{.classroom_id}}','classroom')" disabled>{{._submit_btn}}</button>
         <button class="btn btn-secondary btn-sm" type="button" onclick="disableDetailsEdit();">{{._cancel_btn}}</button>
     </div>

@@ -272,12 +272,17 @@ async function putDetails(id, collection) {
         const name = document.getElementById('inputClassroomName')?.value || '';
         const teacher = document.getElementById('classroomTeacherSelectDetail')?.value || '';
         const room = document.getElementById('inputClassroomRoom')?.value || '';
+        const level = document.getElementById('inputClassroomLevel')?.value || '';
+        const fee = document.getElementById('inputClassroomFee')?.value || 0;
+
         // try to loging for error return an error message
         try {
             const data = {
                 "name": name,
                 "teacher": teacher,
-                "room": room
+                "room": room,
+                "level": level,
+                "fee": parseFloat(fee)
             };
             const record = await pb.collection('classroom').update(id, data);
             pushNotification("Succesfully Updated Classroom Entry!");

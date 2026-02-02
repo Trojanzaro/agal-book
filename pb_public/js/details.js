@@ -193,7 +193,7 @@ function enableDetailsEdit(collection) {
     document.getElementById("inputClassroomLevel").classList.remove("d-none");
     document.getElementById("inputClassroomFee").classList.remove("d-none");
 
-    if (!teacherSelect || !teacherDisplay) return;
+    // if (!teacherSelect || !teacherDisplay) return;
 
     document.getElementById("submitClassroomBtn")?.removeAttribute('disabled');
 
