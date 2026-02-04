@@ -87,13 +87,16 @@
     </div>
     <!--TEACHER CALENDAR-->
     {{if not .student_bool}}
+        <div class="col-12">
+            <!-- Edit Schedule Button -->
+            <button id="editScheduleBtn" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#scheduleModal" >Edit Schedule <i class="fa-regular fa-calendar"></i></button>    
+        </div>
+
+
+
         <div id="teacher_calendar" style="width: 1000px; "></div>
-<div id="example5.2" ></div>
+        <div id="example5.2" ></div>
     {{ end }}
-    <!-- <div class="col-12">
-        <button id="editbtn" type="button" class="btn btn-outline-warning"
-            onclick="enableDetailsEdit();$('#submitEditbtn').removeAttr('disabled')"><i class="fas fa-edit"></i></button>
-    </div> -->
     <div class="col-12">
         <button id="submitEditbtn" type="button" class="btn btn-primary" onclick="putDetails('{{.id}}', '{{.col}}')"
             disabled>{{._submit_btn}}</button>
@@ -381,4 +384,30 @@
             </div>
         </div>
 
-        
+    <!-- Schedule Modal -->
+    <div id="scheduleModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Teacher Schedule</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            <div class="modal-body">
+        <form id="scheduleForm">
+            <div class="table-responsive">
+                <table class="table table-bordered text-center align-middle" id="scheduleGrid">
+                    <thead></thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </form>
+        </div>
+            <div class="modal-footer">
+                <button type="button" id="saveScheduleBtn" class="btn btn-success">Save</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+            </div>
+        </div>
+    </div>

@@ -31,7 +31,7 @@ document.addEventListener('shown.bs.modal', function (e) {
     if (!quill) {
       quill = new Quill('#assignment_editor', { theme: 'snow' });
       // ensure editor receives focus so paste goes into it
-      setTimeout(function () { try { quill.focus(); } catch (e) {} }, 50);
+      setTimeout(function () { try { quill.focus(); } catch (e) { } }, 50);
       // increase editor height by 100px (only once)
       try {
         const editorRoot = quill.root; // .ql-editor
@@ -40,7 +40,7 @@ document.addEventListener('shown.bs.modal', function (e) {
         editorRoot.dataset.heightIncreased = '1';
       } catch (e) { /* ignore */ }
     } else {
-      try { quill.focus(); } catch (e) {}
+      try { quill.focus(); } catch (e) { }
       // on subsequent opens, ensure minHeight present
       try {
         const editorRoot = quill.root;
@@ -49,7 +49,7 @@ document.addEventListener('shown.bs.modal', function (e) {
           editorRoot.style.minHeight = (currentH + 100) + 'px';
           editorRoot.dataset.heightIncreased = '1';
         }
-      } catch(e){}
+      } catch (e) { }
     }
   }
 });
@@ -94,7 +94,7 @@ async function handleCreateAssignment() {
           btn.classList.add('list-group-item-success');
           setTimeout(() => { btn.classList.remove('list-group-item-success'); }, 3000);
           // ensure it's visible
-          try { btn.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) {}
+          try { btn.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { }
         }
 
         if (previewsCol) {
@@ -164,7 +164,7 @@ document.addEventListener('click', function (e) {
 });
 
 function enableDetailsEdit(collection) {
-  if(collection === 'student|teacher') {  
+  if (collection === 'student|teacher') {
 
     // student-only parent editing
     const p1Select = document.getElementById("parentSelect1Detail");
@@ -197,82 +197,203 @@ function enableDetailsEdit(collection) {
 
     document.getElementById("submitClassroomBtn")?.removeAttribute('disabled');
 
-      loadClassroomOptions();
+    loadClassroomOptions();
   }
 }
 
 async function loadParentOptions() {
-    const p1Select = document.getElementById("parentSelect1Detail");
-    const p2Select = document.getElementById("parentSelect2Detail");
+  const p1Select = document.getElementById("parentSelect1Detail");
+  const p2Select = document.getElementById("parentSelect2Detail");
 
-    if (!p1Select || !p2Select) return;
+  if (!p1Select || !p2Select) return;
 
-    const currentP1 = document.getElementById("parent1_id")?.value;
-    const currentP2 = document.getElementById("parent2_id")?.value;
+  const currentP1 = document.getElementById("parent1_id")?.value;
+  const currentP2 = document.getElementById("parent2_id")?.value;
 
-    // reset (keep "Unassigned")
-    p1Select.length = 1;
-    p2Select.length = 1;
+  // reset (keep "Unassigned")
+  p1Select.length = 1;
+  p2Select.length = 1;
 
-    const parents = await pb.collection("customer").getFullList({
-        sort: "last_name"
-    });
+  const parents = await pb.collection("customer").getFullList({
+    sort: "last_name"
+  });
 
-    parents.forEach(p => {
-        const label = `${p.first_name} ${p.last_name}`;
+  parents.forEach(p => {
+    const label = `${p.first_name} ${p.last_name}`;
 
-        p1Select.add(new Option(label, p.id, false, p.id === currentP1));
-        p2Select.add(new Option(label, p.id, false, p.id === currentP2));
-    });
+    p1Select.add(new Option(label, p.id, false, p.id === currentP1));
+    p2Select.add(new Option(label, p.id, false, p.id === currentP2));
+  });
 }
 
 async function loadClassroomOptions() {
-    const teacherSelect = document.getElementById("classroomTeacherSelectDetail");
-    if (!teacherSelect) return;
+  const teacherSelect = document.getElementById("classroomTeacherSelectDetail");
+  if (!teacherSelect) return;
 
-    const currentTeacherId = document.getElementById("assigned_teacher_id")?.value;
+  const currentTeacherId = document.getElementById("assigned_teacher_id")?.value;
 
-    // reset (keep "Unassigned")
-    teacherSelect.length = 1;
+  // reset (keep "Unassigned")
+  teacherSelect.length = 1;
 
-    const teachers = await pb.collection("teacher").getFullList({
-        sort: "last_name"
-    });
+  const teachers = await pb.collection("teacher").getFullList({
+    sort: "last_name"
+  });
 
-    teachers.forEach(t => {
-        const label = `${t.first_name} ${t.last_name}`;
+  teachers.forEach(t => {
+    const label = `${t.first_name} ${t.last_name}`;
 
-        teacherSelect.add(new Option(label, t.id, false, t.id === currentTeacherId));
-    });
+    teacherSelect.add(new Option(label, t.id, false, t.id === currentTeacherId));
+  });
 }
 
 function disableDetailsEdit() {
   console.log('Disabling details edit');
   document.getElementById('submitEditbtn')?.setAttribute('disabled', 'disabled');
   document.getElementById("submitClassroomBtn")?.setAttribute('disabled', 'disabled');
-  
-    // student/teacher parent editing
-    const p1Select = document.getElementById("parentSelect1Detail");
-    const p2Select = document.getElementById("parentSelect2Detail");
 
-    if (p1Select && p2Select) {
-        document.getElementById("parent1_display")?.classList.remove("d-none");
-        document.getElementById("parent2_display")?.classList.remove("d-none");
+  // student/teacher parent editing
+  const p1Select = document.getElementById("parentSelect1Detail");
+  const p2Select = document.getElementById("parentSelect2Detail");
 
-        p1Select.classList.add("d-none");
-        p2Select.classList.add("d-none");
+  if (p1Select && p2Select) {
+    document.getElementById("parent1_display")?.classList.remove("d-none");
+    document.getElementById("parent2_display")?.classList.remove("d-none");
+
+    p1Select.classList.add("d-none");
+    p2Select.classList.add("d-none");
+  }
+
+  // classroom editing
+  const classroomSelect = document.getElementById("classroomTeacherSelectDetail");
+  const classroomDisplay = document.getElementById("classroom_teacher_display");
+
+  if (classroomSelect && classroomDisplay) {
+    document.getElementById("classroomTeacherSelectDetail").classList.add("d-none");
+    document.getElementById("classroom_teacher_display").classList.remove("d-none");
+    document.getElementById("inputClassroomName").classList.add("d-none");
+    document.getElementById("inputClassroomRoom").classList.add("d-none");
+    document.getElementById("inputClassroomLevel").classList.add("d-none");
+    document.getElementById("inputClassroomFee").classList.add("d-none");
+  }
+}
+
+function scheduleTablePopulate() {
+  // Open modal
+  $('#editScheduleBtn').on('click', function () {
+    buildScheduleGrid($("#schedule").val());
+    $('#scheduleModal').modal('show');
+  });
+
+  $('#saveScheduleBtn').on('click', function () {
+    console.log($("#scheduleGrid thead"))
+    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+
+    const dayValues = []
+    days.forEach((el) => {
+      dayValues.push(document.getElementById("day_"+el).checked)
+    })
+
+    // get table values 
+    const tableSize = document.getElementById("scheduleGrid").rows.lenngth
+    for(let i=0; i<tableSize; i++ ) {
+      const mondayV = document.getElementById("scheduleGrid").rows[0].cells[1].childNodes[0].nextSibling.checked
+      const tuesdayV = document.getElementById("scheduleGrid").rows[0].cells[2].childNodes[0].nextSibling.checked
+      const wednesdayV = document.getElementById("scheduleGrid").rows[0].cells[3].childNodes[0].nextSibling.checked
+      const thursdayV = document.getElementById("scheduleGrid").rows[0].cells[4].childNodes[0].nextSibling.checked
+      const fridayV = document.getElementById("scheduleGrid").rows[0].cells[5].childNodes[0].nextSibling.checked
     }
 
-    // classroom editing
-    const classroomSelect = document.getElementById("classroomTeacherSelectDetail");
-    const classroomDisplay = document.getElementById("classroom_teacher_display");
+    let newSchedule = [];
+    days.forEach((day, dayIndex) => {
+        const selectedHours = [];
+        $(`.hour-checkbox[data-day="${dayIndex}"]:checked`).each(function () {
+            const hour = $(this).data("hour");
+            const start = String(hour).padStart(2, '0') + ":00";
+            const end = String(hour + 1).padStart(2, '0') + ":00";
+            selectedHours.push(`${start}-${end}`);
+        });
+        if (selectedHours.length > 0) {
+            newSchedule.push({
+                day: dayIndex,
+                hours: selectedHours,
+                classroom_name: ""
+            });
+        }
+    });
+    drawTeacherCalendar(schedule, new Date().getFullYear());
+    $('#scheduleModal').modal('hide');
+  });
 
-    if (classroomSelect && classroomDisplay) {
-      document.getElementById("classroomTeacherSelectDetail").classList.add("d-none");
-      document.getElementById("classroom_teacher_display").classList.remove("d-none");
-      document.getElementById("inputClassroomName").classList.add("d-none");
-      document.getElementById("inputClassroomRoom").classList.add("d-none");
-      document.getElementById("inputClassroomLevel").classList.add("d-none");
-      document.getElementById("inputClassroomFee").classList.add("d-none");
-    }
+}
+
+function buildScheduleGrid(schedule) {
+
+  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+  const parsed = JSON.parse(schedule);
+
+  const thead = $("#scheduleGrid thead");
+  const tbody = $("#scheduleGrid tbody");
+
+  thead.empty();
+  tbody.empty();
+
+  const daysInSchedule = (JSON.parse(schedule)).map((el) => el.day)
+
+  // ---------------------------
+  // Build header
+  // ---------------------------
+  let headerRow = `<tr><th>Hour<br/><button class="btn btn-primary" onclick="insertTableRow('scheduleGrid')"> + </button</th>`;
+  days.forEach(day => {
+    let dayBool = daysInSchedule.indexOf(day) >= 0 ? "checked" : ""
+    console.log(dayBool)
+    headerRow += `<th>
+           <input type="checkbox" 
+                   class="day-checkbox"
+                   id="day_${day}"
+                   data-day="${day}"
+                   ${dayBool}>
+           <br>${day}
+       </th>`;
+  });
+  headerRow += "</tr>";
+  thead.append(headerRow);
+
+  // ---------------------------
+  // Transform schedule into lookup map
+  // ---------------------------
+  const scheduleMap = {};
+  parsed.forEach(entry => {
+    scheduleMap[entry.day] = entry.hours;
+  });
+
+  // ---------------------------
+  // Collect all unique hour ranges
+  // ---------------------------
+  const allHours = [...new Set(parsed.flatMap(el => el.hours))];
+
+  // ---------------------------
+  // Build table rows
+  // ---------------------------
+  allHours.forEach(hourRange => {
+
+    let row = `<tr><td>0</td>`; // first column is just "0"
+    days.forEach(day => {
+      if (scheduleMap[day] && scheduleMap[day].includes(hourRange)) {
+        row += `
+        <td><input type="checkbox"
+                           class="hour-checkbox"
+                           data-day="${day}"
+                           data-hour="${hourRange}" checked>
+                           <input type="text" class="form-control w-15" value="${hourRange}"></input></td>`;
+      } else {
+        row += `<td><input type="checkbox"
+                           class="hour-checkbox"
+                           data-day="${day}"
+                           ><input type="text" class="form-control w-15" value="0"></input></td>`;
+      }
+    });
+
+    row += "</tr>";
+    tbody.append(row);
+  });
 }

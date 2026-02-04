@@ -13,9 +13,43 @@ async function teacherDetails(teacherId) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
-    const scheduleData = document.getElementById("schedule").value || '[]'; 
-    const schedule = JSON.parse(scheduleData);
+    const scheduleData = document.getElementById("schedule").value || '[{"classroom": "3o2ktfriv7jyeps","day": "Tuesday","hours": ["16:00-17:30","19:00-20:30"]}]' ; 
+    const schedule = JSON.parse(scheduleData) ;
     drawTeacherCallendar(schedule, 2026);
+    scheduleTablePopulate();
+
+    // Save schedule
+    $('#saveScheduleBtn').on('click', function () {
+        const date = $('#sessionDate').val();
+        const start = $('#sessionStart').val();
+        const end = $('#sessionEnd').val();
+        const classroom = $('#sessionClassroom').val();
+
+        if (!date || !start || !end) {
+            alert("Please fill all required fields.");
+            return;
+        }
+
+        // Convert to Date objects
+        const [year, month, day] = date.split('-').map(Number);
+        const [startH, startM] = start.split(':').map(Number);
+        const [endH, endM] = end.split(':').map(Number);
+
+        const startDate = new Date(year, month - 1, day, startH, startM);
+        const endDate = new Date(year, month - 1, day, endH, endM);
+
+        // Add to your schedule array or send AJAX to server
+        schedule.push({
+            day: startDate.getDay(),        // 0=Sun, 1=Mon...
+            hours: [`${start}:${end}`],
+            classroom_name: classroom
+        });
+
+        // Redraw calendar with updated schedule
+        drawTeacherCalendar(schedule, year);
+
+        $('#scheduleModal').modal('hide');
+    });
 }
 
 ///////
@@ -474,13 +508,14 @@ async function login() {
     document.getElementById("UI_MAIN").innerHTML = '';
 
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
-    window.localStorage.setItem('nav', window.localStorage.getItem('nav') || 'dashboard');
+    const nav = window.localStorage.getItem('nav') || 'dashboard';
     window.localStorage.setItem('language', window.localStorage.getItem('language') || 'en');
+    dashboardNavActive(nav)
 
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=dashboard&language=' + getLanguage(), null);
+        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
@@ -532,7 +567,7 @@ async function loadAllStudents() {
             lengthChange: true,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+                url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
             }
         });
     });
@@ -614,7 +649,7 @@ async function loadAllTeachers() {
             lengthChange: true,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+                url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
             }
         });
     });
@@ -648,7 +683,7 @@ async function loadAllCustomers() {
             lengthChange: true,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+                url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
             }
         });
     });
@@ -664,14 +699,30 @@ function drawTeacherCallendar(schedule, year) {
         .then(() => {
             const dataTable = new google.visualization.DataTable();
             dataTable.addColumn({ type: 'date', id: 'Date' });
-            dataTable.addColumn({ type: 'number', id: 'Calls' });
+            dataTable.addColumn({ type: 'number', id: 'Sessions' });
+            dataTable.addColumn({ type: 'string', role: 'hours' });
+            dataTable.addColumn({ type: 'string', role: 'clarssroom' });
+
+            // Step 1: Pre-fill all days of the year with 0
+            const startDate = new Date(year, 0, 1);
+            const endDate = new Date(year, 11, 31);
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                dataTable.addRow([new Date(d), 0, '', '']);
+            }
             
             // for each weekday that we need to mark in the calendar 
             schedule.forEach((session) => {
+                console.log("Processing session for day:", session['hours']);
                 const sessionDates = getWeekdayDatesInYear(session["day"], year);
+                //console.log("Session dates for", session["day"]);
                 for (let i = 0; i < 12; i++) {
                     sessionDates[i.toString()].forEach((date) => {
-                        dataTable.addRow([new Date(year, i, date), 6]); // Assuming 6 calls for each date
+                        dataTable.addRow([
+                            new Date(year, i, date, 0, 0, 0, 0),
+                            session["hours"].length,
+                            JSON.stringify(session['hours']),
+                            session["classroom_name"]
+                        ]);
                     });
                 }
             });
@@ -684,7 +735,7 @@ function drawTeacherCallendar(schedule, year) {
                 colorAxis: {
                     minValue: 0,
                     maxValue: 10,
-                    colors: ['#e0f2f1', '#004d40']
+                    colors: ['#e0f2f1', '#26a4d6']
                 },
                 title: 'Teacher Calendar',
                 calendar: {
@@ -693,39 +744,72 @@ function drawTeacherCallendar(schedule, year) {
             };
 
             chart.draw(dataTable, options);
+             // CLICK HANDLER
+            google.visualization.events.addListener(chart, 'select', function () {
+
+                const selection = chart.getSelection();
+
+                if (!selection || selection.length === 0) {
+                    return;
+                }
+
+                if (selection[0].row == null) {
+                    return;
+                }
+
+                const clickedDate = dataTable.getValue(selection[0].row, 0);
+                const sessions = dataTable.getValue(selection[0].row, 1);
+                const hours = dataTable.getValue(selection[0].row, 2);
+                const classroom = dataTable.getValue(selection[0].row, 3);
+                
+                if(sessions !== 0) handleDateClick(clickedDate, sessions, hours, classroom);
+            });
+
         });
-        drawChart() ;
 }
 
-  function drawChart() {
-    //google.charts.setOnLoadCallback(drawChart);
+function handleDateClick(date, sessions, hours, classroom) {
     google.charts.load("current", {packages:["timeline"]}).then(function() {
-      var container = document.getElementById('example5.2');
+        var container = document.getElementById('example5.2');
         var chart = new google.visualization.Timeline(container);
         var dataTable = new google.visualization.DataTable();
-
         dataTable.addColumn({ type: 'string', id: 'Room' });
-        dataTable.addColumn({ type: 'string', id: 'Name' });
         dataTable.addColumn({ type: 'date', id: 'Start' });
         dataTable.addColumn({ type: 'date', id: 'End' });
-        dataTable.addRows([
-        [ 'Magnolia Room',  'CSS Fundamentals',    new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
-        [ 'Magnolia Room',  'Intro JavaScript',    new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-        [ 'Magnolia Room',  'Advanced JavaScript', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
-        [ 'Gladiolus Room', 'Intermediate Perl',   new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-        [ 'Gladiolus Room', 'Advanced Perl',       new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-        [ 'Gladiolus Room', 'Applied Perl',        new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
-        [ 'Petunia Room',   'Google Charts',       new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-        [ 'Petunia Room',   'Closure',             new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-        [ 'Petunia Room',   'App Engine',          new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]]);
 
-        var options = {
-            timeline: { singleColor: 'rgb(117, 13, 155)' },
-        };
+        const parsedHours = JSON.parse(hours);
 
-        chart.draw(dataTable, options);
+        console.log("Parsed Hours:", parsedHours);
+
+        parsedHours.forEach(hourRange => {
+            const dayStart = new Date(date);
+            const hxDayStart = new Date(date);
+            hxDayStart.setHours(8, 0, 0, 0); // 08:00:00.000
+            dayStart.setHours(parseInt(hourRange.split('-')[0].split(':')[0]), 0, 0, 0);
+
+            const endDate = new Date(date);
+            const hxDayEnd = new Date(date);
+            endDate.setHours(parseInt(hourRange.split('-')[1].split(':')[0]), 0, 0);
+            hxDayEnd.setHours(23, 59, 59, 999); // 23:59:59.999
+
+            dataTable.addRows([
+                [ classroom, dayStart, endDate ]
+            ]);
+
+            var options = {
+                timeline: { singleColor: 'rgb(13, 134, 155)' },
+                title: 'Teacher Timeline',
+                hAxis: {
+                    minValue: hxDayStart,   // 00:00
+                    maxValue: hxDayEnd, // 23:59
+                    format: 'HH:mm'
+                }
+            };
+
+            chart.draw(dataTable, options);
+        });
     });    
-  }
+}
 
 ///////
 // EVENT: LOAD CLASSROOM DETAILS PAGE
@@ -766,7 +850,7 @@ async function loadAllClassrooms() {
             lengthChange: true,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+                url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
             }
         });
     });
@@ -914,4 +998,22 @@ function getLanguage() {
 function changeLanguage(lang) {
     window.localStorage.setItem('language', lang);
     window.location.reload();
+}
+
+function insertTableRow(tableId) {
+    var table = document.getElementById(tableId)
+    var row = table.insertRow(table.length)
+    var c1 = row.insertCell(0)
+    var c2 = row.insertCell(1)
+    var c3 = row.insertCell(2)
+    var c4 = row.insertCell(3)
+    var c5 = row.insertCell(4)
+    var c6 = row.insertCell(5)
+    c1.innerHTML = "0"
+    c2.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Monday"><input type="text" class="form-control w-15" value="0"></input>'
+    c3.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Tuesday"><input type="text" class="form-control w-15" value="0"></input>'
+    c4.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Wednesday"><input type="text" class="form-control w-15" value="0"></input>'
+    c5.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Thursday"><input type="text" class="form-control w-15" value="0"></input>'
+    c6.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Friday"><input type="text" class="form-control w-15" value="0"></input>'
+    
 }

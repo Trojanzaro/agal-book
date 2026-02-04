@@ -194,7 +194,7 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
     const teachersId = httpContext.request.url.query().get("id");
     const record = $app.findRecordById("teacher", teachersId);
 
-    const scheduleArray = JSON.parse(record.get("schedule"));
+    const scheduleArray = JSON.parse(record.get("schedule")) || [];
     const birthdate= new Date(record.get("birthdate").string().replace(" ", 'T'));
     const birthdateStr = birthdate.getFullYear() +'-'+ ('0' + (birthdate.getMonth()+1)).slice(-2) +'-'+ String(birthdate.getDate()).padStart(2,'0');
 
@@ -208,6 +208,12 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
         localizationMap[r.get("string_id")] = r.get(lang + "_text");
     });
 
+    scheduleArray.forEach((session) => {
+        const classroomRecord = $app.findRecordById("classroom", session["classroom"]);
+        session["classroom_name"] = classroomRecord.get("name");
+    });
+
+    console.log("scheduleArray", JSON.stringify(scheduleArray));
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
