@@ -1,0 +1,181 @@
+{{ block "navbar" .}}
+{{ end }}
+
+
+{{ block "sidebar" .}}
+{{ end }}
+
+<br/>
+<div class="container mt-4">
+  <!-- Header -->
+  <div class="row align-items-center">
+    <div class="col-md-8">
+      <h2>John Anderson</h2>
+      <p class="text-muted mb-1">Student ID: STU-1024</p>
+      <p class="text-muted">Class: Algebra I - Room 204</p>
+    </div>
+    <div class="col-md-4 text-md-end">
+      <button class="btn btn-primary btn-sm">
+        <i class="bi bi-pencil"></i> Edit Profile
+      </button>
+    </div>
+  </div>
+
+  <hr class="my-4">
+
+  <!-- Summary Cards -->
+  <div class="row g-3">
+
+    <div class="col-md-4">
+      <div class="card text-white bg-success h-100">
+        <div class="card-body">
+          <h5 class="card-title">Overall Average</h5>
+          <p class="display-6 mb-0">87%</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-light h-100">
+        <div class="card-body">
+          <h5 class="card-title">Total Tests</h5>
+          <p class="display-6 mb-0">6</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-light h-100">
+        <div class="card-body">
+          <h5 class="card-title">Latest Score</h5>
+          <p class="display-6 mb-0">92%</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Grades & Tests Table -->
+  <div class="card mt-4 shadow-sm">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5 class="mb-0">Grades & Tests</h5>
+      <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addGradeModal">
+        <i class="bi bi-plus-lg"></i> Add Grade
+      </button>
+    </div>
+
+    <div class="card-body p-0">
+      <table class="table table-striped mb-0">
+        <thead class="table-secondary">
+          <tr>
+            <th>Test / Assignment</th>
+            <th>Date</th>
+            <th>Score</th>
+            <th>Max</th>
+            <th>Percentage</th>
+            <th class="text-center">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+
+          <tr>
+            <td>Chapter 1 Quiz</td>
+            <td>2026-01-15</td>
+            <td>18</td>
+            <td>20</td>
+            <td>90%</td>
+            <td class="text-center">
+              <button class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>Midterm Exam</td>
+            <td>2026-02-01</td>
+            <td>46</td>
+            <td>50</td>
+            <td>92%</td>
+            <td class="text-center">
+              <button class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+          <tr>
+            <td>Homework Set 3</td>
+            <td>2026-01-28</td>
+            <td>15</td>
+            <td>20</td>
+            <td>75%</td>
+            <td class="text-center">
+              <button class="btn btn-outline-secondary btn-sm">
+                <i class="bi bi-pencil"></i>
+              </button>
+              <button class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-trash"></i>
+              </button>
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+
+<!-- Add Grade Modal -->
+<div class="modal fade" id="addGradeModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Add New Grade</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+
+          <div class="mb-3">
+            <label class="form-label">Test / Assignment</label>
+            <input type="text" class="form-control" placeholder="e.g. Final Exam">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control">
+          </div>
+
+          <div class="row g-3">
+            <div class="col">
+              <label class="form-label">Score</label>
+              <input type="number" class="form-control" placeholder="0">
+            </div>
+            <div class="col">
+              <label class="form-label">Max Score</label>
+              <input type="number" class="form-control" placeholder="100">
+            </div>
+          </div>
+
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary">Save Grade</button>
+      </div>
+
+    </div>
+  </div>
+</div>

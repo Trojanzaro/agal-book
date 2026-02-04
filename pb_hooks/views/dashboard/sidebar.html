@@ -36,6 +36,12 @@
         </a>
       </li>
       <li>
+        <a id="customers_a_id" href="#" class="nav-link text-white {{.sb_profile}}" onclick="window.localStorage.setItem('nav','profile');dashboardNavActive('profile')">
+          <i class="fa-solid fa-address-card" style="padding-right: 15px;"></i>
+          {{._nav_profile}} 
+        </a>
+      </li>
+      <li>
         <a id="customers_a_id" href="#" class="nav-link text-white {{.sb_customers}}" onclick="window.localStorage.setItem('nav','customers');dashboardNavActive('customers')">
           <i class="fas fa-award" style="padding-right: 15px;"></i>
           {{._nav_customers}} 

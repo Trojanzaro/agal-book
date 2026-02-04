@@ -307,6 +307,69 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
     }
 }, $apis.requireAuth("users"));
 
+// GET STUDENTPROFILE
+//  
+//  @param httpContext - echo.Context []
+routerAdd("GET", "/_dist/student/profile", (httpContext) => {
+    
+    // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
+    const classroomId = httpContext.request.url.query().get("id");
+    const record = $app.findRecordById("classroom", classroomId);
+    const studentsArray = $app.findRecordsByIds("student", record.get("students"));
+
+    // teacher with dummy data in case of error
+    const dummyCollection = $app.findCollectionByNameOrId("teacher");
+
+    let teacherRecord = new Record(dummyCollection);
+
+    try {
+        teacherRecord = $app.findRecordById("teacher", record.get("teacher"));
+    } catch(e) {   
+        console.log("error"+e);
+        teacherRecord.set("first_name", "N/A");
+        teacherRecord.set("last_name", "N/A");
+    }
+    console.log("teacherRecord", teacherRecord);
+    const assignments = $app.findRecordsByFilter("assignment","classroom='"+classroomId+"'");
+
+    // retrieve all the localization strings
+    const lang = httpContext.request.url.query().get("language") || "en";
+    const localizationRecords = $app.findAllRecords("local_strings");
+
+    const localizationMap = {};
+        localizationRecords.forEach(r => {
+        localizationMap[r.get("string_id")] = r.get(lang + "_text");
+    });
+
+    // wrapped in try watch for any internal problem so that nothing get returned to client
+    try {
+        //generate templates base on working directory path
+        const html = $template.loadFiles(
+            `${__hooks}/views/details.html`
+        ).render({
+            "id": classroomId,
+            "classroom_name": record.get("name"),
+            "assigned_teacher": teacherRecord.get("first_name")+" "+teacherRecord.get("last_name"),
+            "assigned_teacher_id": teacherRecord.id,
+            "room": record.get("room"),
+            "col": "classroom",
+            "students":studentsArray,
+            "assignments": assignments,
+            "sb_classroom": "active",
+            "classroom_bool": "true",
+            "classroom_id": classroomId,
+            "level": record.get("level"),
+            "fee": record.get("fee"),
+            ...localizationMap
+        });
+        // Once generated return the HTML contents
+        return httpContext.html(200, html);
+    } catch(e) {
+        console.log("error"+e);
+        return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
+    }
+}, $apis.requireAuth("users"));
+
 //////////
 // router get assignment file
 routerAdd("GET", "/_dist/assignment/file", (httpContext) => {
