@@ -220,6 +220,62 @@
     </dl>
     <hiddent id="classroomId" value="{{.classroom_id}}"></hiddent> 
 
+    <!--TEXTBOOK-->
+    <div class="card mt-4 shadow-sm">
+  <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+    <h5 class="mb-0">Class Textbooks & Syllabi</h5>
+    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#createTextbookModal">
+      <i class="bi bi-plus-lg"></i> Add
+    </button>
+  </div>
+
+  <div class="card-body p-0">
+    <ul class="list-group list-group-flush">
+
+      <!-- Entry 1 -->
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-1 fw-bold">Algebra I – Foundations</h6>
+            <p class="mb-1 text-muted">
+              Introduction to equations, graphing, and problem-solving.
+            </p>
+            <span class="badge bg-secondary">ISBN: 978-1234567890</span>
+          </div>
+
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-secondary">Edit</button>
+            <button class="btn btn-outline-danger">Remove</button>
+          </div>
+        </div>
+      </li>
+
+      <!-- Entry 2 -->
+      <li class="list-group-item">
+        <div class="d-flex justify-content-between align-items-start">
+          <div>
+            <h6 class="mb-1 fw-bold">Semester 1 Syllabus</h6>
+            <p class="mb-2 text-muted">
+              Weekly breakdown of lessons and grading policy.
+            </p>
+            <a href="#" class="btn btn-outline-primary btn-sm">
+              Download PDF
+            </a>
+          </div>
+
+          <div class="btn-group btn-group-sm">
+            <button class="btn btn-outline-secondary">Edit</button>
+            <button class="btn btn-outline-danger">Remove</button>
+          </div>
+        </div>
+      </li>
+
+    </ul>
+  </div>
+</div>
+
+<br/>
+
     <!--CLASSROOM STUDENTS-->
 
     <h3>{{._students_in_classroom}} </h3>
@@ -411,3 +467,47 @@
             </div>
         </div>
     </div>
+
+    <!--NEW TEXTBOOK MODAL-->
+    <div class="modal fade" id="createTextbookModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title">Create Textbook</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <form>
+          <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" placeholder="Algebra I – Foundations">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" rows="3"></textarea>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">ISBN</label>
+            <input type="text" class="form-control">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Upload Syllabus (PDF)</label>
+            <input type="file" class="form-control">
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <button class="btn btn-primary">Save Textbook</button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
