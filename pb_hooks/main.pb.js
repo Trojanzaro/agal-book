@@ -211,6 +211,7 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
     scheduleArray.forEach((session) => {
         const classroomRecord = $app.findRecordById("classroom", session["classroom"]);
         session["classroom_name"] = classroomRecord.get("name");
+        session["classroom_id"] = session["classroom"]
     });
 
     console.log("scheduleArray", JSON.stringify(scheduleArray));

@@ -284,43 +284,67 @@ function scheduleTablePopulate() {
     $('#scheduleModal').modal('show');
   });
 
-  $('#saveScheduleBtn').on('click', function () {
-    console.log($("#scheduleGrid thead"))
+  $('#saveScheduleBtn').on('click', async function () {
+
     const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
+    const table = document.getElementById("scheduleGrid");
+    const rows = table.rows;
+    const scheduleArray = [];
 
-    const dayValues = []
-    days.forEach((el) => {
-      dayValues.push(document.getElementById("day_"+el).checked)
-    })
+    // Get classroom (from first row, first column)
+    const classroomInput = rows[1]?.cells[0]?.querySelector('.classroom-input');
+    const classroomValue = classroomInput ? classroomInput.value : "";
 
-    // get table values 
-    const tableSize = document.getElementById("scheduleGrid").rows.lenngth
-    for(let i=0; i<tableSize; i++ ) {
-      const mondayV = document.getElementById("scheduleGrid").rows[0].cells[1].childNodes[0].nextSibling.checked
-      const tuesdayV = document.getElementById("scheduleGrid").rows[0].cells[2].childNodes[0].nextSibling.checked
-      const wednesdayV = document.getElementById("scheduleGrid").rows[0].cells[3].childNodes[0].nextSibling.checked
-      const thursdayV = document.getElementById("scheduleGrid").rows[0].cells[4].childNodes[0].nextSibling.checked
-      const fridayV = document.getElementById("scheduleGrid").rows[0].cells[5].childNodes[0].nextSibling.checked
+    // Loop days (columns 1 → 5)
+    for (let i = 0; i < days.length; i++) {
+
+      const day = days[i];
+
+      // HEADER CHECKBOX
+      const headerCheckbox = document.querySelector(`#day_${day}`);
+
+      if (!headerCheckbox || !headerCheckbox.checked) {
+        continue; // Skip this day completely
+      }
+
+      const hours = [];
+
+      // Loop all table rows (skip header row at index 0)
+      for (let j = 1; j < rows.length; j++) {
+        const cell = rows[j].cells[i + 1]; // +1 because first column is classroom
+        if (!cell) continue;
+        const checkbox = cell.querySelector('.hour-checkbox');
+        const timeInput = cell.querySelector('input[type="text"]');
+
+        if (checkbox && checkbox.checked && timeInput) {
+          hours.push(timeInput.value);
+        }
+      }
+
+      // Only push if hours exist
+      if (hours.length > 0) {
+        scheduleArray.push({
+          classroom: classroomValue,
+          day: day,
+          hours: hours
+        });
+      }
     }
 
-    let newSchedule = [];
-    days.forEach((day, dayIndex) => {
-        const selectedHours = [];
-        $(`.hour-checkbox[data-day="${dayIndex}"]:checked`).each(function () {
-            const hour = $(this).data("hour");
-            const start = String(hour).padStart(2, '0') + ":00";
-            const end = String(hour + 1).padStart(2, '0') + ":00";
-            selectedHours.push(`${start}-${end}`);
-        });
-        if (selectedHours.length > 0) {
-            newSchedule.push({
-                day: dayIndex,
-                hours: selectedHours,
-                classroom_name: ""
-            });
-        }
+    console.log("FINAL SCHEDULE:", scheduleArray);
+
+    // -----------------------------
+    // PocketBase Update
+    // -----------------------------
+
+    const teacherId = document.getElementById('id').value;
+
+    await pb.collection('teacher').update(teacherId, {
+      schedule: scheduleArray
     });
-    drawTeacherCalendar(schedule, new Date().getFullYear());
+
+    pushNotification("Teacher Schedule updated correctly!")
+
     $('#scheduleModal').modal('hide');
   });
 
@@ -329,7 +353,7 @@ function scheduleTablePopulate() {
 function buildScheduleGrid(schedule) {
 
   const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"];
-  const parsed = JSON.parse(schedule);
+  const parsed = JSON.parse(schedule || "[]");
 
   const thead = $("#scheduleGrid thead");
   const tbody = $("#scheduleGrid tbody");
@@ -337,63 +361,99 @@ function buildScheduleGrid(schedule) {
   thead.empty();
   tbody.empty();
 
-  const daysInSchedule = (JSON.parse(schedule)).map((el) => el.day)
-
   // ---------------------------
-  // Build header
-  // ---------------------------
-  let headerRow = `<tr><th>Hour<br/><button class="btn btn-primary" onclick="insertTableRow('scheduleGrid')"> + </button</th>`;
-  days.forEach(day => {
-    let dayBool = daysInSchedule.indexOf(day) >= 0 ? "checked" : ""
-    console.log(dayBool)
-    headerRow += `<th>
-           <input type="checkbox" 
-                   class="day-checkbox"
-                   id="day_${day}"
-                   data-day="${day}"
-                   ${dayBool}>
-           <br>${day}
-       </th>`;
-  });
-  headerRow += "</tr>";
-  thead.append(headerRow);
-
-  // ---------------------------
-  // Transform schedule into lookup map
+  // Build lookup map
   // ---------------------------
   const scheduleMap = {};
   parsed.forEach(entry => {
     scheduleMap[entry.day] = entry.hours;
   });
 
-  // ---------------------------
-  // Collect all unique hour ranges
-  // ---------------------------
-  const allHours = [...new Set(parsed.flatMap(el => el.hours))];
+  const classroom = parsed.length > 0 ? parsed[0].classroom : "";
 
   // ---------------------------
-  // Build table rows
+  // Build header WITH checkboxes
+  // ---------------------------
+  let headerRow = `
+    <tr>
+      <th>
+        Classroom
+        <br/>
+        <button class="btn btn-primary"
+                onclick="insertTableRow('scheduleGrid', '${classroom}')"> + </button>
+      </th>
+  `;
+
+  days.forEach(day => {
+
+    const dayChecked = scheduleMap[day] ? "checked" : "";
+
+    headerRow += `
+      <th>
+        <input type="checkbox"
+               class="day-checkbox"
+               id="day_${day}"
+               data-day="${day}"
+               ${dayChecked}>
+        <br>${day}
+      </th>
+    `;
+  });
+
+  headerRow += `</tr>`;
+  thead.append(headerRow);
+
+  // ---------------------------
+  // Collect unique hour ranges
+  // ---------------------------
+  const allHours = [
+    ...new Set(parsed.flatMap(el => el.hours))
+  ];
+
+  // If empty schedule, create one empty row
+  if (allHours.length === 0) {
+    allHours.push("00:00-00:00");
+  }
+
+  // ---------------------------
+  // Build rows
   // ---------------------------
   allHours.forEach(hourRange => {
 
-    let row = `<tr><td>0</td>`; // first column is just "0"
+    let row = `<tr>`;
+
+    // Classroom column
+    row += `
+      <td>
+        <input type="text"
+               class="form-control classroom-input"
+               value="${classroom}">
+      </td>
+    `;
+
+    // Day columns
     days.forEach(day => {
-      if (scheduleMap[day] && scheduleMap[day].includes(hourRange)) {
-        row += `
-        <td><input type="checkbox"
-                           class="hour-checkbox"
-                           data-day="${day}"
-                           data-hour="${hourRange}" checked>
-                           <input type="text" class="form-control w-15" value="${hourRange}"></input></td>`;
-      } else {
-        row += `<td><input type="checkbox"
-                           class="hour-checkbox"
-                           data-day="${day}"
-                           ><input type="text" class="form-control w-15" value="0"></input></td>`;
-      }
+
+      const isChecked =
+        scheduleMap[day] &&
+        scheduleMap[day].includes(hourRange);
+
+      row += `
+        <td>
+          <input type="checkbox"
+                 class="hour-checkbox"
+                 data-day="${day}"
+                 data-hour="${hourRange}"
+                 ${isChecked ? "checked" : ""}>
+
+          <input type="text"
+                 class="form-control mt-1"
+                 value="${isChecked ? hourRange : "00:00-00:00"}">
+        </td>
+      `;
     });
 
-    row += "</tr>";
+    row += `</tr>`;
     tbody.append(row);
   });
 }

@@ -189,6 +189,14 @@
         <button class="btn btn-secondary btn-sm" type="button" onclick="disableDetailsEdit();">{{._cancel_btn}}</button>
     </div>
     <dl class="row">
+
+        <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                            <span class="badge bg-info text-dark me-1">ID: {{.id}}</span>
+                        </div>
+                        
+                    </div>
+
         <dt class="col-sm-3">{{._class_name_str}} </dt>
         <dd class="col-sm-9">
             <span id="classroom_name_display">{{.classroom_name}}</span>

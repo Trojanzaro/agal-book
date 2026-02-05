@@ -18,38 +18,33 @@ async function teacherDetails(teacherId) {
     drawTeacherCallendar(schedule, 2026);
     scheduleTablePopulate();
 
-    // Save schedule
-    $('#saveScheduleBtn').on('click', function () {
-        const date = $('#sessionDate').val();
-        const start = $('#sessionStart').val();
-        const end = $('#sessionEnd').val();
-        const classroom = $('#sessionClassroom').val();
+    // // Save schedule
+    // $('#saveScheduleBtn').on('click', function () {
+    //     const date = $('#sessionDate').val();
+    //     const start = $('#sessionStart').val();
+    //     const end = $('#sessionEnd').val();
+    //     const classroom = $('#sessionClassroom').val();
 
-        if (!date || !start || !end) {
-            alert("Please fill all required fields.");
-            return;
-        }
+    //     // Convert to Date objects
+    //     const [year, month, day] = date.split('-').map(Number);
+    //     const [startH, startM] = start.split(':').map(Number);
+    //     const [endH, endM] = end.split(':').map(Number);
 
-        // Convert to Date objects
-        const [year, month, day] = date.split('-').map(Number);
-        const [startH, startM] = start.split(':').map(Number);
-        const [endH, endM] = end.split(':').map(Number);
+    //     const startDate = new Date(year, month - 1, day, startH, startM);
+    //     const endDate = new Date(year, month - 1, day, endH, endM);
 
-        const startDate = new Date(year, month - 1, day, startH, startM);
-        const endDate = new Date(year, month - 1, day, endH, endM);
+    //     // Add to your schedule array or send AJAX to server
+    //     schedule.push({
+    //         day: startDate.getDay(),        // 0=Sun, 1=Mon...
+    //         hours: [`${start}:${end}`],
+    //         classroom_name: classroom
+    //     });
 
-        // Add to your schedule array or send AJAX to server
-        schedule.push({
-            day: startDate.getDay(),        // 0=Sun, 1=Mon...
-            hours: [`${start}:${end}`],
-            classroom_name: classroom
-        });
+    //     // Redraw calendar with updated schedule
+    //     drawTeacherCalendar(schedule, year);
 
-        // Redraw calendar with updated schedule
-        drawTeacherCalendar(schedule, year);
-
-        $('#scheduleModal').modal('hide');
-    });
+    //     $('#scheduleModal').modal('hide');
+    // });
 }
 
 ///////
@@ -1000,7 +995,7 @@ function changeLanguage(lang) {
     window.location.reload();
 }
 
-function insertTableRow(tableId) {
+function insertTableRow(tableId, classroomid) {
     var table = document.getElementById(tableId)
     var row = table.insertRow(table.length)
     var c1 = row.insertCell(0)
@@ -1009,11 +1004,11 @@ function insertTableRow(tableId) {
     var c4 = row.insertCell(3)
     var c5 = row.insertCell(4)
     var c6 = row.insertCell(5)
-    c1.innerHTML = "0"
-    c2.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Monday"><input type="text" class="form-control w-15" value="0"></input>'
-    c3.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Tuesday"><input type="text" class="form-control w-15" value="0"></input>'
-    c4.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Wednesday"><input type="text" class="form-control w-15" value="0"></input>'
-    c5.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Thursday"><input type="text" class="form-control w-15" value="0"></input>'
-    c6.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Friday"><input type="text" class="form-control w-15" value="0"></input>'
+    c1.innerHTML = `<input type="text" class="form-control w-15" value="${classroomid}"/>`
+    c2.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Monday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
+    c3.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Tuesday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
+    c4.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Wednesday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
+    c5.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Thursday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
+    c6.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Friday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
     
 }
