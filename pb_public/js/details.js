@@ -151,9 +151,46 @@ async function handleCreateAssignment() {
   }
 }
 
+
+async function handleCreateTextbook() {
+  try {
+    const title = document.getElementById('textbookTitle').value || '';
+    const description = document.getElementById('textbookDescription').value || '';
+    const textbookFile = document.getElementById('textbookFile');
+    const classroomId = document.getElementById('classroom_id').value;
+
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    formData.append('classroom', classroomId);
+
+    if (textbookFile && textbookFile.files && textbookFile.files.length > 0) {
+      formData.append('attachment', textbookFile.files[0]);
+    }
+
+    if (typeof pb !== 'undefined' && pb.collection) {
+      const res = await pb.collection('textbook').create(formData);
+      console.log('textbook created', res);
+      pushNotification("Textbook created!")
+              // hide modal
+        var modalEl = document.getElementById('createTextbookModal');
+        var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.hide();
+      // Update the DOM in-place (no full reload)
+    } else {
+      alert('PocketBase client not available.');
+    }
+
+    
+  } catch (err) {
+    console.error('createTextbook error', err);
+    alert('Failed to create textbook. See console.');
+  }
+}
+
 // Attach both direct and delegated listeners so the button works when inserted dynamically
 const directBtn = document.getElementById('createAssignmentBtn');
-if (directBtn) directBtn.addEventListener('click', handleCreateAssignment);
+//if (directBtn) directBtn.addEventListener('click', handleCreateAssignment);
 document.addEventListener('click', function (e) {
   const t = e.target;
   if (!t) return;

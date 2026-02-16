@@ -17,34 +17,6 @@ async function teacherDetails(teacherId) {
     const schedule = JSON.parse(scheduleData) ;
     drawTeacherCallendar(schedule, 2026);
     scheduleTablePopulate();
-
-    // // Save schedule
-    // $('#saveScheduleBtn').on('click', function () {
-    //     const date = $('#sessionDate').val();
-    //     const start = $('#sessionStart').val();
-    //     const end = $('#sessionEnd').val();
-    //     const classroom = $('#sessionClassroom').val();
-
-    //     // Convert to Date objects
-    //     const [year, month, day] = date.split('-').map(Number);
-    //     const [startH, startM] = start.split(':').map(Number);
-    //     const [endH, endM] = end.split(':').map(Number);
-
-    //     const startDate = new Date(year, month - 1, day, startH, startM);
-    //     const endDate = new Date(year, month - 1, day, endH, endM);
-
-    //     // Add to your schedule array or send AJAX to server
-    //     schedule.push({
-    //         day: startDate.getDay(),        // 0=Sun, 1=Mon...
-    //         hours: [`${start}:${end}`],
-    //         classroom_name: classroom
-    //     });
-
-    //     // Redraw calendar with updated schedule
-    //     drawTeacherCalendar(schedule, year);
-
-    //     $('#scheduleModal').modal('hide');
-    // });
 }
 
 ///////
@@ -176,6 +148,7 @@ async function studentFees(studentId, customerId, customerName, studentName) {
                 <td>€${payment.payment_amount}</td>\
                 <td>DIRECT</td>\
                 <td><span class="badge bg-success">Completed</span></td>\
+                <td><button class="btn bs b-btn-xl btn-primary" type="button" onclick="window.open('http://192.168.191.216:8090/_dist/payment?id=${payment.id}')">Print <i class="fa-solid fa-print"></i></button></td>\
             </tr>`;
 
             // payment progrees bar
@@ -324,7 +297,28 @@ async function putDetails(id, collection) {
 }
 
 ///////
-// EVENT: CLOCK ASSIGNMENT
+// EVENT: CLICK DELETE STUDENT
+function deleteStudentModal(studentId, name) {
+    const myModal = new bootstrap.Modal(document.getElementById('deleteStudentModal'));
+    document.querySelector("#deleteBody").innerHTML = `Are you sure you want to delete stuent: ${name}`;
+    document.querySelector("#deleteStudentBtn").setAttribute("onclick", `deleteStudent('${studentId}')`);
+    const rep = myModal.show();
+}
+
+///////
+// EVENT: DELETE STUDENT
+async function deleteStudent(studentId) {
+    try {
+        const authData = await pb.collection('student').delete(studentId);
+        pushNotification("Succesfully deleted Student!");
+    } catch(ex) {
+        pushNotification(ex)
+    }
+}
+
+
+///////
+// EVENT: CLICK ASSIGNMENT
 function showAssignment(index) {
     document.querySelectorAll('[id^="assignment-preview-"]').forEach(el => {
         el.classList.add('d-none');
@@ -540,21 +534,25 @@ async function initializeApp() {
 ///////
 // EVENT: CTRL: LOAD ALL STUDENTS
 async function loadAllStudents() {
-    console.log("Loading Students...");
-    // you can also fetch all records at once via getFullList
-    const records = await pb.collection('student').getFullList({
-        sort: '-created',
+    const classrooms = await pb.collection("classroom").getFullList({
+        expand: "students"
     });
 
-    records.forEach(element => {
-        const age = ((new Date()).getFullYear() - new Date(element.birthdate).getFullYear())
-        document.getElementById("tbodyStudents").innerHTML += `<tr>\
-            <td><a href="javascript:studentDetails('${element.id}');" >${element.first_name}</a></td>\
-            <td><a href="javascript:studentDetails('${element.id}');" >${element.last_name}</a></td>\
-            <td>${age}</td>\
-            <td>${element.phone_number}</td>\
-        </tr>`
+    classrooms.forEach(async(element) => {
+        element.expand.students.forEach((el) => {
+            const fnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['first_name']}</a>` : el['first_name']
+            const lnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['last_name']}</a>` : el['last_name']
+            document.getElementById("tbodyStudents").innerHTML += `<tr>\
+                <td>${fnLinkString}</td>\
+                <td>${lnLinkString}</td>\
+                <td>${((new Date()).getFullYear() - new Date(el['birthdate']).getFullYear())}</td>\
+                <td>${el['phone_number']}</td>\
+                <td><a href="javascript:classroomDetails('${element['id']}');sidebarNavActive('classrooms');">${element['name']}</a></td>
+                <td><button type="button" class="btn btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>
+            </tr>`
+        });
     });
+
     loadAllParentsForSelect();
 
     $(document).ready(function () {
@@ -623,8 +621,6 @@ async function loadAllStudentsForAssign() {
 ///////
 // EVENT: CTRL: LOAD ALL TEACHERS
 async function loadAllTeachers() {
-    console.log("Loading Teachers...");
-    // you can also fetch all records at once via getFullList
     const records = await pb.collection('teacher').getFullList({
         sort: '-created',
     });
@@ -817,27 +813,28 @@ async function loadAllClassrooms() {
     });
 
     records.forEach(element => {
-    const teacher = element.expand?.teacher;
+        console.log("ele:", element)
+        const teacher = element.expand?.teacher;
 
-    const teacherCell = teacher
-        ? `<a href="javascript:teacherDetails('${teacher.id}');sidebarNavActive('teachers');">
-              ${teacher.first_name} ${teacher.last_name}
-           </a>`
-        : `<span class="text-muted">No teacher assigned</span>`;
+        const teacherCell = teacher
+            ? `<a href="javascript:teacherDetails('${teacher.id}');sidebarNavActive('teachers');">
+                ${teacher.first_name} ${teacher.last_name}
+            </a>`
+            : `<span class="text-muted">No teacher assigned</span>`;
 
-        document.getElementById("tbodyClassrooms").innerHTML += `
-            <tr>
-                <td>
-                    <a href="javascript:classroomDetails('${element.id}');">
-                        ${element.name}
-                    </a>
-                </td>
-                <td>${teacherCell}</td>
-                <td>${element.level}</td>
-                <td>${element.room}</td>
-                <td>${element.fee}</td>
-            </tr>
-        `;
+            document.getElementById("tbodyClassrooms").innerHTML += `
+                <tr>
+                    <td>
+                        <a href="javascript:classroomDetails('${element.id}');">
+                            ${element.name}
+                        </a>
+                    </td>
+                    <td>${teacherCell}</td>
+                    <td>${element.level}</td>
+                    <td>${element.room}</td>
+                    <td>${element.fee}</td>
+                </tr>
+            `;
     });
 
     $(document).ready(function () {
@@ -947,42 +944,6 @@ function getWeekdayDatesInYear(targetWeekday, year) {
         }
     }
     return result;
-}
-
-// functionto get file from server
-async function getFileFromServer(id) {
-    try {
-        const response = await fetch("http://192.168.191.216:8090/_dist/assignment/file?id=" + id, {
-            headers: {
-                'Authorization': pb.authStore.token.trim()
-            }
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const blob = await response.blob();
-        // Create a temporary download URL
-        const url = URL.createObjectURL(blob);
-
-        // Create a hidden <a> element
-        const a = document.createElement("a");
-        a.href = url;
-
-        // Optional: set filename
-        const disposition = response.headers.get("Content-Disposition");
-        const filename = disposition?.match(/filename="(.+)"/)?.[1] ?? "download";
-        a.download = filename;
-
-        document.body.appendChild(a);
-        a.click();
-
-        // Cleanup
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error('There has been a problem with your fetch operation:', error);
-        throw error;
-    }
 }
 
 function getLanguage() {

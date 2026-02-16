@@ -69,6 +69,8 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
             data["notifications"] = notifications;
         });
 
+        data["student_bool"] = httpContext.auth.get('auth_type') === 'student'
+
         const html = $template.loadFiles(
             `${__hooks}/views/${workinDirectory}/layout.html`,
             `${__hooks}/views/dashboard/navbar.html`,
@@ -155,7 +157,12 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
             `${__hooks}/views/details.html`
         ).render({...renderValues, ...localizationMap});
         // Once generated return the HTML contents
-        return httpContext.html(200, html);
+
+        if(httpContext.auth.get('auth_type') === "teacher")
+            return httpContext.html(200, html);
+        else
+            throw Error('Not found')
+
     } catch(e) {
         console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
@@ -167,27 +174,6 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
 // GET TEACHER DETAILS
 //  
 //  @param httpContext - echo.Context []
-//
-//  * teacher. schedule:
-//
-// [
-//   {
-//     "classroom": "3o2ktfriv7jyeps",
-//     "day": "Tuesday",
-//     "hours": [
-//       "16:00",
-//       "19:00"
-//     ]
-//   },
-//   {
-//     "classroom": "3o2ktfriv7jyeps",
-//     "day": "Thursday",
-//     "hours": [
-//       "18:00",
-//       "19:00"
-//     ]
-//   }
-// ]
 routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
     
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
@@ -238,7 +224,12 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
             ...localizationMap
         });
         // Once generated return the HTML contents
-        return httpContext.html(200, html);
+
+        if(httpContext.auth.get('auth_type') === "teacher")
+            return httpContext.html(200, html);
+        else
+            throw Error('Not found')
+
     } catch(e) {
         console.log(e);
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
@@ -267,8 +258,10 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
         teacherRecord.set("first_name", "N/A");
         teacherRecord.set("last_name", "N/A");
     }
-    console.log("teacherRecord", teacherRecord);
+    
+    // get all assignments
     const assignments = $app.findRecordsByFilter("assignment","classroom='"+classroomId+"'");
+    const textbooks = $app.findRecordsByFilter("textbook", "classroom='"+classroomId+"'")
 
     // retrieve all the localization strings
     const lang = httpContext.request.url.query().get("language") || "en";
@@ -279,6 +272,7 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
         localizationMap[r.get("string_id")] = r.get(lang + "_text");
     });
 
+    const studentbool = httpContext.auth.get('auth_type') === "student"
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
@@ -292,8 +286,10 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
             "room": record.get("room"),
             "col": "classroom",
             "students":studentsArray,
+            "student_bool": studentbool,
             "assignments": assignments,
             "sb_classroom": "active",
+            "textbooks": textbooks,
             "classroom_bool": "true",
             "classroom_id": classroomId,
             "level": record.get("level"),
@@ -373,11 +369,12 @@ routerAdd("GET", "/_dist/student/profile", (httpContext) => {
 
 //////////
 // router get assignment file
-routerAdd("GET", "/_dist/assignment/file", (httpContext) => {
+routerAdd("GET", "/_dist/attachment/file", (httpContext) => {
     
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
     const assignmentId = httpContext.request.url.query().get("id");
-    const record = $app.findRecordById("assignment", assignmentId);
+    const collectionId = httpContext.request.url.query().get("collection");
+    const record = $app.findRecordById(collectionId, assignmentId);
 
     const fileName = record.get("attachment");
     const fileKey = record.baseFilesPath() + "/" + record.get("attachment");
@@ -411,3 +408,37 @@ routerAdd("GET", "/_dist/assignment/file", (httpContext) => {
 });
 
 //////////
+// PAYMENT PRINT PAGE
+routerAdd("GET", "/_dist/payment", (httpContext) => {
+    
+    // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
+    const paymentId = httpContext.request.url.query().get("id");
+    const payment = $app.findRecordById("payment", paymentId);
+    const customer = $app.findRecordById("customer", payment.get('payment_parent'));
+    const student = $app.findRecordById("student", payment.get('payment_student'));
+
+    //console.log(JSON.stringify(record))
+
+    const data = {
+        "customer": customer.get('first_name') + " " + customer.get('last_name'),
+        "student": student.get('first_name') + " " + student.get('last_name'),
+        "created": payment.get('created'),
+        "payment": payment.get('payment_amount'),
+        "address": customer.get('address') + " " + customer.get('city') + ", " + customer.get('postal_code')
+    }
+
+    try {
+
+        const html = $template.loadFiles(
+            `${__hooks}/views/payment_template.html`,
+        ).render(data);
+
+        // Once generated return the HTML contents
+        
+        return httpContext.html(200, html);
+
+    } catch(e) {
+        console.log(e);
+        return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
+    }
+});

@@ -1,7 +1,7 @@
 {{define "sidebar"}}
 <!--SIDEBAR-->
 <div class="position-fixed shadow" >
-  <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-secondary" style="width: 280px;">
+  <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-secondary" style="min-height: 100vh; width: 280px;">
     <br />
     <a href="#" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
       <svg class="bi me-2" width="40" height="32">
@@ -10,7 +10,7 @@
       <!-- <span class="fs-4">Sidebar</span> -->
     </a>
     <hr>
-    <ul class="nav nav-pills flex-column mb-auto" style="margin-bottom: 30rem!important;">
+    <ul class="nav nav-pills flex-column mb-auto" style="margin-bottom:27rem !important">
       <li class="nav-item">
         <a id="dashboard_a_id" href="#" class="nav-link text-white {{.sb_dashboard}}" onclick="window.localStorage.setItem('nav','dashboard');dashboardNavActive('dashboard')"><!--...active" aria-current="page"-->
           <i class="fas fa-window-restore" style="padding-right: 15px;"></i>
@@ -23,12 +23,14 @@
           {{._nav_students}} 
         </a>
       </li>
+      {{if not .student_bool}}
       <li>
         <a id="teachers_a_id" href="#" class="nav-link text-white {{.sb_teachers}}" onclick="window.localStorage.setItem('nav','teachers');dashboardNavActive('teachers')">
           <i class="fas fa-user-graduate" style="padding-right: 15px;"></i>
-          {{._nav_teachers}} 
+          {{._nav_teachers}}
         </a>
       </li>
+      {{end}}
       <li>
         <a id="classrooms_a_id" href="#" class="nav-link text-white {{.sb_classrooms}}" onclick="window.localStorage.setItem('nav','classrooms');dashboardNavActive('classrooms')">
           <i class="fas fa-graduation-cap" style="padding-right: 15px;"></i>
@@ -41,12 +43,14 @@
           {{._nav_profile}} 
         </a>
       </li>
+      {{if not .student_bool}}
       <li>
         <a id="customers_a_id" href="#" class="nav-link text-white {{.sb_customers}}" onclick="window.localStorage.setItem('nav','customers');dashboardNavActive('customers')">
           <i class="fas fa-award" style="padding-right: 15px;"></i>
           {{._nav_customers}} 
         </a>
       </li>
+      {{end}}
     </ul>
     <hr>
     <div class="dropdown">
