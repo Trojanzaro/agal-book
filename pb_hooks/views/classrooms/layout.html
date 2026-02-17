@@ -10,8 +10,10 @@
 <!--MAIN-->
 <div class="main-dashboard" id="main-dashboard">
   <h1>{{._classroom_str}} </h1>
+  {{if not .student_bool}}
   <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newClassroomModal">{{._new_entry_btn}}   <i class="fas fa-file-alt">  </i></button>
     <br/><br/>
+  {{end}}
   <table id="dataTable" class="table table-striped" style="width:100%">
     <thead>
       <tr>

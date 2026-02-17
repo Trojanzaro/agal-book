@@ -13,9 +13,10 @@ async function teacherDetails(teacherId) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
-    const scheduleData = document.getElementById("schedule").value || '[]'; 
-    const schedule = JSON.parse(scheduleData);
+    const scheduleData = document.getElementById("schedule").value || '[{"classroom": "3o2ktfriv7jyeps","day": "Tuesday","hours": ["16:00-17:30","19:00-20:30"]}]' ; 
+    const schedule = JSON.parse(scheduleData) ;
     drawTeacherCallendar(schedule, 2026);
+    scheduleTablePopulate();
 }
 
 ///////
@@ -147,6 +148,7 @@ async function studentFees(studentId, customerId, customerName, studentName) {
                 <td>€${payment.payment_amount}</td>\
                 <td>DIRECT</td>\
                 <td><span class="badge bg-success">Completed</span></td>\
+                <td><button class="btn bs b-btn-xl btn-primary" type="button" onclick="window.open('http://192.168.191.216:8090/_dist/payment?id=${payment.id}')">Print <i class="fa-solid fa-print"></i></button></td>\
             </tr>`;
 
             // payment progrees bar
@@ -295,7 +297,28 @@ async function putDetails(id, collection) {
 }
 
 ///////
-// EVENT: CLOCK ASSIGNMENT
+// EVENT: CLICK DELETE STUDENT
+function deleteStudentModal(studentId, name) {
+    const myModal = new bootstrap.Modal(document.getElementById('deleteStudentModal'));
+    document.querySelector("#deleteBody").innerHTML = `Are you sure you want to delete stuent: ${name}`;
+    document.querySelector("#deleteStudentBtn").setAttribute("onclick", `deleteStudent('${studentId}')`);
+    const rep = myModal.show();
+}
+
+///////
+// EVENT: DELETE STUDENT
+async function deleteStudent(studentId) {
+    try {
+        const authData = await pb.collection('student').delete(studentId);
+        pushNotification("Succesfully deleted Student!");
+    } catch(ex) {
+        pushNotification(ex)
+    }
+}
+
+
+///////
+// EVENT: CLICK ASSIGNMENT
 function showAssignment(index) {
     document.querySelectorAll('[id^="assignment-preview-"]').forEach(el => {
         el.classList.add('d-none');
@@ -474,13 +497,14 @@ async function login() {
     document.getElementById("UI_MAIN").innerHTML = '';
 
     // Succesfully logged in! send token to header requests and navigate to where the nav variable says
-    window.localStorage.setItem('nav', window.localStorage.getItem('nav') || 'dashboard');
+    const nav = window.localStorage.getItem('nav') || 'dashboard';
     window.localStorage.setItem('language', window.localStorage.getItem('language') || 'en');
+    dashboardNavActive(nav)
 
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=dashboard&language=' + getLanguage(), null);
+        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
@@ -510,21 +534,25 @@ async function initializeApp() {
 ///////
 // EVENT: CTRL: LOAD ALL STUDENTS
 async function loadAllStudents() {
-    console.log("Loading Students...");
-    // you can also fetch all records at once via getFullList
-    const records = await pb.collection('student').getFullList({
-        sort: '-created',
+    const classrooms = await pb.collection("classroom").getFullList({
+        expand: "students"
     });
 
-    records.forEach(element => {
-        const age = ((new Date()).getFullYear() - new Date(element.birthdate).getFullYear())
-        document.getElementById("tbodyStudents").innerHTML += `<tr>\
-            <td><a href="javascript:studentDetails('${element.id}');" >${element.first_name}</a></td>\
-            <td><a href="javascript:studentDetails('${element.id}');" >${element.last_name}</a></td>\
-            <td>${age}</td>\
-            <td>${element.phone_number}</td>\
-        </tr>`
+    classrooms.forEach(async(element) => {
+        element.expand.students.forEach((el) => {
+            const fnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['first_name']}</a>` : el['first_name']
+            const lnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['last_name']}</a>` : el['last_name']
+            document.getElementById("tbodyStudents").innerHTML += `<tr>\
+                <td>${fnLinkString}</td>\
+                <td>${lnLinkString}</td>\
+                <td>${((new Date()).getFullYear() - new Date(el['birthdate']).getFullYear())}</td>\
+                <td>${el['phone_number']}</td>\
+                <td><a href="javascript:classroomDetails('${element['id']}');sidebarNavActive('classrooms');">${element['name']}</a></td>
+                <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>
+            </tr>`
+        });
     });
+
     loadAllParentsForSelect();
 
     $(document).ready(function () {
@@ -532,7 +560,7 @@ async function loadAllStudents() {
             lengthChange: true,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+                url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
             }
         });
     });
@@ -593,8 +621,6 @@ async function loadAllStudentsForAssign() {
 ///////
 // EVENT: CTRL: LOAD ALL TEACHERS
 async function loadAllTeachers() {
-    console.log("Loading Teachers...");
-    // you can also fetch all records at once via getFullList
     const records = await pb.collection('teacher').getFullList({
         sort: '-created',
     });
@@ -614,7 +640,7 @@ async function loadAllTeachers() {
             lengthChange: true,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+                url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
             }
         });
     });
@@ -648,7 +674,7 @@ async function loadAllCustomers() {
             lengthChange: true,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+                url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
             }
         });
     });
@@ -664,14 +690,30 @@ function drawTeacherCallendar(schedule, year) {
         .then(() => {
             const dataTable = new google.visualization.DataTable();
             dataTable.addColumn({ type: 'date', id: 'Date' });
-            dataTable.addColumn({ type: 'number', id: 'Calls' });
+            dataTable.addColumn({ type: 'number', id: 'Sessions' });
+            dataTable.addColumn({ type: 'string', role: 'hours' });
+            dataTable.addColumn({ type: 'string', role: 'clarssroom' });
+
+            // Step 1: Pre-fill all days of the year with 0
+            const startDate = new Date(year, 0, 1);
+            const endDate = new Date(year, 11, 31);
+            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+                dataTable.addRow([new Date(d), 0, '', '']);
+            }
             
             // for each weekday that we need to mark in the calendar 
             schedule.forEach((session) => {
+                console.log("Processing session for day:", session['hours']);
                 const sessionDates = getWeekdayDatesInYear(session["day"], year);
+                //console.log("Session dates for", session["day"]);
                 for (let i = 0; i < 12; i++) {
                     sessionDates[i.toString()].forEach((date) => {
-                        dataTable.addRow([new Date(year, i, date), 6]); // Assuming 6 calls for each date
+                        dataTable.addRow([
+                            new Date(year, i, date, 0, 0, 0, 0),
+                            session["hours"].length,
+                            JSON.stringify(session['hours']),
+                            session["classroom_name"]
+                        ]);
                     });
                 }
             });
@@ -684,7 +726,7 @@ function drawTeacherCallendar(schedule, year) {
                 colorAxis: {
                     minValue: 0,
                     maxValue: 10,
-                    colors: ['#e0f2f1', '#004d40']
+                    colors: ['#e0f2f1', '#26a4d6']
                 },
                 title: 'Teacher Calendar',
                 calendar: {
@@ -693,39 +735,72 @@ function drawTeacherCallendar(schedule, year) {
             };
 
             chart.draw(dataTable, options);
+             // CLICK HANDLER
+            google.visualization.events.addListener(chart, 'select', function () {
+
+                const selection = chart.getSelection();
+
+                if (!selection || selection.length === 0) {
+                    return;
+                }
+
+                if (selection[0].row == null) {
+                    return;
+                }
+
+                const clickedDate = dataTable.getValue(selection[0].row, 0);
+                const sessions = dataTable.getValue(selection[0].row, 1);
+                const hours = dataTable.getValue(selection[0].row, 2);
+                const classroom = dataTable.getValue(selection[0].row, 3);
+                
+                if(sessions !== 0) handleDateClick(clickedDate, sessions, hours, classroom);
+            });
+
         });
-        drawChart() ;
 }
 
-  function drawChart() {
-    //google.charts.setOnLoadCallback(drawChart);
+function handleDateClick(date, sessions, hours, classroom) {
     google.charts.load("current", {packages:["timeline"]}).then(function() {
-      var container = document.getElementById('example5.2');
+        var container = document.getElementById('example5.2');
         var chart = new google.visualization.Timeline(container);
         var dataTable = new google.visualization.DataTable();
-
         dataTable.addColumn({ type: 'string', id: 'Room' });
-        dataTable.addColumn({ type: 'string', id: 'Name' });
         dataTable.addColumn({ type: 'date', id: 'Start' });
         dataTable.addColumn({ type: 'date', id: 'End' });
-        dataTable.addRows([
-        [ 'Magnolia Room',  'CSS Fundamentals',    new Date(0,0,0,12,0,0),  new Date(0,0,0,14,0,0) ],
-        [ 'Magnolia Room',  'Intro JavaScript',    new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-        [ 'Magnolia Room',  'Advanced JavaScript', new Date(0,0,0,16,30,0), new Date(0,0,0,19,0,0) ],
-        [ 'Gladiolus Room', 'Intermediate Perl',   new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-        [ 'Gladiolus Room', 'Advanced Perl',       new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-        [ 'Gladiolus Room', 'Applied Perl',        new Date(0,0,0,16,30,0), new Date(0,0,0,18,0,0) ],
-        [ 'Petunia Room',   'Google Charts',       new Date(0,0,0,12,30,0), new Date(0,0,0,14,0,0) ],
-        [ 'Petunia Room',   'Closure',             new Date(0,0,0,14,30,0), new Date(0,0,0,16,0,0) ],
-        [ 'Petunia Room',   'App Engine',          new Date(0,0,0,16,30,0), new Date(0,0,0,18,30,0) ]]);
 
-        var options = {
-            timeline: { singleColor: 'rgb(117, 13, 155)' },
-        };
+        const parsedHours = JSON.parse(hours);
 
-        chart.draw(dataTable, options);
+        console.log("Parsed Hours:", parsedHours);
+
+        parsedHours.forEach(hourRange => {
+            const dayStart = new Date(date);
+            const hxDayStart = new Date(date);
+            hxDayStart.setHours(8, 0, 0, 0); // 08:00:00.000
+            dayStart.setHours(parseInt(hourRange.split('-')[0].split(':')[0]), 0, 0, 0);
+
+            const endDate = new Date(date);
+            const hxDayEnd = new Date(date);
+            endDate.setHours(parseInt(hourRange.split('-')[1].split(':')[0]), 0, 0);
+            hxDayEnd.setHours(23, 59, 59, 999); // 23:59:59.999
+
+            dataTable.addRows([
+                [ classroom, dayStart, endDate ]
+            ]);
+
+            var options = {
+                timeline: { singleColor: 'rgb(13, 134, 155)' },
+                title: 'Teacher Timeline',
+                hAxis: {
+                    minValue: hxDayStart,   // 00:00
+                    maxValue: hxDayEnd, // 23:59
+                    format: 'HH:mm'
+                }
+            };
+
+            chart.draw(dataTable, options);
+        });
     });    
-  }
+}
 
 ///////
 // EVENT: LOAD CLASSROOM DETAILS PAGE
@@ -738,27 +813,28 @@ async function loadAllClassrooms() {
     });
 
     records.forEach(element => {
-    const teacher = element.expand?.teacher;
+        console.log("ele:", element)
+        const teacher = element.expand?.teacher;
 
-    const teacherCell = teacher
-        ? `<a href="javascript:teacherDetails('${teacher.id}');sidebarNavActive('teachers');">
-              ${teacher.first_name} ${teacher.last_name}
-           </a>`
-        : `<span class="text-muted">No teacher assigned</span>`;
+        const teacherCell = teacher
+            ? `<a href="javascript:teacherDetails('${teacher.id}');sidebarNavActive('teachers');">
+                ${teacher.first_name} ${teacher.last_name}
+            </a>`
+            : `<span class="text-muted">No teacher assigned</span>`;
 
-        document.getElementById("tbodyClassrooms").innerHTML += `
-            <tr>
-                <td>
-                    <a href="javascript:classroomDetails('${element.id}');">
-                        ${element.name}
-                    </a>
-                </td>
-                <td>${teacherCell}</td>
-                <td>${element.level}</td>
-                <td>${element.room}</td>
-                <td>${element.fee}</td>
-            </tr>
-        `;
+            document.getElementById("tbodyClassrooms").innerHTML += `
+                <tr>
+                    <td>
+                        <a href="javascript:classroomDetails('${element.id}');">
+                            ${element.name}
+                        </a>
+                    </td>
+                    <td>${teacherCell}</td>
+                    <td>${element.level}</td>
+                    <td>${element.room}</td>
+                    <td>${element.fee}</td>
+                </tr>
+            `;
     });
 
     $(document).ready(function () {
@@ -766,7 +842,7 @@ async function loadAllClassrooms() {
             lengthChange: true,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
+                url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
             }
         });
     });
@@ -870,42 +946,6 @@ function getWeekdayDatesInYear(targetWeekday, year) {
     return result;
 }
 
-// functionto get file from server
-async function getFileFromServer(id) {
-    try {
-        const response = await fetch("http://192.168.191.216:8090/_dist/assignment/file?id=" + id, {
-            headers: {
-                'Authorization': pb.authStore.token.trim()
-            }
-        });
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        const blob = await response.blob();
-        // Create a temporary download URL
-        const url = URL.createObjectURL(blob);
-
-        // Create a hidden <a> element
-        const a = document.createElement("a");
-        a.href = url;
-
-        // Optional: set filename
-        const disposition = response.headers.get("Content-Disposition");
-        const filename = disposition?.match(/filename="(.+)"/)?.[1] ?? "download";
-        a.download = filename;
-
-        document.body.appendChild(a);
-        a.click();
-
-        // Cleanup
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    } catch (error) {
-        console.error('There has been a problem with your fetch operation:', error);
-        throw error;
-    }
-}
-
 function getLanguage() {
     const lang = window.localStorage.getItem('language') || 'en';
     return lang;
@@ -914,4 +954,22 @@ function getLanguage() {
 function changeLanguage(lang) {
     window.localStorage.setItem('language', lang);
     window.location.reload();
+}
+
+function insertTableRow(tableId, classroomid) {
+    var table = document.getElementById(tableId)
+    var row = table.insertRow(table.length)
+    var c1 = row.insertCell(0)
+    var c2 = row.insertCell(1)
+    var c3 = row.insertCell(2)
+    var c4 = row.insertCell(3)
+    var c5 = row.insertCell(4)
+    var c6 = row.insertCell(5)
+    c1.innerHTML = `<input type="text" class="form-control w-15" value="${classroomid}"/>`
+    c2.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Monday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
+    c3.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Tuesday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
+    c4.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Wednesday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
+    c5.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Thursday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
+    c6.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Friday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
+    
 }

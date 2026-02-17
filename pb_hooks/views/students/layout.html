@@ -14,8 +14,11 @@
 <!--MAIN-->
   <div class="main-dashboard" id="main-dashboard">
     <h1>{{._students}} </h1>
+    {{if not .student_bool}}
     <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newStudentModal">{{._new_entry_btn}}  <i class="fas fa-file-alt">  </i></button>
     <br/><br/>
+    {{end}}
+
     <table id="dataTable" class="table table-striped" style="width:100%">
       <thead>
         <tr>
@@ -23,6 +26,8 @@
           <th>{{._last_name}} </th>
           <th>{{._age}} </th>
           <th>{{._phone}} </th>
+          <th> Classroom </th>
+          <th> Student </th>
         </tr>
       </thead>
       <tbody id="tbodyStudents">
@@ -108,3 +113,28 @@
   </div>
 </div>
 <!--END MODAL-->
+
+<!-- DELETE STUDENT -->
+<div class="modal fade" id="deleteStudentModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <h5 class="modal-title">Delete Student</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body" id="deleteBody">
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" id="deleteStudentBtn" class="btn btn-primary" data-bs-dismiss="modal">
+          Delete
+        </button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">
+          Cancel
+        </button>
+      </div>
+
+    </div>
+  </div>
