@@ -351,11 +351,19 @@
             <div class="col-md-4">
                 <div class="list-group" id="assignmentList">
                     {{range $i, $a := .assignments}}
-                    <button type="button" class="list-group-item list-group-item-action {{if eq $i 0}}active{{end}}"
-                        onclick="showAssignment({{ $i }})">
-                        <strong>{{.Get "title"}}</strong><br>
-                        <small>{{.Get "created"}}</small>
-                    </button>
+                    <div role="button" tabindex="0" class="list-group-item list-group-item-action {{if eq $i 0}}active{{end}}"
+                         onclick="showAssignment({{ $i }})">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <strong>{{.Get "title"}}</strong><br>
+                                <small>{{.Get "created"}}</small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-success ms-2"
+                                    onclick="event.stopPropagation(); openSubmitModal('{{.Id}}')">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
                     {{end}}
                 </div>
             </div>
@@ -470,6 +478,36 @@
             </div>
         </div>
     </div>
+
+    <!-- SUBMIT ASSIGNMENT MODAL -->
+    <div class="modal fade" tabindex="-1" id="submitAssignmentModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Submit Assignment Response</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="submitAssignmentForm" class="row g-3" onsubmit="event.preventDefault(); handleSubmitAssignment();">
+                        <input type="hidden" id="submitAssignment_assignment_id" name="assignment_id" value="">
+                        <div class="col-12">
+                            <label for="submitAssignment_body" class="form-label">Response</label>
+                            <textarea id="submitAssignment_body" class="form-control" rows="6" placeholder="Write your response..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label for="submitAssignment_attachment" class="form-label">Attachment</label>
+                            <input type="file" id="submitAssignment_attachment" name="attachment" class="form-control">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="submitAssignmentBtn" class="btn btn-primary" onclick="handleSubmitAssignment();">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <!-- Schedule Modal -->
     <div id="scheduleModal" class="modal" tabindex="-1" role="dialog">

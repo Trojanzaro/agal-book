@@ -548,7 +548,7 @@ async function loadAllStudents() {
                 <td>${((new Date()).getFullYear() - new Date(el['birthdate']).getFullYear())}</td>\
                 <td>${el['phone_number']}</td>\
                 <td><a href="javascript:classroomDetails('${element['id']}');sidebarNavActive('classrooms');">${element['name']}</a></td>
-                <td><button type="button" class="btn btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>
+                <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>
             </tr>`
         });
     });

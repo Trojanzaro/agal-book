@@ -79,6 +79,9 @@ async function handleCreateAssignment() {
         const previewsCol = document.querySelectorAll('.col-md-8')[0];
         const nextIndex = list ? list.querySelectorAll('.list-group-item').length : 0;
 
+        const createdId = res.id;
+        const previewId = `assignment-preview-${createdId}`;
+
         // created display
         const createdStr = (res && res.created) ? res.created : (new Date()).toISOString();
 
@@ -87,7 +90,8 @@ async function handleCreateAssignment() {
           btn.type = 'button';
           btn.className = 'list-group-item list-group-item-action';
           btn.innerHTML = `<strong>${escapeHtml(title)}</strong><br><small>${escapeHtml(createdStr)}</small>`;
-          btn.addEventListener('click', function () { showAssignment(nextIndex); });
+          btn.dataset.previewId = previewId;
+          btn.addEventListener('click', function () { showAssignment(previewId); });
           // insert at top visually while keeping the internal index mapping
           list.insertBefore(btn, list.firstChild);
           // temporary highlight
@@ -99,7 +103,7 @@ async function handleCreateAssignment() {
 
         if (previewsCol) {
           const preview = document.createElement('div');
-          preview.id = `assignment-preview-${nextIndex}`;
+          preview.id = previewId;
           preview.className = 'd-none';
           const attachmentHtml = (fileInput && fileInput.files && fileInput.files.length > 0) ?
             `<hr><strong>Attachment</strong><br><a href="/api/files/assignments/${res.id}/${encodeURIComponent(fileInput.files[0].name)}" target="_blank">📎 ${escapeHtml(fileInput.files[0].name)}</a>` : '';
@@ -125,15 +129,13 @@ async function handleCreateAssignment() {
 
         // show the newly added assignment if showAssignment exists, else toggle manually
         if (typeof showAssignment === 'function') {
-          showAssignment(nextIndex);
+          showAssignment(previewId);
         } else {
-          // remove active from list items
           if (list) {
-            list.querySelectorAll('.list-group-item').forEach((el, i) => el.classList.toggle('active', i === nextIndex));
+            list.querySelectorAll('.list-group-item').forEach(el => el.classList.toggle('active', el.dataset && el.dataset.previewId === previewId));
           }
-          // hide other previews and show new preview
           document.querySelectorAll('[id^="assignment-preview-"]').forEach(el => el.classList.add('d-none'));
-          const newPreview = document.getElementById(`assignment-preview-${nextIndex}`);
+          const newPreview = document.getElementById(previewId);
           if (newPreview) newPreview.classList.remove('d-none');
         }
 
@@ -493,4 +495,57 @@ function buildScheduleGrid(schedule) {
     row += `</tr>`;
     tbody.append(row);
   });
+}
+
+
+
+// Open submit modal for the given assignment id (record id)
+function openSubmitModal(assignmentId) {
+  const hid = document.getElementById('submitAssignment_assignment_id');
+  if (hid) hid.value = assignmentId;
+  const body = document.getElementById('submitAssignment_body');
+  if (body) body.value = '';
+  const file = document.getElementById('submitAssignment_attachment');
+  if (file) file.value = '';
+  const modalEl = document.getElementById('submitAssignmentModal');
+  if (!modalEl) return alert('Submit modal not found');
+  const modal = new bootstrap.Modal(modalEl);
+  modal.show();
+}
+
+async function handleSubmitAssignment() {
+  try {
+    const assignmentId = document.getElementById('submitAssignment_assignment_id')?.value || '';
+    const body = document.getElementById('submitAssignment_body')?.value || '';
+    const fileInput = document.getElementById('submitAssignment_attachment');
+
+    if (!assignmentId) {
+      alert('No assignment selected.');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('assignment', assignmentId);
+    formData.append('response_body', body);
+
+    const currentUserId = document.getElementById('id')?.value || (window.pb && pb.authStore && pb.authStore.model && pb.authStore.model.id) || '';
+    if (currentUserId) formData.append('student', currentUserId);
+
+    if (fileInput && fileInput.files && fileInput.files.length > 0) {
+      formData.append('attachment', fileInput.files[0]);
+    }
+
+    if (typeof pb !== 'undefined' && pb.collection) {
+      const res = await pb.collection('assignment_submit').create(formData);
+      pushNotification('Assignment response submitted!');
+      const modalEl = document.getElementById('submitAssignmentModal');
+      const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+      modal.hide();
+    } else {
+      alert('PocketBase client not available.');
+    }
+  } catch (err) {
+    console.error('submitAssignment error', err);
+    alert('Failed to submit response. See console.');
+  }
 }
