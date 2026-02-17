@@ -6,7 +6,7 @@ async function teacherDetails(teacherId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const teacherHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/teacher/details?id=' + teacherId + "&language=" + getLanguage(), null);
+        const teacherHTML = await httpPromise('GET', 'http://aggal-book.ddns.net/_dist/teacher/details?id=' + teacherId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = teacherHTML;
 
     } catch (e) {
@@ -27,7 +27,7 @@ async function studentDetails(studentId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const studentHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/student/details?id=' + studentId + "&language=" + getLanguage(), null);
+        const studentHTML = await httpPromise('GET', 'http://aggal-book.ddns.net/_dist/student/details?id=' + studentId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = studentHTML;
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
@@ -43,7 +43,7 @@ async function classroomDetails(classroomId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const classroomHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/classroom/details?id=' + classroomId + "&language=" + getLanguage(), null);
+        const classroomHTML = await httpPromise('GET', 'http://aggal-book.ddns.net/_dist/classroom/details?id=' + classroomId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = classroomHTML;
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
@@ -148,7 +148,7 @@ async function studentFees(studentId, customerId, customerName, studentName) {
                 <td>€${payment.payment_amount}</td>\
                 <td>DIRECT</td>\
                 <td><span class="badge bg-success">Completed</span></td>\
-                <td><button class="btn bs b-btn-xl btn-primary" type="button" onclick="window.open('http://192.168.191.216:8090/_dist/payment?id=${payment.id}')">Print <i class="fa-solid fa-print"></i></button></td>\
+                <td><button class="btn bs b-btn-xl btn-primary" type="button" onclick="window.open('http://aggal-book.ddns.net/_dist/payment?id=${payment.id}')">Print <i class="fa-solid fa-print"></i></button></td>\
             </tr>`;
 
             // payment progrees bar
@@ -504,7 +504,7 @@ async function login() {
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
+        const dashboard = await httpPromise('GET', 'http://aggal-book.ddns.net/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
@@ -521,7 +521,7 @@ async function initializeApp() {
         try {
             const mainLogin = document.getElementById("UI_MAIN");
             mainLogin.innerHTML = '';
-            const loginHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/login', null);
+            const loginHTML = await httpPromise('GET', 'http://aggal-book.ddns.net/_dist/login', null);
             mainLogin.innerHTML = loginHTML;
 
         } catch (e) {
@@ -854,7 +854,7 @@ async function dashboardNavActive(nav) {
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
+        const dashboard = await httpPromise('GET', 'http://aggal-book.ddns.net/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
