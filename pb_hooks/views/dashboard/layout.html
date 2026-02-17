@@ -23,7 +23,7 @@
       <div class="card-body">
         <h5 class="card-title">{{ $notif.title }} <span class="{{ $notif.type_b }}"> {{ $notif.type }}</span></h5>
         <p class="card-text">{{ $notif.body_text|raw }}</p>
-        <a href="#" class="btn btn-primary" onclick="document.getElementById('notification_{{ $index }}').innerHTML='';">Close</a>
+        <a href="#" class="btn btn-primary" onclick="document.querySelector('#notification_{{ $index }}').innerHTML=''; document.querySelector('#notification_{{ $index }}').classList=[]">Close</a>
       </div>
       <div class="card-footer text-muted">
       </div>

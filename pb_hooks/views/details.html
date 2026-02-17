@@ -1,49 +1,52 @@
 <!--MAIN-->
 {{if not .classroom_bool}}
-    <div class="container py-3">
-        <div class="card shadow-sm mb-4">
-            <div class="row g-0">
-                <div class="col-md-4 text-center p-4 border-end">
-                    <img src="{{.avatarUrl}}" alt="Avatar" class="rounded-circle detail-avatar mb-3">
-                    <h4 class="mb-1">{{.first_name}} {{.last_name}}</h4>
-                    <div class="text-muted mb-2">{{if .student_bool}}Student{{else}}Teacher{{end}}</div>
-                    <div class="d-flex flex-column detail-card-actions">
-                        <button id="editbtn" class="btn btn-primary" onclick="enableDetailsEdit('student|teacher');$('#submitEditbtn').removeAttr('disabled');$('#editbtn').attr('disabled', true);$('#editCancelBtn').removeAttr('disabled').removeAttr('disabled');">{{._edit_btn}}</button>
-                        <button id="editCancelBtn" class="btn btn-danger" onclick="$('#editbtn').removeAttr('disabled');$('#editCancelBtn').attr('disabled', true);$('#submitEditbtn').attr('disabled', true);" disabled>{{._cancel_btn}}</button>
-                    </div>
-                </div>
-
-                <div class="col-md-8 p-3">
-                    <div class="d-flex justify-content-between align-items-start mb-2">
-                        <div>
-                            <span class="badge bg-info text-dark me-1">ID: {{.id}}</span>
-                            <small class="text-muted">Born: {{.birth_date}}</small>
-                        </div>
-                        <div>
-                            <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">Print</button>
-                        </div>
-                    </div>
-
-                    <ul class="list-group list-group-flush mb-3">
-                        <li class="list-group-item d-flex">
-                            <strong class="me-2" style="width:140px">Email</strong>
-                            <div>{{.email}}</div>
-                        </li>
-                        <li class="list-group-item d-flex">
-                            <strong class="me-2" style="width:140px">{{._phone}} </strong>
-                            <div>{{.phone1}}</div>
-                        </li>
-                        <li class="list-group-item d-flex">
-                            <strong class="me-2" style="width:140px">{{._address}} </strong>
-                            <div>{{.address}}, {{.city}} {{.postal_code}}</div>
-                        </li>
-                    </ul>
+<div class="container py-3">
+    <div class="card shadow-sm mb-4">
+        <div class="row g-0">
+            <div class="col-md-4 text-center p-4 border-end">
+                <img src="{{.avatarUrl}}" alt="Avatar" class="rounded-circle detail-avatar mb-3">
+                <h4 class="mb-1">{{.first_name}} {{.last_name}}</h4>
+                <div class="text-muted mb-2">{{if .student_bool}}Student{{else}}Teacher{{end}}</div>
+                <div class="d-flex flex-column detail-card-actions">
+                    <button id="editbtn" class="btn btn-primary"
+                        onclick="enableDetailsEdit('student|teacher');$('#submitEditbtn').removeAttr('disabled');$('#editbtn').attr('disabled', true);$('#editCancelBtn').removeAttr('disabled').removeAttr('disabled');">{{._edit_btn}}</button>
+                    <button id="editCancelBtn" class="btn btn-danger"
+                        onclick="$('#editbtn').removeAttr('disabled');$('#editCancelBtn').attr('disabled', true);$('#submitEditbtn').attr('disabled', true);"
+                        disabled>{{._cancel_btn}}</button>
                 </div>
             </div>
-        </div>
 
-        
+            <div class="col-md-8 p-3">
+                <div class="d-flex justify-content-between align-items-start mb-2">
+                    <div>
+                        <span class="badge bg-info text-dark me-1">ID: {{.id}}</span>
+                        <small class="text-muted">Born: {{.birth_date}}</small>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary" onclick="window.print()">Print</button>
+                    </div>
+                </div>
+
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item d-flex">
+                        <strong class="me-2" style="width:140px">Email</strong>
+                        <div>{{.email}}</div>
+                    </li>
+                    <li class="list-group-item d-flex">
+                        <strong class="me-2" style="width:140px">{{._phone}} </strong>
+                        <div>{{.phone1}}</div>
+                    </li>
+                    <li class="list-group-item d-flex">
+                        <strong class="me-2" style="width:140px">{{._address}} </strong>
+                        <div>{{.address}}, {{.city}} {{.postal_code}}</div>
+                    </li>
+                </ul>
+            </div>
+        </div>
     </div>
+
+
+</div>
 
 <form class="row g-3" name="details_form">
     <input type="hidden" value="{{.id}}" id="id" />
@@ -87,13 +90,17 @@
     </div>
     <!--TEACHER CALENDAR-->
     {{if not .student_bool}}
-        <div id="teacher_calendar" style="width: 1000px; "></div>
-<div id="example5.2" ></div>
+    <div class="col-12">
+        <!-- Edit Schedule Button -->
+        <button type="button" id="editScheduleBtn" class="btn btn-primary" data-bs-toggle="modal"
+            data-bs-target="#scheduleModal">Edit Schedule <i class="fa-regular fa-calendar"></i></button>
+    </div>
+
+
+
+    <div id="teacher_calendar" style="width: 1000px; "></div>
+    <div id="example5.2"></div>
     {{ end }}
-    <!-- <div class="col-12">
-        <button id="editbtn" type="button" class="btn btn-outline-warning"
-            onclick="enableDetailsEdit();$('#submitEditbtn').removeAttr('disabled')"><i class="fas fa-edit"></i></button>
-    </div> -->
     <div class="col-12">
         <button id="submitEditbtn" type="button" class="btn btn-primary" onclick="putDetails('{{.id}}', '{{.col}}')"
             disabled>{{._submit_btn}}</button>
@@ -108,6 +115,7 @@
 
 <!--PARENTS INFO-->
 {{if .student_bool}}
+{{if not .classroom_bool}}
 <nav>
     <div class="nav nav-tabs" id="nav-tab" role="tablist">
         <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home" type="button"
@@ -175,52 +183,133 @@
     </div>
 
     {{end}}
+    {{end}}
     <!--CLASSROOM DATA-->
 
     {{if .classroom_bool}}
-    <h3>{{._classroom_info}} </h3>
-    <input type="hidden" id="classroom_id" value="{{.classroom_id}}" />
-    <div class="mb-2">
-        <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button" onclick="enableDetailsEdit('classroom');$('#submitClassroomBtn').removeAttr('disabled');$('#editbtn').attr('disabled', true)"><i class="fas fa-edit"></i> {{._edit_btn}}</button>
-        <button id="submitClassroomBtn" class="btn btn-primary btn-sm" type="button" onclick="putDetails('{{.classroom_id}}','classroom')" disabled>{{._submit_btn}}</button>
-        <button class="btn btn-secondary btn-sm" type="button" onclick="disableDetailsEdit();">{{._cancel_btn}}</button>
+    <div class="container py-3 mx-6">
+        <div class="row align-items-stretch g-4">
+
+            <!-- CLASSROOM DATA -->
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+
+                        <h3>{{._classroom_info}} </h3>
+                        <input type="hidden" id="classroom_id" value="{{.classroom_id}}" />
+                        {{if not .student_bool}}
+                        <p><span class="badge bg-info text-dark me-1">ID: {{.id}}</span></p>
+                        <div class="mb-2">
+                            <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button"
+                                onclick="enableDetailsEdit('classroom');$('#submitClassroomBtn').removeAttr('disabled');$('#editbtn').attr('disabled', true)">
+                                <i class="fas fa-edit"></i> {{._edit_btn}}
+                            </button>
+                            <button id="submitClassroomBtn" class="btn btn-primary btn-sm" type="button"
+                                onclick="putDetails('{{.classroom_id}}','classroom')" disabled>{{._submit_btn}}</button>
+                            <button class="btn btn-secondary btn-sm" type="button"
+                                onclick="disableDetailsEdit();">{{._cancel_btn}}</button>
+                        </div>
+                        {{end}}
+
+                        <dl class="row">
+                            <dt class="col-sm-4">{{._class_name_str}} </dt>
+                            <dd class="col-sm-8">
+                                <span id="classroom_name_display">{{.classroom_name}}</span>
+                                <input type="text" id="inputClassroomName" class="form-control d-none"
+                                    value="{{.classroom_name}}" />
+                            </dd>
+
+                            <dt class="col-sm-4">{{._assigned_teacher_str}} </dt>
+                            <dd class="col-sm-8">
+                                <a
+                                    href="javascript:teacherDetails('{{.assigned_teacher_id}}');sidebarNavActive('teachers');"><span
+                                        id="classroom_teacher_display">{{.assigned_teacher}}</span></a>
+                                <select id="classroomTeacherSelectDetail" class="form-select d-none">
+                                    <option value="">Unassigned</option>
+                                </select>
+                                <input type="hidden" id="assigned_teacher_id" value="{{.assigned_teacher_id}}" />
+                            </dd>
+
+                            <dt class="col-sm-4">{{._room_str}} </dt>
+                            <dd class="col-sm-8">
+                                <span id="classroom_room_display">{{.room}}</span>
+                                <input type="text" id="inputClassroomRoom" class="form-control d-none"
+                                    value="{{.room}}" />
+                            </dd>
+
+                            <dt class="col-sm-4">{{._level_str}} </dt>
+                            <dd class="col-sm-8">
+                                <span id="classroom_level_display">{{.level}}</span>
+                                <input type="text" id="inputClassroomLevel" class="form-control d-none"
+                                    value="{{.level}}" />
+                            </dd>
+
+                            <dt class="col-sm-4">{{._fee_str}} </dt>
+                            <dd class="col-sm-8">
+                                <span id="classroom_fee_display">{{.fee}}</span>
+                                <input type="text" id="inputClassroomFee" class="form-control d-none"
+                                    value="{{.fee}}" />
+                            </dd>
+                        </dl>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- TEXTBOOKS -->
+            <div class="col-md-6">
+                <div class="card shadow-sm h-100">
+                    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Class Textbooks & Syllabi</h5>
+                        {{if not .student_bool}}
+                            <button class="btn btn-light btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#createTextbookModal">
+                                <i class="bi bi-plus-lg"></i> Add
+                            </button>
+                        {{end}}
+                    </div>
+
+                    <div class="card-body p-0">
+                        {{ if .textbooks}}
+                        <ul id="textbook_list" class="list-group list-group-flush">
+                            {{ range $index, $element := .textbooks }}
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1 fw-bold">{{ .Get "title"}}</h6>
+                                        <p class="mb-1 text-muted">
+                                            {{ .Get "description"}}
+                                        </p>
+                                        <a href="/_dist/attachment/file?id={{.Id}}&collection=textbook" target="_blank">
+                                            Download {{ .Get "attachment"}}
+                                        </a>
+                                    </div>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary">Edit</button>
+                                        <button class="btn btn-outline-danger">Remove</button>
+                                    </div>
+                                </div>
+                            </li>
+                            {{end}}
+                        </ul>
+                        {{ else}}
+
+                        <p style="text-align: center;" class="text-muted"><br />No Textbooks/syllabi yet.</p>
+                        {{ end }}
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
-    <dl class="row">
-        <dt class="col-sm-3">{{._class_name_str}} </dt>
-        <dd class="col-sm-9">
-            <span id="classroom_name_display">{{.classroom_name}}</span>
-            <input type="text" id="inputClassroomName" class="form-control d-none" value="{{.classroom_name}}" />
-        </dd>
-        <dt class="col-sm-3">{{._assigned_teacher_str}} </dt>
-        <dd class="col-sm-9">
-            <a href="javascript:teacherDetails('{{.assigned_teacher_id}}');sidebarNavActive('teachers');"><span id="classroom_teacher_display">{{.assigned_teacher}}</span></a>
-            <select id="classroomTeacherSelectDetail" class="form-select d-none">
-                <option value="">Unassigned</option>
-            </select>
-            <input type="hidden" id="assigned_teacher_id" value="{{.assigned_teacher_id}}" />
-        </dd>
-        <dt class="col-sm-3">{{._room_str}} </dt>
-        <dd class="col-sm-9">
-            <span id="classroom_room_display">{{.room}}</span>
-            <input type="text" id="inputClassroomRoom" class="form-control d-none" value="{{.room}}" />
-        </dd>
-        <dt class="col-sm-3">{{._level_str}} </dt>
-        <dd class="col-sm-9">
-            <span id="classroom_level_display">{{.level}}</span>
-            <input type="text" id="inputClassroomLevel" class="form-control d-none" value="{{.level}}" />
-        </dd>
-        <dt class="col-sm-3">{{._fee_str}} </dt>
-        <dd class="col-sm-9">
-            <span id="classroom_fee_display">{{.fee}}</span>
-            <input type="text" id="inputClassroomFee" class="form-control d-none" value="{{.fee}}" />
-        </dd>
-    </dl>
-    <hiddent id="classroomId" value="{{.classroom_id}}"></hiddent> 
+
+    <br />
 
     <!--CLASSROOM STUDENTS-->
 
     <h3>{{._students_in_classroom}} </h3>
-    <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#assignStudentModal">{{._assign_student_btn}} <i class="fas fa-book-reader"></i></button>
+    <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal"
+        data-bs-target="#assignStudentModal">{{._assign_student_btn}} <i class="fas fa-book-reader"></i></button>
     <table id="dataTable" class="table table-striped" style="width:100%">
         <thead>
             <tr>
@@ -245,14 +334,15 @@
 
     <hr />
 
-        <div class="d-flex justify-content-between align-items-center">
-            <h3 class="mb-0">{{._assignments_str}} </h3>
-            <div>
-                <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#newAssignmentModal">{{._new_assignment_btn}} <i class="fas fa-file-alt"> </i> </button>
-            </div>
+    <div class="d-flex justify-content-between align-items-center">
+        <h3 class="mb-0">{{._assignments_str}} </h3>
+        <div>
+            <button class="btn btn-success" data-bs-toggle="modal"
+                data-bs-target="#newAssignmentModal">{{._new_assignment_btn}} <i class="fas fa-file-alt"> </i> </button>
         </div>
+    </div>
 
-        {{ if .assignments }}
+    {{ if .assignments }}
 
     <div class="mt-4">
         <div class="row">
@@ -261,11 +351,19 @@
             <div class="col-md-4">
                 <div class="list-group" id="assignmentList">
                     {{range $i, $a := .assignments}}
-                    <button type="button" class="list-group-item list-group-item-action {{if eq $i 0}}active{{end}}"
-                        onclick="showAssignment({{ $i }})">
-                        <strong>{{.Get "title"}}</strong><br>
-                        <small>{{.Get "created"}}</small>
-                    </button>
+                    <div role="button" tabindex="0" class="list-group-item list-group-item-action {{if eq $i 0}}active{{end}}"
+                         onclick="showAssignment({{ $i }})">
+                        <div class="d-flex w-100 justify-content-between align-items-center">
+                            <div>
+                                <strong>{{.Get "title"}}</strong><br>
+                                <small>{{.Get "created"}}</small>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-success ms-2"
+                                    onclick="event.stopPropagation(); openSubmitModal('{{.Id}}')">
+                                Submit
+                            </button>
+                        </div>
+                    </div>
                     {{end}}
                 </div>
             </div>
@@ -287,7 +385,7 @@
                             {{if .Get "attachment"}}
                             <hr>
                             <strong>Attachment</strong><br>
-                            <a href="/api/files/assignments/{{.Id}}/{{.Get " attachment"}}" target="_blank">
+                            <a href="/_dist/attachment/file?id={{.Id}}&collection=assignment" target="_blank">
                                 📎 {{.Get "attachment"}}
                             </a>
                             {{end}}
@@ -300,7 +398,7 @@
 
         </div>
     </div>
-    <br/><br/>
+    <br /><br />
 
 
     {{ else }}
@@ -346,39 +444,134 @@
     </div>
     <!--END MODAL-->
 
-        <!-- NEW ASSIGNMENT MODAL -->
-        <div class="modal fade" tabindex="-1" id="newAssignmentModal">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title">{{._new_assignment}}</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                        <form id="newAssignmentForm">
-                            <input type="hidden" id="assignment_classroom_id" value="{{.classroom_id}}" />
-                            <div class="mb-3">
-                                <label class="form-label">{{._title}}</label>
-                                <input class="form-control" id="assignment_title" />
+    <!-- NEW ASSIGNMENT MODAL -->
+    <div class="modal fade" tabindex="-1" id="newAssignmentModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{._new_assignment}}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="newAssignmentForm">
+                        <input type="hidden" id="assignment_classroom_id" value="{{.classroom_id}}" />
+                        <div class="mb-3">
+                            <label class="form-label">{{._title}}</label>
+                            <input class="form-control" id="assignment_title" />
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{._body}}</label>
+                            <div class="assignment-editor-wrapper">
+                                <div id="assignment_editor"></div>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{._body}}</label>
-                                <div class="assignment-editor-wrapper">
-                                    <div id="assignment_editor"></div>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">{{._attachment}}</label>
-                                <input type="file" class="form-control" id="assignment_attachment" />
-                            </div>
-                        </form>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary" id="createAssignmentBtn">{{._create_new_btn}}</button>
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{._cancel_btn}}</button>
-                    </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">{{._attachment}}</label>
+                            <input type="file" class="form-control" id="assignment_attachment" />
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" id="createAssignmentBtn">{{._create_new_btn}}</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{._cancel_btn}}</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        
+    <!-- SUBMIT ASSIGNMENT MODAL -->
+    <div class="modal fade" tabindex="-1" id="submitAssignmentModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Submit Assignment Response</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="submitAssignmentForm" class="row g-3" onsubmit="event.preventDefault(); handleSubmitAssignment();">
+                        <input type="hidden" id="submitAssignment_assignment_id" name="assignment_id" value="">
+                        <div class="col-12">
+                            <label for="submitAssignment_body" class="form-label">Response</label>
+                            <textarea id="submitAssignment_body" class="form-control" rows="6" placeholder="Write your response..."></textarea>
+                        </div>
+                        <div class="col-12">
+                            <label for="submitAssignment_attachment" class="form-label">Attachment</label>
+                            <input type="file" id="submitAssignment_attachment" name="attachment" class="form-control">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="submitAssignmentBtn" class="btn btn-primary" onclick="handleSubmitAssignment();">Submit</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Schedule Modal -->
+    <div id="scheduleModal" class="modal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Teacher Schedule</h5>
+                    <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="scheduleForm">
+                        <div class="table-responsive">
+                            <table class="table table-bordered text-center align-middle" id="scheduleGrid">
+                                <thead></thead>
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" id="saveScheduleBtn" class="btn btn-success">Save</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--NEW TEXTBOOK MODAL-->
+    <div class="modal fade" id="createTextbookModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+
+                <div class="modal-header">
+                    <h5 class="modal-title">Create Textbook</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+
+                <div class="modal-body">
+                    <form>
+                        <div class="mb-3">
+                            <label class="form-label">Title</label>
+                            <input id="textbookTitle" type="text" class="form-control"
+                                placeholder="Algebra I – Foundations">
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea id="textbookDescription" class="form-control" rows="3"></textarea>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Upload Syllabus (PDF)</label>
+                            <input id="textbookFile" type="file" class="form-control">
+                        </div>
+                    </form>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-primary" onclick="handleCreateTextbook();">Save Textbook</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
