@@ -285,9 +285,9 @@
                                         </a>
                                     </div>
                                     <div class="btn-group btn-group-sm">
-                                        <button class="btn btn-outline-secondary">Edit</button>
-                                        <button class="btn btn-outline-danger">Remove</button>
-                                    </div>
+                                            <button class="btn btn-outline-secondary">Edit</button>
+                                            <button class="btn btn-outline-danger" onclick="deleteTextbook('{{.Id}}')">Remove</button>
+                                        </div>
                                 </div>
                             </li>
                             {{end}}
@@ -358,16 +358,23 @@
                 <div class="list-group" id="assignmentList">
                     {{range $i, $a := .assignments}}
                     <div role="button" tabindex="0" class="list-group-item list-group-item-action {{if eq $i 0}}active{{end}}"
-                         onclick="showAssignment({{ $i }})">
+                         data-preview-id="assignment-preview-{{.Id}}"
+                         onclick="showAssignment('assignment-preview-{{.Id}}')">
                         <div class="d-flex w-100 justify-content-between align-items-center">
                             <div>
                                 <strong>{{.Get "title"}}</strong><br>
                                 <small>{{.Get "created"}}</small>
                             </div>
-                            <button type="button" class="btn btn-sm btn-success ms-2"
-                                    onclick="event.stopPropagation(); openSubmitModal('{{.Id}}')">
-                                Submit
-                            </button>
+                            <div>
+                                <button type="button" class="btn btn-sm btn-success ms-2"
+                                        onclick="event.stopPropagation(); openSubmitModal('{{.Id}}')">
+                                    Submit
+                                </button>
+                                <button type="button" class="btn btn-sm btn-danger ms-2"
+                                        onclick="event.stopPropagation(); deleteAssignment('{{.Id}}')">
+                                    Delete
+                                </button>
+                            </div>
                         </div>
                     </div>
                     {{end}}
@@ -377,7 +384,7 @@
             <!-- Assignment preview -->
             <div class="col-md-8">
                 {{range $i, $a := .assignments}}
-                <div id="assignment-preview-{{$i}}" class="{{if ne $i 0}}d-none{{end}}">
+                <div id="assignment-preview-{{.Id}}" class="{{if ne $i 0}}d-none{{end}}">
 
                     <div class="card shadow-sm">
                         <div class="card-body">

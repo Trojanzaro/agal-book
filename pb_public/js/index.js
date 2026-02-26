@@ -361,15 +361,42 @@ async function deleteCustomer(customerId) {
 ///////
 // EVENT: CLICK ASSIGNMENT
 function showAssignment(index) {
-    document.querySelectorAll('[id^="assignment-preview-"]').forEach(el => {
-        el.classList.add('d-none');
-    });
-    document.getElementById('assignment-preview-' + index).classList.remove('d-none');
+    // Accept either a numeric index or a full preview id like 'assignment-preview-<id>'
+    const previewPrefix = 'assignment-preview-';
+    const allPreviews = document.querySelectorAll('[id^="assignment-preview-"]');
+    allPreviews.forEach(el => el.classList.add('d-none'));
 
-    document.querySelectorAll('#assignmentList .list-group-item').forEach(el => {
-        el.classList.remove('active');
-    });
-    document.querySelectorAll('#assignmentList .list-group-item')[index].classList.add('active');
+    if (typeof index === 'string' && index.startsWith(previewPrefix)) {
+        const el = document.getElementById(index);
+        if (el) el.classList.remove('d-none');
+        // toggle active class on list items by matching data-preview-id
+        document.querySelectorAll('#assignmentList .list-group-item').forEach(li => {
+            li.classList.toggle('active', li.dataset && li.dataset.previewId === index);
+        });
+    } else {
+        // numeric index fallback
+        const numeric = parseInt(index, 10);
+        const el = document.getElementById(previewPrefix + numeric);
+        if (el) el.classList.remove('d-none');
+        document.querySelectorAll('#assignmentList .list-group-item').forEach(el => el.classList.remove('active'));
+        const listItems = document.querySelectorAll('#assignmentList .list-group-item');
+        if (listItems[numeric]) listItems[numeric].classList.add('active');
+    }
+}
+
+// Delete a class report (index.js scope)
+async function deleteClassReport(reportId, classroomId, dateISO) {
+    if (!confirm('Delete this report?')) return;
+    try {
+        await pb.collection('class_report').delete(reportId);
+        pushNotification('Report deleted');
+        // refresh calendar and reports
+        drawClassroomCalendar(classroomId, (new Date()).getFullYear());
+        if (dateISO) handleClassroomDateClick(new Date(dateISO), classroomId);
+    } catch (e) {
+        console.error(e);
+        alert('Failed to delete report');
+    }
 }
 
 ///////
@@ -1085,6 +1112,7 @@ async function handleClassroomDateClick(dateObj, classroomId) {
                                 data-classroom-id="${classroomId}"
                                 data-report-date="${r.date || ''}"
                                 onclick="openClassReportModalFromElem(this)">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteClassReport('${r.id}','${classroomId}','${dateISO}')">Delete</button>
                         </div>
                     </div>
                     <div class="card-text mt-2">${r.report_body || ''}</div>

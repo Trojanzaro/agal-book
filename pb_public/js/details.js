@@ -86,14 +86,24 @@ async function handleCreateAssignment() {
         const createdStr = (res && res.created) ? res.created : (new Date()).toISOString();
 
         if (list) {
-          const btn = document.createElement('button');
-          btn.type = 'button';
-          btn.className = 'list-group-item list-group-item-action';
-          btn.innerHTML = `<strong>${escapeHtml(title)}</strong><br><small>${escapeHtml(createdStr)}</small>`;
-          btn.dataset.previewId = previewId;
-          btn.addEventListener('click', function () { showAssignment(previewId); });
-          // insert at top visually while keeping the internal index mapping
-          list.insertBefore(btn, list.firstChild);
+          const item = document.createElement('div');
+          item.setAttribute('role', 'button');
+          item.tabIndex = 0;
+          item.className = 'list-group-item list-group-item-action';
+          item.dataset.previewId = previewId;
+          item.innerHTML = `
+            <div class="d-flex w-100 justify-content-between align-items-center">
+              <div>
+                <strong>${escapeHtml(title)}</strong><br><small>${escapeHtml(createdStr)}</small>
+              </div>
+              <div>
+                <button type="button" class="btn btn-sm btn-success ms-2" onclick="event.stopPropagation(); openSubmitModal('${createdId}')">Submit</button>
+                <button type="button" class="btn btn-sm btn-danger ms-2" onclick="event.stopPropagation(); deleteAssignment('${createdId}')">Delete</button>
+              </div>
+            </div>
+          `;
+          item.addEventListener('click', function () { showAssignment(previewId); });
+          list.insertBefore(item, list.firstChild);
           // temporary highlight
           btn.classList.add('list-group-item-success');
           setTimeout(() => { btn.classList.remove('list-group-item-success'); }, 3000);
@@ -136,16 +146,16 @@ async function handleCreateAssignment() {
         }
 
         // show the newly added assignment if showAssignment exists, else toggle manually
-        if (typeof showAssignment === 'function') {
-          showAssignment(previewId);
-        } else {
-          if (list) {
-            list.querySelectorAll('.list-group-item').forEach(el => el.classList.toggle('active', el.dataset && el.dataset.previewId === previewId));
-          }
-          document.querySelectorAll('[id^="assignment-preview-"]').forEach(el => el.classList.add('d-none'));
-          const newPreview = document.getElementById(previewId);
-          if (newPreview) newPreview.classList.remove('d-none');
-        }
+              if (typeof showAssignment === 'function') {
+                showAssignment(previewId);
+              } else {
+                if (list) {
+                  list.querySelectorAll('.list-group-item').forEach(el => el.classList.toggle('active', el.dataset && el.dataset.previewId === previewId));
+                }
+                document.querySelectorAll('[id^="assignment-preview-"]').forEach(el => el.classList.add('d-none'));
+                const newPreview = document.getElementById(previewId);
+                if (newPreview) newPreview.classList.remove('d-none');
+              }
 
       } catch (domErr) {
         console.error('DOM update after create failed', domErr);
@@ -210,6 +220,44 @@ async function handleCreateTextbook() {
   } catch (err) {
     console.error('createTextbook error', err);
     alert('Failed to create textbook. See console.');
+  }
+}
+
+// Delete textbook by id and remove from DOM
+async function deleteTextbook(textbookId) {
+  if (!confirm('Delete this textbook?')) return;
+  try {
+    await pb.collection('textbook').delete(textbookId);
+    pushNotification('Textbook deleted');
+    const list = document.getElementById('textbook_list');
+    if (list) {
+      const item = list.querySelector(`[data-textbook-id="${textbookId}"]`);
+      if (item && item.parentNode) item.parentNode.removeChild(item);
+    }
+  } catch (e) {
+    console.error(e);
+    alert('Failed to delete textbook');
+  }
+}
+
+// Delete assignment and remove list + preview
+async function deleteAssignment(assignmentId) {
+  if (!confirm('Delete this assignment?')) return;
+  try {
+    await pb.collection('assignment').delete(assignmentId);
+    pushNotification('Assignment deleted');
+    // remove list item
+    const list = document.getElementById('assignmentList');
+    if (list) {
+      const li = list.querySelector(`[data-preview-id="assignment-preview-${assignmentId}"]`);
+      if (li && li.parentNode) li.parentNode.removeChild(li);
+    }
+    // remove preview
+    const preview = document.getElementById('assignment-preview-' + assignmentId);
+    if (preview && preview.parentNode) preview.parentNode.removeChild(preview);
+  } catch (e) {
+    console.error(e);
+    alert('Failed to delete assignment');
   }
 }
 
