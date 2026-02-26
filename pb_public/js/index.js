@@ -19,6 +19,139 @@ async function teacherDetails(teacherId) {
     scheduleTablePopulate();
 }
 
+// --- Student profile listing and grades handling ---
+async function loadStudentsForProfile() {
+    const records = await pb.collection('student').getFullList({ sort: 'last_name' });
+    const tbody = document.getElementById('tbodyStudentsProfile');
+    if (!tbody) return;
+    tbody.innerHTML = '';
+    records.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td><a href="javascript:void(0)" onclick="selectStudentProfile('${r.id}','${escapeHtml(r.first_name + ' ' + r.last_name)}')">${r.first_name} ${r.last_name}</a></td>
+            <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteStudent('${r.id}','${r.first_name} ${r.last_name}')">Delete</button></td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function selectStudentProfile(studentId, displayName) {
+    // set header
+    document.getElementById('profile_name').innerText = displayName;
+    document.getElementById('profile_student_id').innerText = 'ID: ' + studentId;
+    document.getElementById('addGradeBtn').style.display = '';
+    document.getElementById('editProfileBtn').style.display = '';
+    // store selected id
+    document.getElementById('grade_student_id').value = studentId;
+    // load assignments
+    loadStudentProfile(studentId);
+}
+
+async function loadStudentProfile(studentId) {
+    // fetch assignment submits for this student
+    let subs = [];
+    try {
+        subs = await pb.collection('assignment_submit').getFullList({ filter: `student = "${studentId}"`, sort: '-created' });
+    } catch (e) { console.error(e); }
+
+    // calculate metrics
+    let total = 0, count = 0, tests = 0;
+    let latest = null;
+    subs.forEach(s => {
+        const g = parseFloat(s.grade || 0);
+        if (!isNaN(g)) { total += g; count++; }
+        if (s.type === 'test') tests++;
+        if (!latest) latest = s; // already sorted desc so first is latest
+    });
+
+    const overall = count > 0 ? Math.round((total / count) * 100) / 100 : '-';
+    document.getElementById('overallAverage').innerText = overall === '-' ? '-' : overall + '%';
+    document.getElementById('totalTests').innerText = tests;
+    document.getElementById('latestScore').innerText = latest ? (latest.grade || '-') : '-';
+
+    // populate assignments table
+    const tbody = document.getElementById('tbodyAssignments');
+    tbody.innerHTML = '';
+    subs.forEach(s => {
+        const pct = (s.grade && s.max_score) ? Math.round((parseFloat(s.grade) / parseFloat(s.max_score)) * 100) + '%' : '-';
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${escapeHtml(s.type || '')}</td>
+            <td>${escapeHtml(s.title || '')}</td>
+            <td>${s.date ? (new Date(s.date)).toISOString().slice(0,10) : ''}</td>
+            <td>${escapeHtml(s.grade || '')}</td>
+            <td>${escapeHtml(s.max_score || '')}</td>
+            <td>${pct}</td>
+            <td class="text-center">
+                <button class="btn btn-outline-secondary btn-sm" onclick="openEditGradeModal('${s.id}','${studentId}')"><i class="bi bi-pencil"></i></button>
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteGrade('${s.id}','${studentId}')"><i class="bi bi-trash"></i></button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function openEditGradeModal(subId, studentId) {
+    // if subId is null -> create new
+    document.getElementById('grade_id').value = subId || '';
+    document.getElementById('grade_student_id').value = studentId || '';
+    if (!subId) {
+        document.getElementById('grade_type').value = 'homework';
+        document.getElementById('grade_title').value = '';
+        document.getElementById('grade_date').value = '';
+        document.getElementById('grade_score').value = '';
+        document.getElementById('grade_max').value = '';
+        var modal = new bootstrap.Modal(document.getElementById('addGradeModal'));
+        modal.show();
+        return;
+    }
+    pb.collection('assignment_submit').getOne(subId).then(r => {
+        document.getElementById('grade_type').value = r.type || 'homework';
+        document.getElementById('grade_title').value = r.title || '';
+        document.getElementById('grade_date').value = r.date ? (new Date(r.date)).toISOString().slice(0,10) : '';
+        document.getElementById('grade_score').value = r.grade || '';
+        document.getElementById('grade_max').value = r.max_score || '';
+        var modal = new bootstrap.Modal(document.getElementById('addGradeModal'));
+        modal.show();
+    }).catch(e => console.error(e));
+}
+
+async function saveGrade() {
+    const id = document.getElementById('grade_id').value || null;
+    const student = document.getElementById('grade_student_id').value || '';
+    const type = document.getElementById('grade_type').value || '';
+    const title = document.getElementById('grade_title').value || '';
+    const date = document.getElementById('grade_date').value || '';
+    const grade = document.getElementById('grade_score').value || '';
+    const max = document.getElementById('grade_max').value || '';
+
+    try {
+        if (id) {
+            await pb.collection('assignment_submit').update(id, { type: type, title: title, date: date, grade: grade, max_score: max, student: student });
+            pushNotification('Grade updated');
+        } else {
+            await pb.collection('assignment_submit').create({ type: type, title: title, date: date, grade: grade, max_score: max, student: student });
+            pushNotification('Grade created');
+        }
+        var modalEl = document.getElementById('addGradeModal');
+        var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        try { modal.hide(); } catch (e) {}
+        if (student) loadStudentProfile(student);
+    } catch (e) {
+        console.error(e);
+        alert('Failed to save grade');
+    }
+}
+
+async function deleteGrade(subId, studentId) {
+    if (!confirm('Delete this grade?')) return;
+    try {
+        await pb.collection('assignment_submit').delete(subId);
+        pushNotification('Grade deleted');
+        if (studentId) loadStudentProfile(studentId);
+    } catch (e) { console.error(e); alert('Failed to delete grade'); }
+}
+
 ///////
 // EVENT: USER: CLICK STUDENT DETAILS
 async function studentDetails(studentId) {
