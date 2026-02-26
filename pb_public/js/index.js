@@ -120,7 +120,7 @@ function openEditGradeModal(subId, studentId) {
         return;
     }
     pb.collection('assignment_submit').getOne(subId).then(r => {
-        document.getElementById('grade_type').value = r.type || 'homework';
+        document.getElementById('grade_type').value = r.type || 'Homework';
         document.getElementById('grade_title').value = r.title || '';
         document.getElementById('grade_date').value = r.date ? (new Date(r.date)).toISOString().slice(0,10) : '';
         document.getElementById('grade_score').value = r.grade || '';
