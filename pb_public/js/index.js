@@ -1056,8 +1056,8 @@ async function handleClassroomDateClick(dateObj, classroomId) {
     // fetch reports for classroom and filter by date
     let reports = [];
     try {
-        const all = await pb.collection('class_report').getFullList({ filter: `classroom = "${classroomId}"` });
-        reports = all.filter(r => r.date && (new Date(r.date)).toISOString().slice(0,10) === dateISO);
+        const all = await pb.collection('class_report').getFullList({ filter: `(classroom = "${classroomId}") && (date = "${dateISO}")` });
+        reports = all;
     } catch (e) { console.error('Failed to fetch reports for date', e); }
 
     const container = document.getElementById('classroom_reports');
