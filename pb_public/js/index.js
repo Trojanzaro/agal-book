@@ -1115,6 +1115,9 @@ async function handleClassroomDateClick(dateObj, classroomId) {
 // Modal + Quill handling for class reports
 let classReportQuill = null;
 function openClassReportModal(reportId, classroomId, dateISO) {
+    const modalEl = document.getElementById('classReportModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
     
     // populate modal fields; if reportId null, create new
     document.getElementById('classReport_id').value = reportId || '';
@@ -1138,10 +1141,6 @@ function openClassReportModal(reportId, classroomId, dateISO) {
             classReportQuill.root.innerHTML = '';
         }, 100);
     }
-
-    const modalEl = document.getElementById('classReportModal');
-    const modal = new bootstrap.Modal(modalEl);
-    modal.show();
 }
 
 function openClassReportModalFromElem(el) {
