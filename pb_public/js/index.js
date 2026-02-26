@@ -50,6 +50,8 @@ async function classroomDetails(classroomId) {
         console.error(e);
     }
     loadAllStudentsForAssign();
+    // draw classroom calendar for reports
+    try { drawClassroomCalendar(classroomId, (new Date()).getFullYear()); } catch (e) { console.error(e); }
 }
 
 ///////
@@ -986,6 +988,174 @@ function getWeekdayDatesInYear(targetWeekday, year) {
     }
     return result;
 }
+
+// DRAW CLASSROOM CALENDAR AND HANDLE REPORTS
+async function drawClassroomCalendar(classroomId, year) {
+    google.charts.load('current', { packages: ['calendar'] }).then(async () => {
+        const dataTable = new google.visualization.DataTable();
+        dataTable.addColumn({ type: 'date', id: 'Date' });
+        dataTable.addColumn({ type: 'number', id: 'Reports' });
+
+        // Prefill all days with 0
+        const startDate = new Date(year, 0, 1);
+        const endDate = new Date(year, 11, 31);
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            dataTable.addRow([new Date(d), 0]);
+        }
+
+        // fetch all reports for this classroom
+        let reports = [];
+        try {
+            reports = await pb.collection('class_report').getFullList({ filter: `classroom = "${classroomId}"` });
+        } catch (e) { console.error('Failed to load class_report records', e); }
+
+        // aggregate by date (YYYY-MM-DD)
+        const counts = {};
+        reports.forEach(r => {
+            if (!r.date) return;
+            const d = new Date(r.date);
+            const key = d.toISOString().slice(0,10);
+            counts[key] = (counts[key] || 0) + 1;
+        });
+
+        // add rows for dates with reports (Google Calendar will color them)
+        Object.keys(counts).forEach(k => {
+            const parts = k.split('-');
+            const yr = parseInt(parts[0],10);
+            const mo = parseInt(parts[1],10)-1;
+            const day = parseInt(parts[2],10);
+            dataTable.addRow([new Date(yr, mo, day), counts[k]]);
+        });
+
+        const chart = new google.visualization.Calendar(document.getElementById('classroom_calendar'));
+        const options = {
+            title: 'Classroom Reports',
+            calendar: { cellSize: 15 },
+            colorAxis: { colors: ['#f0f4c3', '#8bc34a'] }
+        };
+
+        chart.draw(dataTable, options);
+
+        google.visualization.events.addListener(chart, 'select', function () {
+            const selection = chart.getSelection();
+            if (!selection || selection.length === 0) return;
+            if (selection[0].row == null) return;
+            const clickedDate = dataTable.getValue(selection[0].row, 0);
+            handleClassroomDateClick(clickedDate, classroomId);
+        });
+    });
+}
+
+function formatDateISO(d) {
+    const dt = new Date(d);
+    return dt.toISOString().slice(0,10);
+}
+
+async function handleClassroomDateClick(dateObj, classroomId) {
+    const dateISO = formatDateISO(dateObj);
+    // fetch reports for classroom and filter by date
+    let reports = [];
+    try {
+        const all = await pb.collection('class_report').getFullList({ filter: `classroom = "${classroomId}"` });
+        reports = all.filter(r => r.date && (new Date(r.date)).toISOString().slice(0,10) === dateISO);
+    } catch (e) { console.error('Failed to fetch reports for date', e); }
+
+    const container = document.getElementById('classroom_reports');
+    container.innerHTML = '';
+
+    if (reports.length > 0) {
+        reports.forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'card mb-2';
+            card.innerHTML = `
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">${escapeHtml(r.title || '(untitled)')}</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary me-1" onclick="openClassReportModal('${r.id}', '${classroomId}');">Edit</button>
+                        </div>
+                    </div>
+                    <div class="card-text mt-2">${r.report_body || ''}</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    } else {
+        // show create form prompt
+        container.innerHTML = `
+            <div class="card p-3">
+                <div class="mb-2">No reports for <strong>${dateISO}</strong>.</div>
+                <button class="btn btn-primary" id="createReportBtn">Create report for ${dateISO}</button>
+            </div>
+        `;
+        document.getElementById('createReportBtn').addEventListener('click', function () {
+            openClassReportModal(null, classroomId, dateISO);
+        });
+    }
+}
+
+// Modal + Quill handling for class reports
+let classReportQuill = null;
+function openClassReportModal(reportId, classroomId, dateISO) {
+    // populate modal fields; if reportId null, create new
+    document.getElementById('classReport_id').value = reportId || '';
+    document.getElementById('classReport_classroom').value = classroomId;
+    if (dateISO) document.getElementById('classReport_date').value = dateISO;
+
+    if (reportId) {
+        // load record
+        pb.collection('class_report').getOne(reportId).then(r => {
+            document.getElementById('classReport_title').value = r.title || '';
+            document.getElementById('classReport_date').value = r.date ? (new Date(r.date)).toISOString().slice(0,10) : '';
+            setTimeout(() => {
+                if (!classReportQuill) classReportQuill = new Quill('#classReport_editor', { theme: 'snow' });
+                classReportQuill.root.innerHTML = r.report_body || '';
+            }, 100);
+        }).catch(e => { console.error(e); });
+    } else {
+        document.getElementById('classReport_title').value = '';
+        setTimeout(() => {
+            if (!classReportQuill) classReportQuill = new Quill('#classReport_editor', { theme: 'snow' });
+            classReportQuill.root.innerHTML = '';
+        }, 100);
+    }
+
+    const modalEl = document.getElementById('classReportModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    document.getElementById('saveClassReportBtn')?.addEventListener('click', async function () {
+        const id = document.getElementById('classReport_id').value || null;
+        const classroom = document.getElementById('classReport_classroom').value;
+        const title = document.getElementById('classReport_title').value || '';
+        const date = document.getElementById('classReport_date').value || '';
+        const body = classReportQuill ? classReportQuill.root.innerHTML : document.getElementById('classReport_editor')?.innerHTML || '';
+
+        try {
+            if (id) {
+                await pb.collection('class_report').update(id, { title: title, date: date, report_body: body, classroom: classroom });
+                pushNotification('Report updated');
+            } else {
+                await pb.collection('class_report').create({ title: title, date: date, report_body: body, classroom: classroom });
+                pushNotification('Report created');
+            }
+            // hide modal
+            const modalEl = document.getElementById('classReportModal');
+            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            modal.hide();
+            // refresh calendar and reports
+            const cid = classroom;
+            drawClassroomCalendar(cid, (new Date()).getFullYear());
+            // open reports for the saved date
+            if (date) handleClassroomDateClick(new Date(date), cid);
+        } catch (e) {
+            console.error(e);
+            alert('Failed to save report');
+        }
+    });
+});
 
 function getLanguage() {
     const lang = window.localStorage.getItem('language') || 'en';

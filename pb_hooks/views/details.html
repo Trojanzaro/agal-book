@@ -55,6 +55,37 @@
         <label for="inputFirstname" class="form-label">{{._first_name}} </label>
         <input type="text" class="form-control" id="inputFirstname" value="{{.first_name}}">
     </div>
+    <!-- CLASS REPORT Modal -->
+    <div class="modal fade" id="classReportModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Class Report</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="classReport_id" />
+                    <input type="hidden" id="classReport_classroom" />
+                    <div class="mb-3">
+                        <label class="form-label">Title</label>
+                        <input id="classReport_title" type="text" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Date</label>
+                        <input id="classReport_date" type="date" class="form-control" />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Report</label>
+                        <div id="classReport_editor"></div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" id="saveClassReportBtn">Save</button>
+                    <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="col-md-6">
         <label for="inputLastname" class="form-label">{{._last_name}} </label>
         <input type="text" class="form-control" id="inputLastname" value="{{.last_name}}">
@@ -331,6 +362,13 @@
             {{ end }}
         </tbody>
     </table>
+
+    <!-- CLASSROOM CALENDAR -->
+    <div class="mt-4">
+        <h4>Classroom Calendar</h4>
+        <div id="classroom_calendar" style="width: 1000px;"></div>
+        <div id="classroom_reports" class="mt-3"></div>
+    </div>
 
     <hr />
 
