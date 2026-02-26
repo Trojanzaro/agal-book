@@ -1072,6 +1072,11 @@ async function handleClassroomDateClick(dateObj, classroomId) {
         reports = all;
     } catch (e) { console.error('Failed to fetch reports for date', e); }
 
+    // populate the hidden html tags
+    document.getElementById('classReport_date').value = dateISO || '';
+    document.getElementById('classReport_classroom').value = classroomId || '';
+    document.getElementById('classReport').value = reports[0]['id'] || ''   ;
+
     const container = document.getElementById('classroom_reports');
     container.innerHTML = '';
 
