@@ -6,7 +6,7 @@ async function teacherDetails(teacherId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const teacherHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/teacher/details?id=' + teacherId + "&language=" + getLanguage(), null);
+        const teacherHTML = await httpPromise('GET', 'https://aggal-book.ddns.net/_dist/teacher/details?id=' + teacherId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = teacherHTML;
 
     } catch (e) {
@@ -27,7 +27,7 @@ async function studentDetails(studentId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const studentHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/student/details?id=' + studentId + "&language=" + getLanguage(), null);
+        const studentHTML = await httpPromise('GET', 'https://aggal-book.ddns.net/_dist/student/details?id=' + studentId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = studentHTML;
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
@@ -43,13 +43,15 @@ async function classroomDetails(classroomId) {
     try {
         const mainDashboard = document.getElementById("main-dashboard");
         mainDashboard.innerHTML = '';
-        const classroomHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/classroom/details?id=' + classroomId + "&language=" + getLanguage(), null);
+        const classroomHTML = await httpPromise('GET', 'https://aggal-book.ddns.net/_dist/classroom/details?id=' + classroomId + "&language=" + getLanguage(), null);
         mainDashboard.innerHTML = classroomHTML;
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response));
         console.error(e);
     }
     loadAllStudentsForAssign();
+    // draw classroom calendar for reports
+    try { drawClassroomCalendar(classroomId, (new Date()).getFullYear()); } catch (e) { console.error(e); }
 }
 
 ///////
@@ -148,7 +150,7 @@ async function studentFees(studentId, customerId, customerName, studentName) {
                 <td>€${payment.payment_amount}</td>\
                 <td>DIRECT</td>\
                 <td><span class="badge bg-success">Completed</span></td>\
-                <td><button class="btn bs b-btn-xl btn-primary" type="button" onclick="window.open('http://192.168.191.216:8090/_dist/payment?id=${payment.id}')">Print <i class="fa-solid fa-print"></i></button></td>\
+                <td><button class="btn bs b-btn-xl btn-primary" type="button" onclick="window.open('https://aggal-book.ddns.net/_dist/payment?id=${payment.id}')">Print <i class="fa-solid fa-print"></i></button></td>\
             </tr>`;
 
             // payment progrees bar
@@ -299,10 +301,8 @@ async function putDetails(id, collection) {
 ///////
 // EVENT: CLICK DELETE STUDENT
 function deleteStudentModal(studentId, name) {
-    const myModal = new bootstrap.Modal(document.getElementById('deleteStudentModal'));
-    document.querySelector("#deleteBody").innerHTML = `Are you sure you want to delete stuent: ${name}`;
-    document.querySelector("#deleteStudentBtn").setAttribute("onclick", `deleteStudent('${studentId}')`);
-    const rep = myModal.show();
+    if (!confirm(`Are you sure you want to delete student: ${name}?`)) return;
+    deleteStudent(studentId);
 }
 
 ///////
@@ -316,19 +316,81 @@ async function deleteStudent(studentId) {
     }
 }
 
+///////
+// EVENT: CLICK DELETE TEACHER
+function deleteTeacherModal(teacherId, name) {
+    if (!confirm(`Are you sure you want to delete teacher: ${name}?`)) return;
+    deleteTeacher(teacherId);
+}
+
+///////
+//EVENT: DELETE TEACHER
+async function deleteTeacher(teacherId) {
+    try {
+        const authData = await pb.collection('teacher').delete(teacherId);
+        pushNotification("Succesfully deleted Teacher!");
+    } catch(ex) {
+        pushNotification(ex)
+    }
+}
+
+///////
+// EVENT: CLICK DELETE CUSTOMER
+function deleteCustomerModal(customerId, name) {
+    if (!confirm(`Are you sure you want to delete customer: ${name}?`)) return;
+    deleteCustomer(customerId);
+}
+
+///////
+//EVENT: DELETE CUSTOMER
+async function deleteCustomer(customerId) {
+    try {
+        const authData = await pb.collection('customer').delete(customerId);
+        pushNotification("Succesfully deleted Customer!");
+    } catch(ex) {
+        pushNotification(ex)
+    }
+}
 
 ///////
 // EVENT: CLICK ASSIGNMENT
 function showAssignment(index) {
-    document.querySelectorAll('[id^="assignment-preview-"]').forEach(el => {
-        el.classList.add('d-none');
-    });
-    document.getElementById('assignment-preview-' + index).classList.remove('d-none');
+    // Accept either a numeric index or a full preview id like 'assignment-preview-<id>'
+    const previewPrefix = 'assignment-preview-';
+    const allPreviews = document.querySelectorAll('[id^="assignment-preview-"]');
+    allPreviews.forEach(el => el.classList.add('d-none'));
 
-    document.querySelectorAll('#assignmentList .list-group-item').forEach(el => {
-        el.classList.remove('active');
-    });
-    document.querySelectorAll('#assignmentList .list-group-item')[index].classList.add('active');
+    if (typeof index === 'string' && index.startsWith(previewPrefix)) {
+        const el = document.getElementById(index);
+        if (el) el.classList.remove('d-none');
+        // toggle active class on list items by matching data-preview-id
+        document.querySelectorAll('#assignmentList .list-group-item').forEach(li => {
+            li.classList.toggle('active', li.dataset && li.dataset.previewId === index);
+        });
+    } else {
+        // numeric index fallback
+        const numeric = parseInt(index, 10);
+        const el = document.getElementById(previewPrefix + numeric);
+        if (el) el.classList.remove('d-none');
+        document.querySelectorAll('#assignmentList .list-group-item').forEach(el => el.classList.remove('active'));
+        const listItems = document.querySelectorAll('#assignmentList .list-group-item');
+        if (listItems[numeric]) listItems[numeric].classList.add('active');
+    }
+}
+
+// Delete a class report (index.js scope)
+async function deleteClassReport(reportId, classroomId, dateISO) {
+    if (!confirm('Delete this report?')) return;
+    try {
+        await pb.collection('class_report').delete(reportId);
+        pushNotification('Report deleted');
+        // refresh calendar and reports
+        drawClassroomCalendar(classroomId, (new Date()).getFullYear());
+        if (dateISO) handleClassroomDateClick(new Date(dateISO), classroomId);
+    } catch (e) {
+        console.error(e);
+        alert('Failed to delete report');
+    }
 }
 
 ///////
@@ -504,7 +566,7 @@ async function login() {
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
+        const dashboard = await httpPromise('GET', 'https://aggal-book.ddns.net/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
@@ -521,7 +583,7 @@ async function initializeApp() {
         try {
             const mainLogin = document.getElementById("UI_MAIN");
             mainLogin.innerHTML = '';
-            const loginHTML = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/login', null);
+            const loginHTML = await httpPromise('GET', 'https://aggal-book.ddns.net/_dist/login', null);
             mainLogin.innerHTML = loginHTML;
 
         } catch (e) {
@@ -612,10 +674,7 @@ async function loadAllStudentsForAssign() {
             document.getElementById("studentsSelectAssign").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
         }
     });
-    
-    // records.forEach(element => {
-    //     document.getElementById("studentsSelectAssign").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
-    // });
+
 }
 
 ///////
@@ -632,6 +691,7 @@ async function loadAllTeachers() {
             <td><a href="javascript:teacherDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${age}</td>\
             <td>${element.phone_number}</td>\
+            <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTeacherModal('${element.id}', '${element.first_name} ${element.last_name}')">Delete</button></td>
         </tr>`
     });
 
@@ -661,6 +721,7 @@ async function loadAllCustomers() {
             <td><a href="javascript:customerDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${element.email}</td>\
             <td>${element.phone_number}</td>\
+            <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteCustomerModal('${element.id}', '${element.first_name} ${element.last_name}')">Delete</button></td>
         </tr>`
     }
     );
@@ -833,6 +894,9 @@ async function loadAllClassrooms() {
                     <td>${element.level}</td>
                     <td>${element.room}</td>
                     <td>${element.fee}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteClassroom('${element.id}','${element.name}')">Delete</button>
+                    </td>
                 </tr>
             `;
     });
@@ -854,7 +918,7 @@ async function dashboardNavActive(nav) {
     try {
         const mainDashboard = document.getElementById("UI_MAIN");
         mainDashboard.innerHTML = '';
-        const dashboard = await httpPromise('GET', 'http://192.168.191.216:8090/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
+        const dashboard = await httpPromise('GET', 'https://aggal-book.ddns.net/_dist/dashboard?wd=' + nav + '&language=' + getLanguage(), null);
         mainDashboard.innerHTML = dashboard;
 
     } catch (e) {
@@ -944,6 +1008,215 @@ function getWeekdayDatesInYear(targetWeekday, year) {
         }
     }
     return result;
+}
+
+// DRAW CLASSROOM CALENDAR AND HANDLE REPORTS
+async function drawClassroomCalendar(classroomId, year) {
+    google.charts.load('current', { packages: ['calendar'] }).then(async () => {
+        const dataTable = new google.visualization.DataTable();
+        dataTable.addColumn({ type: 'date', id: 'Date' });
+        dataTable.addColumn({ type: 'number', id: 'Reports' });
+
+        // Prefill all days with 0
+        const startDate = new Date(year, 0, 1);
+        const endDate = new Date(year, 11, 31);
+        for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+            dataTable.addRow([new Date(d), 0]);
+        }
+
+        // fetch all reports for this classroom
+        let reports = [];
+        try {
+            reports = await pb.collection('class_report').getFullList({ filter: `classroom = "${classroomId}"` });
+        } catch (e) { console.error('Failed to load class_report records', e); }
+
+        // aggregate by date (YYYY-MM-DD)
+        const counts = {};
+        reports.forEach(r => {
+            if (!r.date) return;
+            const d = new Date(r.date);
+            const key = d.toISOString().slice(0,10);
+            counts[key] = (counts[key] || 0) + 1;
+        });
+
+        // add rows for dates with reports (Google Calendar will color them)
+        Object.keys(counts).forEach(k => {
+            const parts = k.split('-');
+            const yr = parseInt(parts[0],10);
+            const mo = parseInt(parts[1],10)-1;
+            const day = parseInt(parts[2],10);
+            dataTable.addRow([new Date(yr, mo, day), counts[k]]);
+        });
+
+        const chart = new google.visualization.Calendar(document.getElementById('classroom_calendar'));
+        const options = {
+            title: getLanguage() === 'en' ? 'Classroom Reports' : 'Αναφορές Τάξης',
+            calendar: { cellSize: 15 },
+            colorAxis: { colors: ['#f0f4c3', '#8bc34a'] }
+        };
+
+        chart.draw(dataTable, options);
+
+        google.visualization.events.addListener(chart, 'select', function () {
+            const selection = chart.getSelection();
+            if (!selection || selection.length === 0) return;
+            if (selection[0].row == null) return;
+            const clickedDate = dataTable.getValue(selection[0].row, 0);
+            handleClassroomDateClick(clickedDate, classroomId);
+        });
+    });
+}
+
+
+async function handleClassroomDateClick(dateObj, classroomId) {
+    const dateISO = dateObj.toLocaleDateString();
+    // Extract LOCAL date parts
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth();
+    const day = dateObj.getDate();
+
+    // Build proper UTC boundaries
+    const start = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
+    const end = new Date(Date.UTC(year, month, day, 23, 59, 59, 999));
+
+    //otherwise the 
+    const filterStr = `
+        classroom = "${classroomId}" &&
+        date >= "${start.toISOString().replace("T", " ")}" &&
+        date <= "${end.toISOString().replace("T", " ")}"
+    `;
+    // fetch reports for classroom and filter by date
+    let reports = [];
+    try {
+        const all = await pb.collection('class_report').getFullList({ filter: filterStr });
+        reports = all;
+    } catch (e) { console.error('Failed to fetch reports for date', e); }
+
+
+    const container = document.getElementById('classroom_reports');
+    container.innerHTML = '';
+
+    if (reports.length > 0) {
+        reports.forEach(r => {
+            const card = document.createElement('div');
+            card.className = 'card mb-2';
+            card.innerHTML = `
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <h5 class="card-title">${dateISO} - ${escapeHtml(r.title || '(untitled)')}</h5>
+                        <div>
+                            <button class="btn btn-sm btn-outline-primary me-1"
+                                data-report-id="${r.id}"
+                                data-classroom-id="${classroomId}"
+                                data-report-date="${r.date || ''}"
+                                onclick="openClassReportModalFromElem(this)">Edit</button>
+                            <button class="btn btn-sm btn-outline-danger" onclick="deleteClassReport('${r.id}','${classroomId}','${dateISO}')">Delete</button>
+                        </div>
+                    </div>
+                    <div class="card-text mt-2">${r.report_body || ''}</div>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+    } else {
+        // show create form prompt
+        container.innerHTML = `
+            <div class="card p-3">
+                <div class="mb-2">No reports for <strong>${dateISO}</strong>.</div>
+                <button class="btn btn-primary" id="createReportBtn">Create report for ${dateISO}</button>
+            </div>
+        `;
+        document.getElementById('createReportBtn').addEventListener('click', function () {
+            openClassReportModal(null, classroomId, new Date(dateISO).toISOString().split("T")[0]);
+        });
+    }
+}
+
+// Modal + Quill handling for class reports
+let classReportQuill = null;
+function openClassReportModal(reportId, classroomId, dateISO) {
+    console.log("Opening modal for reportId:", reportId, "classroomId:", classroomId, "date:", dateISO);
+    const modalEl = document.getElementById('classReportModal');
+    const modal = new bootstrap.Modal(modalEl);
+    modal.show();
+    
+    // populate modal fields; if reportId null, create new
+    document.getElementById('classReport_id').value = reportId || '';
+    document.getElementById('classReport_classroom').value = classroomId;
+    document.getElementById('classReport_date').value = dateISO;
+
+    if (reportId) {
+        // load record
+        pb.collection('class_report').getOne(reportId).then(r => {
+            document.getElementById('classReport_title').value = r.title || '';
+            document.getElementById('classReport_date').value = r.date ? (new Date(r.date)).toISOString().slice(0,10) : '';
+            setTimeout(() => {
+                if (!classReportQuill) classReportQuill = new Quill('#classReport_editor', { theme: 'snow' });
+                try {
+                    const editorRoot = classReportQuill.root; // .ql-editor
+                    const currentH = editorRoot.clientHeight || editorRoot.scrollHeight || 200;
+                    editorRoot.style.minHeight = (currentH + 100) + 'px';
+                    editorRoot.dataset.heightIncreased = '1';
+                } catch (e) { /* ignore */ }
+                classReportQuill.root.innerHTML = r.report_body || '';
+            }, 100);
+        }).catch(e => { console.error(e); });
+    } else {
+        document.getElementById('classReport_title').value = '';
+        setTimeout(() => {
+            if (!classReportQuill) classReportQuill = new Quill('#classReport_editor', { theme: 'snow' });
+            try {
+                const editorRoot = classReportQuill.root; // .ql-editor
+                const currentH = editorRoot.clientHeight || editorRoot.scrollHeight || 200;
+                editorRoot.style.minHeight = (currentH + 100) + 'px';
+                editorRoot.dataset.heightIncreased = '1';
+            } catch (e) { /* ignore */ }
+            classReportQuill.root.innerHTML = '';
+        }, 100);
+    }
+}
+
+function openClassReportModalFromElem(el) {
+    if (!el || !el.dataset) return;
+    const reportId = el.dataset.reportId || null;
+    const classroomId = el.dataset.classroomId || el.dataset.classroom || null;
+    const rawDate = el.dataset.reportDate || el.dataset.date || '';
+    let dateISO = '';
+    try {
+        if (rawDate) dateISO = (new Date(rawDate)).toISOString().slice(0,10);
+    } catch (e) { dateISO = rawDate; }
+    openClassReportModal(reportId, classroomId, dateISO);
+}
+
+async function saveClassReport() {
+    console.log("Saving report...");
+    const id = document.getElementById('classReport_id').value || null;
+    const classroom = document.getElementById('classReport_classroom').value;
+    const title = document.getElementById('classReport_title').value || '';
+    const date = document.getElementById('classReport_date').value || '';
+    const body = classReportQuill ? classReportQuill.root.innerHTML : document.getElementById('classReport_editor')?.innerHTML || '';
+
+    try {
+        if (id) {
+            await pb.collection('class_report').update(id, { title: title, date: date, report_body: body, classroom: classroom });
+            pushNotification('Report updated');
+        } else {
+            await pb.collection('class_report').create({ title: title, date: date, report_body: body, classroom: classroom });
+            pushNotification('Report created');
+        }
+        // hide modal
+        const modalEl = document.getElementById('classReportModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        try { modal.hide(); } catch (e) { /* ignore */ }
+        // refresh calendar and reports
+        const cid = classroom;
+        drawClassroomCalendar(cid, (new Date()).getFullYear());
+        // open reports for the saved date
+        if (date) handleClassroomDateClick(new Date(date), cid);
+    } catch (e) {
+        console.error(e);
+        alert('Failed to save report');
+    }
 }
 
 function getLanguage() {
