@@ -1054,18 +1054,18 @@ function formatDateISO(d) {
 async function handleClassroomDateClick(dateObj, classroomId) {
     const dateISO = formatDateISO(dateObj);
     // Extract LOCAL date parts
-    const year = clickedDate.getFullYear();
-    const month = clickedDate.getMonth();
-    const day = clickedDate.getDate();
+    const year = dateISO.getFullYear();
+    const month = dateISO.getMonth();
+    const day = dateISO.getDate();
 
     // Build proper UTC boundaries
     const start = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
     const end = new Date(Date.UTC(year, month, day, 23, 59, 59, 999));
 
     const filterStr = `
-    classroom = "${classroomId}" &&
-    date >= "${start.toISOString().replace("T", " ")}" &&
-    date <= "${end.toISOString().replace("T", " ")}"
+        classroom = "${classroomId}" &&
+        date >= "${start.toISOString().replace("T", " ")}" &&
+        date <= "${end.toISOString().replace("T", " ")}"
     `;
     // fetch reports for classroom and filter by date
     let reports = [];
