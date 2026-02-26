@@ -1152,6 +1152,12 @@ function openClassReportModal(reportId, classroomId, dateISO) {
             document.getElementById('classReport_date').value = r.date ? (new Date(r.date)).toISOString().slice(0,10) : '';
             setTimeout(() => {
                 if (!classReportQuill) classReportQuill = new Quill('#classReport_editor', { theme: 'snow' });
+                try {
+                    const editorRoot = classReportQuill.root; // .ql-editor
+                    const currentH = editorRoot.clientHeight || editorRoot.scrollHeight || 200;
+                    editorRoot.style.minHeight = (currentH + 100) + 'px';
+                    editorRoot.dataset.heightIncreased = '1';
+                } catch (e) { /* ignore */ }
                 classReportQuill.root.innerHTML = r.report_body || '';
             }, 100);
         }).catch(e => { console.error(e); });
@@ -1159,6 +1165,12 @@ function openClassReportModal(reportId, classroomId, dateISO) {
         document.getElementById('classReport_title').value = '';
         setTimeout(() => {
             if (!classReportQuill) classReportQuill = new Quill('#classReport_editor', { theme: 'snow' });
+            try {
+                const editorRoot = classReportQuill.root; // .ql-editor
+                const currentH = editorRoot.clientHeight || editorRoot.scrollHeight || 200;
+                editorRoot.style.minHeight = (currentH + 100) + 'px';
+                editorRoot.dataset.heightIncreased = '1';
+            } catch (e) { /* ignore */ }
             classReportQuill.root.innerHTML = '';
         }, 100);
     }
