@@ -301,10 +301,8 @@ async function putDetails(id, collection) {
 ///////
 // EVENT: CLICK DELETE STUDENT
 function deleteStudentModal(studentId, name) {
-    const myModal = new bootstrap.Modal(document.getElementById('deleteStudentModal'));
-    document.querySelector("#deleteBody").innerHTML = `Are you sure you want to delete stuent: ${name}`;
-    document.querySelector("#deleteStudentBtn").setAttribute("onclick", `deleteStudent('${studentId}')`);
-    const rep = myModal.show();
+    if (!confirm(`Are you sure you want to delete student: ${name}?`)) return;
+    deleteStudent(studentId);
 }
 
 ///////
@@ -321,10 +319,8 @@ async function deleteStudent(studentId) {
 ///////
 // EVENT: CLICK DELETE TEACHER
 function deleteTeacherModal(teacherId, name) {
-    const myModal = new bootstrap.Modal(document.getElementById('deleteTeacherModal'));
-    document.querySelector("#deleteTeacherModalText").innerHTML = `Are you sure you want to delete teacher: ${name}`;
-    document.querySelector("#confirmDeleteTeacherBtn").setAttribute("onclick", `deleteTeacher('${teacherId}')`);
-    const rep = myModal.show();
+    if (!confirm(`Are you sure you want to delete teacher: ${name}?`)) return;
+    deleteTeacher(teacherId);
 }
 
 ///////
@@ -341,10 +337,8 @@ async function deleteTeacher(teacherId) {
 ///////
 // EVENT: CLICK DELETE CUSTOMER
 function deleteCustomerModal(customerId, name) {
-    const myModal = new bootstrap.Modal(document.getElementById('deleteCustomerModal'));
-    document.querySelector("#deleteCustomerModalText").innerHTML = `Are you sure you want to delete customer: ${name}`;
-    document.querySelector("#confirmDeleteCustomerBtn").setAttribute("onclick", `deleteCustomer('${customerId}')`);
-    const rep = myModal.show();
+    if (!confirm(`Are you sure you want to delete customer: ${name}?`)) return;
+    deleteCustomer(customerId);
 }
 
 ///////
