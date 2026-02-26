@@ -1058,6 +1058,7 @@ async function handleClassroomDateClick(dateObj, classroomId) {
     try {
         const all = await pb.collection('class_report').getFullList({ filter: `(classroom = "${classroomId}") && (date = "${dateISO}")` });
         reports = all;
+        console.log(`Reports for ${dateISO}:`, reports);
     } catch (e) { console.error('Failed to fetch reports for date', e); }
 
     const container = document.getElementById('classroom_reports');
