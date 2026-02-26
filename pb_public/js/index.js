@@ -1064,6 +1064,7 @@ async function handleClassroomDateClick(dateObj, classroomId) {
     container.innerHTML = '';
 
     if (reports.length > 0) {
+        console.log("ENTERING TH GENERTING THINGY")
         reports.forEach(r => {
             const card = document.createElement('div');
             card.className = 'card mb-2';
