@@ -1152,38 +1152,36 @@ function openClassReportModalFromElem(el) {
     openClassReportModal(reportId, classroomId, dateISO);
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-    document.getElementById('saveClassReportBtn')?.addEventListener('click', async function () {
-        console.log("Saving report...");
-        const id = document.getElementById('classReport_id').value || null;
-        const classroom = document.getElementById('classReport_classroom').value;
-        const title = document.getElementById('classReport_title').value || '';
-        const date = document.getElementById('classReport_date').value || '';
-        const body = classReportQuill ? classReportQuill.root.innerHTML : document.getElementById('classReport_editor')?.innerHTML || '';
+async function saveClassReport() {
+    console.log("Saving report...");
+    const id = document.getElementById('classReport_id').value || null;
+    const classroom = document.getElementById('classReport_classroom').value;
+    const title = document.getElementById('classReport_title').value || '';
+    const date = document.getElementById('classReport_date').value || '';
+    const body = classReportQuill ? classReportQuill.root.innerHTML : document.getElementById('classReport_editor')?.innerHTML || '';
 
-        try {
-            if (id) {
-                await pb.collection('class_report').update(id, { title: title, date: date, report_body: body, classroom: classroom });
-                pushNotification('Report updated');
-            } else {
-                await pb.collection('class_report').create({ title: title, date: date, report_body: body, classroom: classroom });
-                pushNotification('Report created');
-            }
-            // hide modal
-            const modalEl = document.getElementById('classReportModal');
-            const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-            modal.hide();
-            // refresh calendar and reports
-            const cid = classroom;
-            drawClassroomCalendar(cid, (new Date()).getFullYear());
-            // open reports for the saved date
-            if (date) handleClassroomDateClick(new Date(date), cid);
-        } catch (e) {
-            console.error(e);
-            alert('Failed to save report');
+    try {
+        if (id) {
+            await pb.collection('class_report').update(id, { title: title, date: date, report_body: body, classroom: classroom });
+            pushNotification('Report updated');
+        } else {
+            await pb.collection('class_report').create({ title: title, date: date, report_body: body, classroom: classroom });
+            pushNotification('Report created');
         }
-    });
-});
+        // hide modal
+        const modalEl = document.getElementById('classReportModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        try { modal.hide(); } catch (e) { /* ignore */ }
+        // refresh calendar and reports
+        const cid = classroom;
+        drawClassroomCalendar(cid, (new Date()).getFullYear());
+        // open reports for the saved date
+        if (date) handleClassroomDateClick(new Date(date), cid);
+    } catch (e) {
+        console.error(e);
+        alert('Failed to save report');
+    }
+}
 
 function getLanguage() {
     const lang = window.localStorage.getItem('language') || 'en';
