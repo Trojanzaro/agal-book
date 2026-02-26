@@ -98,8 +98,8 @@ async function loadStudentProfile(studentId) {
             <td>${escapeHtml(s.max_score || '')}</td>
             <td>${pct}</td>
             <td class="text-center">
-                <button class="btn btn-outline-secondary btn-sm" onclick="openEditGradeModal('${s.id}','${studentId}')"><i class="bi bi-pencil"></i></button>
-                <button class="btn btn-outline-danger btn-sm" onclick="deleteGrade('${s.id}','${studentId}')"><i class="bi bi-trash"></i></button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="openEditGradeModal('${s.id}','${studentId}')"><i class="fa-solid fa-pencil"></i></button>
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteGrade('${s.id}','${studentId}')"><i class="fa-solid fa-trash"></i></button>
             </td>
         `;
         tbody.appendChild(tr);
