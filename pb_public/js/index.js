@@ -29,7 +29,6 @@ async function loadStudentsForProfile() {
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td><a href="javascript:void(0)" onclick="selectStudentProfile('${r.id}','${escapeHtml(r.first_name + ' ' + r.last_name)}')">${r.first_name} ${r.last_name}</a></td>
-            <td class="text-end"><button class="btn btn-sm btn-outline-danger" onclick="deleteStudent('${r.id}','${r.first_name} ${r.last_name}')">Delete</button></td>
         `;
         tbody.appendChild(tr);
     });
