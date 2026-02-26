@@ -316,6 +316,25 @@ async function deleteStudent(studentId) {
     }
 }
 
+///////
+// EVENT: CLICK DELETE TEACHER
+function deleteTeacherModal(teacherId, name) {
+    const myModal = new bootstrap.Modal(document.getElementById('deleteTeacherModal'));
+    document.querySelector("#deleteTeacherModalText").innerHTML = `Are you sure you want to delete teacher: ${name}`;
+    document.querySelector("#confirmDeleteTeacherBtn").setAttribute("onclick", `deleteTeacher('${teacherId}')`);
+    const rep = myModal.show();
+}
+
+///////
+//EVENT: DELETE TEACHER
+async function deleteTeacher(teacherId) {
+    try {
+        const authData = await pb.collection('teacher').delete(teacherId);
+        pushNotification("Succesfully deleted Teacher!");
+    } catch(ex) {
+        pushNotification(ex)
+    }
+}
 
 ///////
 // EVENT: CLICK ASSIGNMENT
