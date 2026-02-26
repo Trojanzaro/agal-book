@@ -20,6 +20,7 @@
         <th>{{._last_name}} </th>
         <th>Email</th>
         <th>{{._phone}} </th>
+        <th>Customer </th>
       </tr>
     </thead>
     <tbody id="tbodyCustomers">
@@ -211,3 +212,22 @@
   </div>
 </div>
 <!--END MODAL-->
+
+<!--DELETE CUSTOMER MODAL-->
+<div class="modal" tabindex="-1" id="deleteCustomerModal">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">{{._delete_customer_modal_title}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p id="deleteCustomerModalText"></p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" id="confirmDeleteCustomerBtn" data-bs-dismiss="modal">{{._confirm_delete_btn}}</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{._cancel_btn}}</button>
+      </div>
+    </div>
+  </div>
+</div>
