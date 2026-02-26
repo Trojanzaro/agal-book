@@ -1379,3 +1379,23 @@ function insertTableRow(tableId, classroomid) {
     c6.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Friday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
     
 }
+
+// Auto-run loader for profile page: when the profile layout is injected
+// into the DOM (via innerHTML), script execution may not run. Monitor
+// for the profile table and call `loadStudentsForProfile()` once available.
+(function monitorProfileLoad() {
+    function tryRun() {
+        if (document.getElementById('tbodyStudentsProfile')) {
+            try { if (typeof loadStudentsForProfile === 'function') loadStudentsForProfile(); } catch (e) { console.error(e); }
+            return true;
+        }
+        return false;
+    }
+
+    if (!tryRun()) {
+        let attempts = 0;
+        const iv = setInterval(() => {
+            if (tryRun() || ++attempts > 50) clearInterval(iv);
+        }, 200);
+    }
+})();

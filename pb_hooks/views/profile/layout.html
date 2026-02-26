@@ -12,8 +12,10 @@
 <div class="main-dashboard" id="main-dashboard">
   <h1>{{._profile}} </h1>
   <div class="container mt-4">
-    <div class="row">
-      <div class="col-md-4">
+
+    <!-- Students full-width row -->
+    <div class="row mb-3">
+      <div class="col-12">
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Students</h5>
@@ -28,54 +30,60 @@
           </div>
         </div>
       </div>
+    </div>
+
+    <!-- Profile header + summary (left) and assignments (right) -->
+    <div class="row">
+      <div class="col-md-4 mb-3">
+        <div class="card h-100">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+              <div>
+                <h2 id="profile_name">Select a student</h2>
+                <p class="text-muted mb-1" id="profile_student_id"></p>
+                <p class="text-muted" id="profile_class_name"></p>
+              </div>
+              <div class="text-end">
+                <button class="btn btn-primary btn-sm" id="editProfileBtn" style="display:none;">
+                  <i class="bi bi-pencil"></i>
+                </button>
+              </div>
+            </div>
+
+            <hr>
+
+            <div class="row g-3">
+              <div class="col-12 mb-3">
+                <div class="card text-white bg-success">
+                  <div class="card-body">
+                    <h6 class="card-title">Overall Average</h6>
+                    <p class="display-6 mb-0" id="overallAverage">-</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 mb-3">
+                <div class="card bg-light">
+                  <div class="card-body">
+                    <h6 class="card-title">Total Tests</h6>
+                    <p class="display-6 mb-0" id="totalTests">-</p>
+                  </div>
+                </div>
+              </div>
+              <div class="col-6 mb-3">
+                <div class="card bg-light">
+                  <div class="card-body">
+                    <h6 class="card-title">Latest Score</h6>
+                    <p class="display-6 mb-0" id="latestScore">-</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <div class="col-md-8">
-        <!-- Header / Summary area -->
-        <div class="row align-items-center mb-2">
-          <div class="col-md-8">
-            <h2 id="profile_name">Select a student</h2>
-            <p class="text-muted mb-1" id="profile_student_id"></p>
-            <p class="text-muted" id="profile_class_name"></p>
-          </div>
-          <div class="col-md-4 text-md-end">
-            <button class="btn btn-primary btn-sm" id="editProfileBtn" style="display:none;">
-              <i class="bi bi-pencil"></i> Edit Profile
-            </button>
-          </div>
-        </div>
-
-        <hr class="my-2">
-
-        <!-- Summary Cards -->
-        <div class="row g-3 mb-3">
-          <div class="col-md-4">
-            <div class="card text-white bg-success h-100">
-              <div class="card-body">
-                <h5 class="card-title">Overall Average</h5>
-                <p class="display-6 mb-0" id="overallAverage">-</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card bg-light h-100">
-              <div class="card-body">
-                <h5 class="card-title">Total Tests</h5>
-                <p class="display-6 mb-0" id="totalTests">-</p>
-              </div>
-            </div>
-          </div>
-          <div class="col-md-4">
-            <div class="card bg-light h-100">
-              <div class="card-body">
-                <h5 class="card-title">Latest Score</h5>
-                <p class="display-6 mb-0" id="latestScore">-</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Assignments Table -->
-        <div class="card mt-2 shadow-sm">
+        <div class="card mt-0 shadow-sm">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Grades & Tests</h5>
             <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#addGradeModal" id="addGradeBtn" style="display:none;">
@@ -101,6 +109,7 @@
         </div>
       </div>
     </div>
+
   </div>
 </div>
 
