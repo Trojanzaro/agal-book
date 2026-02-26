@@ -1138,7 +1138,7 @@ function openClassReportModal(reportId, classroomId, dateISO) {
     // populate modal fields; if reportId null, create new
     document.getElementById('classReport_id').value = reportId || '';
     document.getElementById('classReport_classroom').value = classroomId;
-    if (dateISO) document.getElementById('classReport_date').value = dateISO;
+    document.getElementById('classReport_date').value = dateISO;
 
     if (reportId) {
         // load record
