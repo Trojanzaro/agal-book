@@ -260,6 +260,27 @@ async function deleteAssignment(assignmentId) {
   }
 }
 
+// Delete classroom
+async function deleteClassroom(classroomId, name) {
+  if (!confirm(`Delete classroom '${name}'?`)) return;
+  try {
+    await pb.collection('classroom').delete(classroomId);
+    pushNotification('Classroom deleted');
+    // remove row from table if present
+    const row = document.querySelector(`#tbodyClassrooms tr td a[href^="javascript:classroomDetails('${classroomId}')"]`);
+    if (row) {
+      const tr = row.closest('tr');
+      if (tr && tr.parentNode) tr.parentNode.removeChild(tr);
+    }
+    // navigate back to classrooms list
+    sidebarNavActive('classrooms');
+    loadAllClassrooms();
+  } catch (e) {
+    console.error(e);
+    alert('Failed to delete classroom');
+  }
+}
+
 // Attach both direct and delegated listeners so the button works when inserted dynamically
 const directBtn = document.getElementById('createAssignmentBtn');
 //if (directBtn) directBtn.addEventListener('click', handleCreateAssignment);

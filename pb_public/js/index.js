@@ -894,6 +894,9 @@ async function loadAllClassrooms() {
                     <td>${element.level}</td>
                     <td>${element.room}</td>
                     <td>${element.fee}</td>
+                    <td>
+                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteClassroom('${element.id}','${element.name}')">Delete</button>
+                    </td>
                 </tr>
             `;
     });
@@ -1076,6 +1079,7 @@ async function handleClassroomDateClick(dateObj, classroomId) {
     const start = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
     const end = new Date(Date.UTC(year, month, day, 23, 59, 59, 999));
 
+    //otherwise the 
     const filterStr = `
         classroom = "${classroomId}" &&
         date >= "${start.toISOString().replace("T", " ")}" &&
