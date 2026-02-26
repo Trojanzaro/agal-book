@@ -110,7 +110,7 @@ function openEditGradeModal(subId, studentId) {
     document.getElementById('grade_id').value = subId || '';
     document.getElementById('grade_student_id').value = studentId || '';
     if (!subId) {
-        document.getElementById('grade_type').value = 'homework';
+        document.getElementById('grade_type').value = 'Homework';
         document.getElementById('grade_title').value = '';
         document.getElementById('grade_date').value = '';
         document.getElementById('grade_score').value = '';
