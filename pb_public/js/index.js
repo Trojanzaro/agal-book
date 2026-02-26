@@ -1041,6 +1041,8 @@ async function drawClassroomCalendar(classroomId, year) {
             if (!selection || selection.length === 0) return;
             if (selection[0].row == null) return;
             const clickedDate = dataTable.getValue(selection[0].row, 0);
+            console.log("Clicked date:", clickedDate);
+            console.log(typeof clickedDate);
             handleClassroomDateClick(clickedDate, classroomId);
         });
     });
