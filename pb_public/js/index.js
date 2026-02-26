@@ -1084,7 +1084,7 @@ async function handleClassroomDateClick(dateObj, classroomId) {
             card.innerHTML = `
                 <div class="card-body">
                     <div class="d-flex justify-content-between">
-                        <h5 class="card-title">${escapeHtml(r.title || '(untitled)')}</h5>
+                        <h5 class="card-title">${dateISO} - ${escapeHtml(r.title || '(untitled)')}</h5>
                         <div>
                             <button class="btn btn-sm btn-outline-primary me-1" onclick="openClassReportModal('${r.id}', '${classroomId}');">Edit</button>
                         </div>
