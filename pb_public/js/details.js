@@ -97,7 +97,6 @@ async function handleCreateAssignment() {
                 <strong>${escapeHtml(title)}</strong><br><small>${escapeHtml(createdStr)}</small>
               </div>
               <div>
-                <button type="button" class="btn btn-sm btn-success ms-2" onclick="event.stopPropagation(); openSubmitModal('${createdId}')">Submit</button>
                 <button type="button" class="btn btn-sm btn-danger ms-2" onclick="event.stopPropagation(); deleteAssignment('${createdId}')">Delete</button>
               </div>
             </div>
