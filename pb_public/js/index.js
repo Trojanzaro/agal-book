@@ -1123,7 +1123,7 @@ async function handleClassroomDateClick(dateObj, classroomId) {
             </div>
         `;
         document.getElementById('createReportBtn').addEventListener('click', function () {
-            openClassReportModal(null, classroomId, new Date(dateISO));
+            openClassReportModal(null, classroomId, new Date(dateISO).toISOString().split("T")[0]);
         });
     }
 }
