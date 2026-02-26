@@ -1154,6 +1154,7 @@ function openClassReportModalFromElem(el) {
 
 document.addEventListener('DOMContentLoaded', function () {
     document.getElementById('saveClassReportBtn')?.addEventListener('click', async function () {
+        console.log("Saving report...");
         const id = document.getElementById('classReport_id').value || null;
         const classroom = document.getElementById('classReport_classroom').value;
         const title = document.getElementById('classReport_title').value || '';
