@@ -337,6 +337,26 @@ async function deleteTeacher(teacherId) {
 }
 
 ///////
+// EVENT: CLICK DELETE CUSTOMER
+function deleteCustomerModal(customerId, name) {
+    const myModal = new bootstrap.Modal(document.getElementById('deleteCustomerModal'));
+    document.querySelector("#deleteCustomerModalText").innerHTML = `Are you sure you want to delete customer: ${name}`;
+    document.querySelector("#confirmDeleteCustomerBtn").setAttribute("onclick", `deleteCustomer('${customerId}')`);
+    const rep = myModal.show();
+}
+
+///////
+//EVENT: DELETE CUSTOMER
+async function deleteCustomer(customerId) {
+    try {
+        const authData = await pb.collection('customer').delete(customerId);
+        pushNotification("Succesfully deleted Customer!");
+    } catch(ex) {
+        pushNotification(ex)
+    }
+}
+
+///////
 // EVENT: CLICK ASSIGNMENT
 function showAssignment(index) {
     document.querySelectorAll('[id^="assignment-preview-"]').forEach(el => {
@@ -681,6 +701,7 @@ async function loadAllCustomers() {
             <td><a href="javascript:customerDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${element.email}</td>\
             <td>${element.phone_number}</td>\
+            <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteCustomerModal('${element.id}', '${element.first_name} ${element.last_name}')">Delete</button></td>
         </tr>`
     }
     );
