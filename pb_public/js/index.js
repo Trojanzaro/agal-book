@@ -1412,7 +1412,14 @@ function insertTableRow(tableId, classroomid) {
     }
 
     const observer = new MutationObserver(() => tryInit());
-    observer.observe(document.body, { childList: true, subtree: true });
+    const observeTarget = document.body || document.documentElement || document;
+    try {
+        observer.observe(observeTarget, { childList: true, subtree: true });
+    } catch (e) {
+        // Fallback: poll if observer cannot attach
+        let attempts = 0;
+        const iv = setInterval(() => { if (tryInit() || ++attempts > 50) clearInterval(iv); }, 200);
+    }
     // try immediately in case content already present
     tryInit();
 })();
