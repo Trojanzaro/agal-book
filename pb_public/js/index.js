@@ -1123,7 +1123,7 @@ async function handleClassroomDateClick(dateObj, classroomId) {
             </div>
         `;
         document.getElementById('createReportBtn').addEventListener('click', function () {
-            openClassReportModal(null, classroomId, new Date(dateISO));
+            openClassReportModal(null, classroomId, dateISO);
         });
     }
 }
@@ -1131,6 +1131,7 @@ async function handleClassroomDateClick(dateObj, classroomId) {
 // Modal + Quill handling for class reports
 let classReportQuill = null;
 function openClassReportModal(reportId, classroomId, dateISO) {
+    console.log("Opening modal for reportId:", reportId, "classroomId:", classroomId, "date:", dateISO);
     const modalEl = document.getElementById('classReportModal');
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
