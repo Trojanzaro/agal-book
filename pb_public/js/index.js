@@ -55,7 +55,6 @@ function selectStudentProfile(studentId, displayName) {
     document.getElementById('profile_name').innerText = displayName;
     document.getElementById('profile_student_id').innerText = 'ID: ' + studentId;
     document.getElementById('addGradeBtn').style.display = '';
-    document.getElementById('editProfileBtn').style.display = '';
     // store selected id
     document.getElementById('grade_student_id').value = studentId;
     // load assignments
