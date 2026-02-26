@@ -33,6 +33,22 @@ async function loadStudentsForProfile() {
         `;
         tbody.appendChild(tr);
     });
+
+    // initialize DataTable for students list (like other pages)
+    try {
+        if (window.$ && $.fn.dataTable) {
+            // destroy existing instance if present
+            if ($.fn.dataTable.isDataTable('#studentsTable')) {
+                $('#studentsTable').DataTable().destroy();
+            }
+            // initialize
+            $('#studentsTable').DataTable({
+                lengthChange: true,
+                buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                language: { url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json' }
+            });
+        }
+    } catch (e) { console.error('Failed to init students DataTable', e); }
 }
 
 function selectStudentProfile(studentId, displayName) {
