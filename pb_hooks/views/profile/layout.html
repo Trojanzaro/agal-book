@@ -5,9 +5,7 @@
 {{ block "sidebar" .}}
 {{ end }}
 
-<script>
-  loadStudentsForProfile();
-</script>
+<!-- profile students are loaded by a MutationObserver in pb_public/js/index.js -->
 
 <div class="main-dashboard" id="main-dashboard">
   <h1>{{._profile}} </h1>

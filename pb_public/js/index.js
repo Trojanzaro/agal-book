@@ -1397,19 +1397,22 @@ function insertTableRow(tableId, classroomid) {
 // Auto-run loader for profile page: when the profile layout is injected
 // into the DOM (via innerHTML), script execution may not run. Monitor
 // for the profile table and call `loadStudentsForProfile()` once available.
-(function monitorProfileLoad() {
-    function tryRun() {
-        if (document.getElementById('tbodyStudentsProfile')) {
-            try { if (typeof loadStudentsForProfile === 'function') loadStudentsForProfile(); } catch (e) { console.error(e); }
-            return true;
+(function observeProfileInsertion() {
+    function tryInit() {
+        const tbody = document.getElementById('tbodyStudentsProfile');
+        if (!tbody) return false;
+        // guard to avoid repeated init; still reload if it's empty
+        if (!tbody.dataset.profileInit || tbody.children.length === 0) {
+            try {
+                if (typeof loadStudentsForProfile === 'function') loadStudentsForProfile();
+                tbody.dataset.profileInit = '1';
+            } catch (e) { console.error(e); }
         }
-        return false;
+        return true;
     }
 
-    if (!tryRun()) {
-        let attempts = 0;
-        const iv = setInterval(() => {
-            if (tryRun() || ++attempts > 50) clearInterval(iv);
-        }, 200);
-    }
+    const observer = new MutationObserver(() => tryInit());
+    observer.observe(document.body, { childList: true, subtree: true });
+    // try immediately in case content already present
+    tryInit();
 })();
