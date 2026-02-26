@@ -632,6 +632,7 @@ async function loadAllTeachers() {
             <td><a href="javascript:teacherDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${age}</td>\
             <td>${element.phone_number}</td>\
+            <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTeacherModal('${element.id}', '${element.first_name} ${element.last_name}')">Delete</button></td>
         </tr>`
     });
 
