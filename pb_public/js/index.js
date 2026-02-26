@@ -1038,8 +1038,6 @@ async function drawClassroomCalendar(classroomId, year) {
             if (!selection || selection.length === 0) return;
             if (selection[0].row == null) return;
             const clickedDate = dataTable.getValue(selection[0].row, 0);
-            console.log("Clicked date:", clickedDate);
-            console.log(typeof clickedDate);
             handleClassroomDateClick(clickedDate, classroomId);
         });
     });
@@ -1047,7 +1045,7 @@ async function drawClassroomCalendar(classroomId, year) {
 
 
 async function handleClassroomDateClick(dateObj, classroomId) {
-    const dateISO = dateObj.toISOString().slice(0,10);
+    const dateISO = dateObj.toLocaleDateString();
     // Extract LOCAL date parts
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth();
@@ -1074,7 +1072,6 @@ async function handleClassroomDateClick(dateObj, classroomId) {
     container.innerHTML = '';
 
     if (reports.length > 0) {
-        console.log("ENTERING TH GENERTING THINGY")
         reports.forEach(r => {
             const card = document.createElement('div');
             card.className = 'card mb-2';
