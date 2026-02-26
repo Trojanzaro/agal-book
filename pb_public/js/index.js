@@ -1053,10 +1053,24 @@ function formatDateISO(d) {
 
 async function handleClassroomDateClick(dateObj, classroomId) {
     const dateISO = formatDateISO(dateObj);
+    const baseDate = new Date(dateObj);
+    const filterStr = `classroom = "${classroomId}" &&\
+    date >= "${new Date(Date.UTC(
+        baseDate.getUTCFullYear(),
+        baseDate.getUTCMonth(),
+        baseDate.getUTCDate(),
+        0, 0, 0, 0
+    )).toISOString().replace("T", " ")}" &&\
+    date <= "${new Date(Date.UTC(
+        baseDate.getUTCFullYear(),
+        baseDate.getUTCMonth(),
+        baseDate.getUTCDate(),
+        23, 59, 59, 999
+    )).toISOString().replace("T", " ")}"`;
     // fetch reports for classroom and filter by date
     let reports = [];
     try {
-        const all = await pb.collection('class_report').getFullList({ filter: `(classroom = "${classroomId}") && (date = "${dateISO}")` });
+        const all = await pb.collection('class_report').getFullList({ filter: filterStr });
         reports = all;
         console.log(`Reports for ${dateISO}:`, reports);
     } catch (e) { console.error('Failed to fetch reports for date', e); }
