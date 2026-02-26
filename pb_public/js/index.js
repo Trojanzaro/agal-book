@@ -1050,7 +1050,7 @@ async function drawClassroomCalendar(classroomId, year) {
 
         const chart = new google.visualization.Calendar(document.getElementById('classroom_calendar'));
         const options = {
-            title: 'Classroom Reports',
+            title: getLanguage() === 'en' ? 'Classroom Reports' : 'Αναφορές Τάξης',
             calendar: { cellSize: 15 },
             colorAxis: { colors: ['#f0f4c3', '#8bc34a'] }
         };
