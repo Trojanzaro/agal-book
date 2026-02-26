@@ -653,10 +653,7 @@ async function loadAllStudentsForAssign() {
             document.getElementById("studentsSelectAssign").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
         }
     });
-    
-    // records.forEach(element => {
-    //     document.getElementById("studentsSelectAssign").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
-    // });
+
 }
 
 ///////
