@@ -1085,7 +1085,11 @@ async function handleClassroomDateClick(dateObj, classroomId) {
                     <div class="d-flex justify-content-between">
                         <h5 class="card-title">${dateISO} - ${escapeHtml(r.title || '(untitled)')}</h5>
                         <div>
-                            <button class="btn btn-sm btn-outline-primary me-1" onclick="openClassReportModal('${r.id}', '${classroomId}');">Edit</button>
+                            <button class="btn btn-sm btn-outline-primary me-1"
+                                data-report-id="${r.id}"
+                                data-classroom-id="${classroomId}"
+                                data-report-date="${r.date || ''}"
+                                onclick="openClassReportModalFromElem(this)">Edit</button>
                         </div>
                     </div>
                     <div class="card-text mt-2">${r.report_body || ''}</div>
@@ -1110,6 +1114,7 @@ async function handleClassroomDateClick(dateObj, classroomId) {
 // Modal + Quill handling for class reports
 let classReportQuill = null;
 function openClassReportModal(reportId, classroomId, dateISO) {
+    
     // populate modal fields; if reportId null, create new
     document.getElementById('classReport_id').value = reportId || '';
     document.getElementById('classReport_classroom').value = classroomId;
@@ -1136,6 +1141,18 @@ function openClassReportModal(reportId, classroomId, dateISO) {
     const modalEl = document.getElementById('classReportModal');
     const modal = new bootstrap.Modal(modalEl);
     modal.show();
+}
+
+function openClassReportModalFromElem(el) {
+    if (!el || !el.dataset) return;
+    const reportId = el.dataset.reportId || null;
+    const classroomId = el.dataset.classroomId || el.dataset.classroom || null;
+    const rawDate = el.dataset.reportDate || el.dataset.date || '';
+    let dateISO = '';
+    try {
+        if (rawDate) dateISO = (new Date(rawDate)).toISOString().slice(0,10);
+    } catch (e) { dateISO = rawDate; }
+    openClassReportModal(reportId, classroomId, dateISO);
 }
 
 document.addEventListener('DOMContentLoaded', function () {
