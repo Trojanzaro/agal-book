@@ -97,8 +97,6 @@ async function handleCreateAssignment() {
           // temporary highlight
           btn.classList.add('list-group-item-success');
           setTimeout(() => { btn.classList.remove('list-group-item-success'); }, 3000);
-          // ensure it's visible
-          try { btn.scrollIntoView({ behavior: 'smooth', block: 'center' }); } catch (e) { }
         }
 
         if (previewsCol) {
@@ -122,10 +120,20 @@ async function handleCreateAssignment() {
           previewsCol.insertBefore(preview, previewsCol.firstChild);
         }
 
-        // hide modal
+        // hide modal (do this safely — bootstrap may not be available)
         var modalEl = document.getElementById('newAssignmentModal');
-        var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
-        modal.hide();
+        if (modalEl) {
+          if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            try { modal.hide(); } catch (e) { /* ignore */ }
+          } else {
+            modalEl.classList.remove('show');
+            modalEl.style.display = 'none';
+            document.body.classList.remove('modal-open');
+            var backdrop = document.querySelector('.modal-backdrop');
+            if (backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+          }
+        }
 
         // show the newly added assignment if showAssignment exists, else toggle manually
         if (typeof showAssignment === 'function') {
@@ -141,8 +149,23 @@ async function handleCreateAssignment() {
 
       } catch (domErr) {
         console.error('DOM update after create failed', domErr);
-        // fallback: reload
-        window.location.reload();
+        // Avoid forcing a full reload. Do a best-effort cleanup and notify the user.
+        try {
+          var modalEl = document.getElementById('newAssignmentModal');
+          if (modalEl) {
+            if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+              var modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+              try { modal.hide(); } catch (e) { /* ignore */ }
+            } else {
+              modalEl.classList.remove('show');
+              modalEl.style.display = 'none';
+              document.body.classList.remove('modal-open');
+              var backdrop = document.querySelector('.modal-backdrop');
+              if (backdrop && backdrop.parentNode) backdrop.parentNode.removeChild(backdrop);
+            }
+          }
+        } catch (e) { /* ignore */ }
+        if (typeof pushNotification === 'function') pushNotification('Assignment created (UI update skipped).');
       }
     } else {
       alert('PocketBase client not available.');
