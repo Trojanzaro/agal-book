@@ -1050,11 +1050,11 @@ async function drawClassroomCalendar(classroomId, year) {
 
 
 async function handleClassroomDateClick(dateObj, classroomId) {
-    const dateISO = dateObj
+    const dateISO = dateObj.toISOString().slice(0,10);
     // Extract LOCAL date parts
-    const year = dateISO.getFullYear();
-    const month = dateISO.getMonth();
-    const day = dateISO.getDate();
+    const year = dateObj.getFullYear();
+    const month = dateObj.getMonth();
+    const day = dateObj.getDate();
 
     // Build proper UTC boundaries
     const start = new Date(Date.UTC(year, month, day, 0, 0, 0, 0));
@@ -1070,7 +1070,6 @@ async function handleClassroomDateClick(dateObj, classroomId) {
     try {
         const all = await pb.collection('class_report').getFullList({ filter: filterStr });
         reports = all;
-        console.log(`Reports for ${dateISO}:`, reports);
     } catch (e) { console.error('Failed to fetch reports for date', e); }
 
     const container = document.getElementById('classroom_reports');
