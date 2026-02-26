@@ -789,7 +789,7 @@ function drawTeacherCallendar(schedule, year) {
                     maxValue: 10,
                     colors: ['#e0f2f1', '#26a4d6']
                 },
-                title: 'Teacher Calendar',
+                title: getLanguage() === 'en' ? 'Teacher Calendar' : 'Ημερολόγιο Δασκάλου',
                 calendar: {
                     cellSize: 15,
                 }
