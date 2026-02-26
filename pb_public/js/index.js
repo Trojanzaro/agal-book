@@ -1048,13 +1048,9 @@ async function drawClassroomCalendar(classroomId, year) {
     });
 }
 
-function formatDateISO(d) {
-    const dt = new Date(d);
-    return dt.toISOString().slice(0,10);
-}
 
 async function handleClassroomDateClick(dateObj, classroomId) {
-    const dateISO = formatDateISO(dateObj);
+    const dateISO = dateObj
     // Extract LOCAL date parts
     const year = dateISO.getFullYear();
     const month = dateISO.getMonth();
