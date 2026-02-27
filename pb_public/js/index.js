@@ -52,7 +52,7 @@ async function loadStudentsForProfile() {
 
 function selectStudentProfile(studentId, displayName) {
     // set header
-    document.getElementById('profile_name').innerText = displayName;
+    document.getElementById('profile_name').innerHTML = '<a href="javascript:studentDetails(\'' + studentId + '\');sidebarNavActive(\'students\');">' + displayName + '</a>';
     document.getElementById('profile_student_id').innerText = 'ID: ' + studentId;
     document.getElementById('addGradeBtn').style.display = '';
     // store selected id
@@ -372,6 +372,24 @@ async function assignStudent() {
     } catch (e) {
         console.error(e);
         pushNotification("ERROR: " + JSON.stringify(e.response.data));
+    }
+}
+
+///////
+// EVENT: CLASSROOM: UNASSIGN STUDENT
+async function unassignStudent(studentId) {
+    if (!confirm('Unassign this student from the classroom?')) return;
+    const classroomId = document.getElementById('classroom_id')?.value || '';
+    if (!classroomId) { alert('No classroom selected'); return; }
+    try {
+        const classroom = await pb.collection('classroom').getOne(classroomId);
+        const updatedStudents = (classroom.students || []).filter(id => id !== studentId);
+        await pb.collection('classroom').update(classroomId, { students: updatedStudents });
+        pushNotification('Student unassigned');
+        classroomDetails(classroomId);
+    } catch (e) {
+        console.error(e);
+        pushNotification('ERROR: ' + JSON.stringify(e.response?.data || e.toString()));
     }
 }
 
