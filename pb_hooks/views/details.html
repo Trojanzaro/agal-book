@@ -317,6 +317,7 @@
                 <th>{{._age}} </th>
                 <th>Email</th>
                 <th>{{._created}} </th>
+                <th>Actions</th>
             </tr>
         </thead>
         <tbody id="tbodyClassroomStudents">
@@ -327,6 +328,7 @@
                 <td>{{ .Get "birthdate" }}</td>
                 <td>{{ .Get "email" }}</td>
                 <td>{{ .Get "created" }}</td>
+                <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="unassignStudent('{{ .Get "id"}}')">Unassign</button></td>
             </tr>
             {{ end }}
         </tbody>
