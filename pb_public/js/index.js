@@ -229,12 +229,23 @@ async function customerDetails(customerId) {
     document.getElementById("tbodyStudents").innerHTML = '';
     relatedStudents.forEach(student => {
         const age = ((new Date()).getFullYear() - new Date(student.birthdate).getFullYear())
+        // prepare discount display
+        const discountPct = parseFloat(student.fee_discount) || 0;
+        let discountCell = '';
+        if (discountPct > 0) {
+            // show badge and remove button (remove hidden for student role)
+            discountCell = `<td><span class="badge bg-info me-2">-${discountPct}%</span>` + (pb.authStore.model['auth_type'] !== 'student' ? `<button type="button" class="btn btn-sm btn-outline-danger" onclick="removeDiscount('${student.id}','${customerId}')">Remove</button>` : ``) + `</td>`;
+        } else {
+            // show add discount button when no discount
+            discountCell = pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-primary" onclick="openDiscountModal('${student.id}','${customerId}')">Discount</button></td>` : `<td></td>`;
+        }
+
         document.getElementById("tbodyStudents").innerHTML += `<tr>\
             <td><a href="javascript:studentFees('${student.id}','${customerId}','${customer.first_name}','${student.first_name + ' ' + student.last_name}');" >${student.first_name}</a></td>\
             <td><a href="javascript:studentFees('${student.id}','${customerId}','${customer.first_name}','${student.first_name + ' ' + student.last_name}');" >${student.last_name}</a></td>\
             <td>${age}</td>\
             <td>${student.phone_number}</td>\
-            ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-primary" onclick="openDiscountModal('${student.id}','${customerId}')">Discount</button></td>` : `<td></td>`}\
+            ${discountCell}\
         </tr>`
     });
 
@@ -287,7 +298,14 @@ async function studentFees(studentId, customerId, customerName, studentName) {
         try { studentRecord = await pb.collection('student').getOne(studentId); } catch (e) { console.error('Failed to fetch student for discount', e); }
         const discountPct = parseFloat(studentRecord.fee_discount) || 0;
         const discountedTotal = Math.round((totalFee * (1 - (discountPct / 100))) * 100) / 100;
-        document.getElementById("totalFee").innerText = '€' + discountedTotal.toFixed(2); // set total fee after discount
+        // display total fee; if discount exists show original and badge + remove button
+        if (discountPct > 0) {
+            const original = '€' + totalFee.toFixed ? '€' + totalFee.toFixed(2) : '€' + totalFee;
+            const removeBtn = pb.authStore.model['auth_type'] !== 'student' ? ` <button class="btn btn-sm btn-outline-danger ms-2" onclick="removeDiscount('${studentId}','${customerId}')">Remove</button>` : ``;
+            document.getElementById("totalFee").innerHTML = `<span class="text-muted text-decoration-line-through">€${totalFee.toFixed(2)}</span> <strong> €${discountedTotal.toFixed(2)}</strong> <span class="badge bg-info ms-2">-${discountPct}%</span>${removeBtn}`;
+        } else {
+            document.getElementById("totalFee").innerText = '€' + discountedTotal.toFixed(2); // set total fee after discount
+        }
         
         let paidAmount = 0;
         // populate payments
@@ -405,6 +423,21 @@ async function saveDiscount(studentId, customerId) {
                 console.error(e);
                 alert('Failed to save discount');
         }
+}
+
+// remove discount from student
+async function removeDiscount(studentId, customerId) {
+    if (!confirm('Remove discount for this student?')) return;
+    try {
+        await pb.collection('student').update(studentId, { fee_discount: 0 });
+        pushNotification('Discount removed');
+        try { customerDetails(customerId); } catch (e) { console.error(e); }
+        // if on student fees view refresh it as well
+        try { studentFees(studentId, customerId, '', document.getElementById('card_studnet_name').innerText); } catch (e) {}
+    } catch (e) {
+        console.error(e);
+        alert('Failed to remove discount');
+    }
 }
 
 
