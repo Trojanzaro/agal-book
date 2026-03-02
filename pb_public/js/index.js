@@ -860,23 +860,45 @@ async function initializeApp() {
 ///////
 // EVENT: CTRL: LOAD ALL STUDENTS
 async function loadAllStudents() {
-    const classrooms = await pb.collection("classroom").getFullList({
-        expand: "students"
-    });
+    // load classrooms with students, and collect assigned student ids
+    const classrooms = await pb.collection("classroom").getFullList({ expand: "students" });
+    const assignedIds = new Set();
 
-    classrooms.forEach(async(element) => {
-        element.expand.students.forEach((el) => {
-            const fnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['first_name']}</a>` : el['first_name']
-            const lnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['last_name']}</a>` : el['last_name']
-            document.getElementById("tbodyStudents").innerHTML += `<tr\
+    // clear table body first
+    document.getElementById("tbodyStudents").innerHTML = '';
+
+    classrooms.forEach(element => {
+        const classroomName = element.name || '';
+        (element.expand?.students || []).forEach(el => {
+            assignedIds.add(el.id);
+            const fnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['first_name']}</a>` : el['first_name'];
+            const lnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['last_name']}</a>` : el['last_name'];
+            document.getElementById("tbodyStudents").innerHTML += `<tr>\
                 <td>${fnLinkString}</td>\
                 <td>${lnLinkString}</td>\
                 <td>${((new Date()).getFullYear() - new Date(el['birthdate']).getFullYear())}</td>\
                 <td>${el['phone_number']}</td>\
-                <td><a href="javascript:classroomDetails('${element['id']}');sidebarNavActive('classrooms');">${element['name']}</a></td>\
+                <td><a href="javascript:classroomDetails('${element['id']}');sidebarNavActive('classrooms');">${classroomName}</a></td>\
                 ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>` : `<td></td>`}\
-            </tr>`
+            </tr>`;
         });
+    });
+
+    // now fetch all students and append those not assigned to any classroom
+    const allStudents = await pb.collection('student').getFullList({ sort: '-created' });
+    allStudents.forEach(s => {
+        if (!assignedIds.has(s.id)) {
+            const fnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${s.id}');" >${s.first_name}</a>` : s.first_name;
+            const lnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${s.id}');" >${s.last_name}</a>` : s.last_name;
+            document.getElementById("tbodyStudents").innerHTML += `<tr>\
+                <td>${fnLinkString}</td>\
+                <td>${lnLinkString}</td>\
+                <td>${((new Date()).getFullYear() - new Date(s.birthdate).getFullYear())}</td>\
+                <td>${s.phone_number}</td>\
+                <td><span class="text-muted">Unassigned</span></td>\
+                ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${s.id}', '${s.first_name} ${s.last_name}')">Delete</button></td>` : `<td></td>`}\
+            </tr>`;
+        }
     });
 
     loadAllParentsForSelect();
