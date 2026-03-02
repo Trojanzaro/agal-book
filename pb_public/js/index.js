@@ -43,6 +43,7 @@ async function loadStudentsForProfile() {
             // initialize
             $('#studentsTable').DataTable({
                 lengthChange: true,
+                pageLength: 10,
                 buttons: ['copy', 'excel', 'pdf', 'colvis'],
                 language: { url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json' }
             });
@@ -89,6 +90,10 @@ async function loadStudentProfile(studentId) {
     subs.forEach(s => {
         const pct = (s.grade && s.max_score) ? Math.round((parseFloat(s.grade) / parseFloat(s.max_score)) * 100) + '%' : '-';
         const tr = document.createElement('tr');
+        const actionButtons = pb.authStore.model['auth_type'] !== 'student' ? `
+                <button class="btn btn-outline-secondary btn-sm" onclick="openEditGradeModal('${s.id}','${studentId}')"><i class="fa-solid fa-pencil"></i></button>
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteGrade('${s.id}','${studentId}')"><i class="fa-solid fa-trash"></i></button>
+            ` : '';
         tr.innerHTML = `
             <td>${escapeHtml(s.type || '')}</td>
             <td>${escapeHtml(s.title || '')}</td>
@@ -96,10 +101,7 @@ async function loadStudentProfile(studentId) {
             <td>${escapeHtml(s.grade || '')}</td>
             <td>${escapeHtml(s.max_score || '')}</td>
             <td>${pct}</td>
-            <td class="text-center">
-                <button class="btn btn-outline-secondary btn-sm" onclick="openEditGradeModal('${s.id}','${studentId}')"><i class="fa-solid fa-pencil"></i></button>
-                <button class="btn btn-outline-danger btn-sm" onclick="deleteGrade('${s.id}','${studentId}')"><i class="fa-solid fa-trash"></i></button>
-            </td>
+            <td class="text-center">${actionButtons}</td>
         `;
         tbody.appendChild(tr);
     });
@@ -232,6 +234,7 @@ async function customerDetails(customerId) {
             <td><a href="javascript:studentFees('${student.id}','${customerId}','${customer.first_name}','${student.first_name + ' ' + student.last_name}');" >${student.last_name}</a></td>\
             <td>${age}</td>\
             <td>${student.phone_number}</td>\
+            ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-primary" onclick="openDiscountModal('${student.id}','${customerId}')">Discount</button></td>` : `<td></td>`}\
         </tr>`
     });
 
@@ -279,17 +282,22 @@ async function studentFees(studentId, customerId, customerName, studentName) {
         // fill the payments table
         document.getElementById("paymentTable").innerHTML = ''; // clear previous entries
         let totalFee = classroom[0].fee; // get fee from classroom
-        document.getElementById("totalFee").innerText = '€' + totalFee; // set total fee
+        // apply student discount (percent stored in student.fee_discount)
+        let studentRecord = {};
+        try { studentRecord = await pb.collection('student').getOne(studentId); } catch (e) { console.error('Failed to fetch student for discount', e); }
+        const discountPct = parseFloat(studentRecord.fee_discount) || 0;
+        const discountedTotal = Math.round((totalFee * (1 - (discountPct / 100))) * 100) / 100;
+        document.getElementById("totalFee").innerText = '€' + discountedTotal.toFixed(2); // set total fee after discount
         
         let paidAmount = 0;
         // populate payments
         payments.forEach(payment => {
             paidAmount += payment.payment_amount;
 
-            const unpaidAmount = totalFee - paidAmount;
+            const unpaidAmount = discountedTotal - paidAmount;
 
-            document.getElementById("paidAmount").innerText = '€' + paidAmount;
-            document.getElementById("unpaidAmount").innerText = '€' + unpaidAmount;
+            document.getElementById("paidAmount").innerText = '€' + paidAmount.toFixed(2);
+            document.getElementById("unpaidAmount").innerText = '€' + unpaidAmount.toFixed(2);
 
             document.getElementById("paymentTable").innerHTML += `<tr>\
                 <td>${payment.created}</td>\
@@ -301,7 +309,7 @@ async function studentFees(studentId, customerId, customerName, studentName) {
             </tr>`;
 
             // payment progrees bar
-            document.getElementById("paymentProgress").style.width = ((paidAmount / totalFee) * 100) + '%';
+            document.getElementById("paymentProgress").style.width = ((paidAmount / discountedTotal) * 100) + '%';
 
         });
     } else {
@@ -339,6 +347,64 @@ async function addPayment() {
     } catch (e) {
         pushNotification("ERROR: " + JSON.stringify(e.response.data));
     }
+}
+
+// Discount modal: open to set fee_discount on student record
+async function openDiscountModal(studentId, customerId) {
+        // ensure modal exists
+        if (!document.getElementById('discountModal')) {
+                const modalHTML = `
+                <div class="modal" tabindex="-1" id="discountModal">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Set Discount (%)</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label class="form-label">Discount percent</label>
+                                    <input type="number" min="0" max="100" class="form-control" id="discountPercent" />
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-primary" id="saveDiscountBtn">Save</button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+                const container = document.createElement('div');
+                container.innerHTML = modalHTML;
+                document.body.appendChild(container);
+        }
+
+        // prefill value
+        try {
+                const student = await pb.collection('student').getOne(studentId);
+                document.getElementById('discountPercent').value = student.fee_discount || 0;
+        } catch (e) { console.error('Failed to fetch student for discount modal', e); document.getElementById('discountPercent').value = 0; }
+
+        // attach handler
+        const saveBtn = document.getElementById('saveDiscountBtn');
+        saveBtn.onclick = function () { saveDiscount(studentId, customerId); };
+
+        const modal = new bootstrap.Modal(document.getElementById('discountModal'));
+        modal.show();
+}
+
+async function saveDiscount(studentId, customerId) {
+        const val = parseFloat(document.getElementById('discountPercent').value) || 0;
+        try {
+                await pb.collection('student').update(studentId, { fee_discount: val });
+                pushNotification('Discount saved');
+                try { var modal = bootstrap.Modal.getInstance(document.getElementById('discountModal')); modal.hide(); } catch (e) {}
+                // refresh customer/student fees view
+                try { customerDetails(customerId); } catch (e) {}
+        } catch (e) {
+                console.error(e);
+                alert('Failed to save discount');
+        }
 }
 
 
@@ -769,13 +835,13 @@ async function loadAllStudents() {
         element.expand.students.forEach((el) => {
             const fnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['first_name']}</a>` : el['first_name']
             const lnLinkString = pb.authStore.model['auth_type'] !== "student" ? `<a href="javascript:studentDetails('${el['id']}');" >${el['last_name']}</a>` : el['last_name']
-            document.getElementById("tbodyStudents").innerHTML += `<tr>\
+            document.getElementById("tbodyStudents").innerHTML += `<tr\
                 <td>${fnLinkString}</td>\
                 <td>${lnLinkString}</td>\
                 <td>${((new Date()).getFullYear() - new Date(el['birthdate']).getFullYear())}</td>\
                 <td>${el['phone_number']}</td>\
-                <td><a href="javascript:classroomDetails('${element['id']}');sidebarNavActive('classrooms');">${element['name']}</a></td>
-                <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>
+                <td><a href="javascript:classroomDetails('${element['id']}');sidebarNavActive('classrooms');">${element['name']}</a></td>\
+                ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>` : `<td></td>`}\
             </tr>`
         });
     });
@@ -785,6 +851,7 @@ async function loadAllStudents() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
+            pageLength: 25,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
                 url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
@@ -856,13 +923,14 @@ async function loadAllTeachers() {
             <td><a href="javascript:teacherDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${age}</td>\
             <td>${element.phone_number}</td>\
-            <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTeacherModal('${element.id}', '${element.first_name} ${element.last_name}')">Delete</button></td>
+            ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteTeacherModal('${element.id}', '${element.first_name} ${element.last_name}')">Delete</button></td>` : `<td></td>`}\
         </tr>`
     });
 
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
+            pageLength: 10,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
                 url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
@@ -886,7 +954,7 @@ async function loadAllCustomers() {
             <td><a href="javascript:customerDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${element.email}</td>\
             <td>${element.phone_number}</td>\
-            <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteCustomerModal('${element.id}', '${element.first_name} ${element.last_name}')">Delete</button></td>
+            ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteCustomerModal('${element.id}', '${element.first_name} ${element.last_name}')">Delete</button></td>` : `<td></td>`}\
         </tr>`
     }
     );
@@ -898,6 +966,7 @@ async function loadAllCustomers() {
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
+            pageLength: 10,
             buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
                 url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
@@ -1060,7 +1129,7 @@ async function loadAllClassrooms() {
                     <td>${element.room}</td>
                     <td>${element.fee}</td>
                     <td>
-                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteClassroom('${element.id}','${element.name}')">Delete</button>
+                                ${pb.authStore.model['auth_type'] !== 'student' ? `<button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteClassroom('${element.id}','${element.name}')">Delete</button>` : ``}
                     </td>
                 </tr>
             `;
@@ -1068,8 +1137,9 @@ async function loadAllClassrooms() {
 
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
-            lengthChange: true,
-            buttons: ['copy', 'excel', 'pdf', 'colvis'],
+                    lengthChange: true,
+                    pageLength: 10,
+                    buttons: ['copy', 'excel', 'pdf', 'colvis'],
             language: {
                 url: 'json/dataTables_' + (getLanguage() === 'en' ? 'en' : 'el') + '.json'
             }
@@ -1270,12 +1340,14 @@ async function handleClassroomDateClick(dateObj, classroomId) {
                     <div class="d-flex justify-content-between">
                         <h5 class="card-title">${dateISO} - ${escapeHtml(r.title || '(untitled)')}</h5>
                         <div>
-                            <button class="btn btn-sm btn-outline-primary me-1"
-                                data-report-id="${r.id}"
-                                data-classroom-id="${classroomId}"
-                                data-report-date="${r.date || ''}"
-                                onclick="openClassReportModalFromElem(this)">Edit</button>
-                            <button class="btn btn-sm btn-outline-danger" onclick="deleteClassReport('${r.id}','${classroomId}','${dateISO}')">Delete</button>
+                            ${pb.authStore.model['auth_type'] !== 'student' ? `
+                                <button class="btn btn-sm btn-outline-primary me-1"
+                                    data-report-id="${r.id}"
+                                    data-classroom-id="${classroomId}"
+                                    data-report-date="${r.date || ''}"
+                                    onclick="openClassReportModalFromElem(this)">Edit</button>
+                                <button class="btn btn-sm btn-outline-danger" onclick="deleteClassReport('${r.id}','${classroomId}','${dateISO}')">Delete</button>
+                            ` : ``}
                         </div>
                     </div>
                     <div class="card-text mt-2">${r.report_body || ''}</div>
