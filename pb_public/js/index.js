@@ -97,7 +97,7 @@ async function loadStudentProfile(studentId) {
         tr.innerHTML = `
             <td>${escapeHtml(s.type || '')}</td>
             <td>${escapeHtml(s.title || '')}</td>
-            <td>${s.date ? (new Date(s.date)).toISOString().slice(0,10) : ''}</td>
+            <td>${s.date ? formatDDMM(new Date(s.date)) : ''}</td>
             <td>${escapeHtml(s.grade || '')}</td>
             <td>${escapeHtml(s.max_score || '')}</td>
             <td>${pct}</td>
@@ -1359,7 +1359,7 @@ async function drawClassroomCalendar(classroomId, year) {
 
 
 async function handleClassroomDateClick(dateObj, classroomId) {
-    const dateISO = dateObj.toLocaleDateString();
+    const dateISO = formatDDMM(dateObj);
     // Extract LOCAL date parts
     const year = dateObj.getFullYear();
     const month = dateObj.getMonth();
@@ -1514,6 +1514,18 @@ async function saveClassReport() {
 function getLanguage() {
     const lang = window.localStorage.getItem('language') || 'en';
     return lang;
+}
+
+// Format a Date object as DD/MM/YYYY for display
+function formatDDMM(d) {
+    if (!d) return '';
+    try {
+        const dt = (d instanceof Date) ? d : new Date(d);
+        const dd = String(dt.getDate()).padStart(2, '0');
+        const mm = String(dt.getMonth() + 1).padStart(2, '0');
+        const yy = dt.getFullYear();
+        return `${dd}/${mm}/${yy}`;
+    } catch (e) { return '' }
 }
 
 function changeLanguage(lang) {
