@@ -1419,7 +1419,8 @@ async function handleClassroomDateClick(dateObj, classroomId) {
             </div>
         `;
         document.getElementById('createReportBtn').addEventListener('click', function () {
-            openClassReportModal(null, classroomId, new Date(dateISO).toISOString().split("T")[0]);
+            const isoDate = (dateObj instanceof Date) ? dateObj.toISOString().slice(0,10) : (new Date(dateObj)).toISOString().slice(0,10);
+            openClassReportModal(null, classroomId, isoDate);
         });
     }
 }
