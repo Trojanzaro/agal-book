@@ -456,6 +456,8 @@ async function addPayment() {
 </InvoicesDoc>
 `;
 
+console.log("Generated XML Body for myDATA:", xmlBody);
+
     const response = await fetch(
       "https://mydatapi.aade.gr/myDATA/SendInvoices",
       {
