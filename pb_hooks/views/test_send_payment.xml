@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<InvoicesDoc 
+    xmlns="http://www.aade.gr/myDATA/invoice/v1.0"
+    xmlns:icls="https://www.aade.gr/myDATA/incomeClassificaton/v1.0"
+    xmlns:ecls="https://www.aade.gr/myDATA/expensesClassificaton/v1.0"
+    xmlns:pm="https://www.aade.gr/myDATA/paymentMethod/v1.0">
+
+  <invoice>
+
+    <uid>7F4E8A7C6D5A4F3E2B1C9D8E7F6A5B4C3D2E1F0A</uid> <!-- Unique identifier for the invoice -->
+
+    <issuer>
+      <vatNumber>012345678</vatNumber>
+      <country>GR</country>
+      <branch>0</branch>
+    </issuer>
+
+    <invoiceHeader>
+      <series>A</series>
+      <aa>1</aa>
+      <issueDate>2026-03-05</issueDate>
+      <invoiceType>11.2</invoiceType>
+      <vatPaymentSuspension>false</vatPaymentSuspension>
+      <currency>EUR</currency>
+    </invoiceHeader>
+
+    <paymentMethods>
+      <paymentMethodDetails>
+        <type>1</type>
+        <amount>2.50</amount>
+      </paymentMethodDetails>
+    </paymentMethods>
+
+    <invoiceDetails>
+      <lineNumber>1</lineNumber>
+      <netValue>2.50</netValue>
+      <vatCategory>7</vatCategory>
+      <vatAmount>0.00</vatAmount>
+      <vatExemptionCategory>7</vatExemptionCategory>
+
+      <incomeClassification>
+        <icls:classificationType>E3_561_003</icls:classificationType>
+        <icls:classificationCategory>category1_3</icls:classificationCategory>
+        <icls:amount>2.50</icls:amount>
+      </incomeClassification>
+    </invoiceDetails>
+
+    <invoiceSummary>
+      <totalNetValue>2.50</totalNetValue>
+      <totalVatAmount>0.00</totalVatAmount>
+      <totalWithheldAmount>0.00</totalWithheldAmount>
+      <totalFeesAmount>0.00</totalFeesAmount>
+      <totalStampDutyAmount>0.00</totalStampDutyAmount>
+      <totalOtherTaxesAmount>0.00</totalOtherTaxesAmount>
+      <totalDeductionsAmount>0.00</totalDeductionsAmount>
+      <totalGrossValue>2.50</totalGrossValue>
+
+      <incomeClassification>
+        <icls:classificationType>E3_561_003</icls:classificationType>
+        <icls:classificationCategory>category1_3</icls:classificationCategory>
+        <icls:amount>2.50</icls:amount>
+      </incomeClassification>
+    </invoiceSummary>
+
+  </invoice>
+
+</InvoicesDoc>
