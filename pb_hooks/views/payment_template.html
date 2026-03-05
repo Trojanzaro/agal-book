@@ -14,16 +14,18 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
         setTimeout(function() {
         console.log("Page loaded, generating QR code...");
         // Generate QR code
-        var qrCanvas = document.createElement('canvas');
-        var qr = new QRCode(qrCanvas, {
-            text: '{{.qr_url}}',
-            width: 150,
-            height: 150
-        });
+      //   var qrCanvas = document.createElement('canvas');
+      //   var qr = new QRCode(qrCanvas, {
+      //       text: '{{.qr_url}}',
+      //       width: 150,
+      //       height: 150
+      //   });
         
-        // Convert canvas to image data and set as SVG image
-        var img = document.getElementById('qrCodeImage');
-        img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', qrCanvas.toDataURL('image/png'));
+      //   // Convert canvas to image data and set as SVG image
+      //   var img = document.getElementById('qrCodeImage');
+      //   img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', qrCanvas.toDataURL('image/png'));
+
+new QRCode(document.getElementById("qrCodeImage"), "{{.qr_url}}");
 
          window.print();
         }, 500);
