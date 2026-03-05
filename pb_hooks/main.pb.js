@@ -444,17 +444,3 @@ routerAdd("GET", "/_dist/payment", (httpContext) => {
         return httpContext.html(404, '<h1>Sorry! page Not Found</h1>');
     }
 });
-
-//////////
-// PAYMENT CREATION - SET DEFAULT MARK AND QR_URL
-onBeforeCreate((e) => {
-    if (e.collection.name == "payment") {
-        // Set default values if not provided
-        if (!e.record.get("mark")) {
-            e.record.set("mark", "400012788280888");
-        }
-        if (!e.record.get("qr_url")) {
-            e.record.set("qr_url", "https://mydatapi.aade.gr/myDATA/TimologioQR/QRInfo?q=S9ger8dY3c2acZg6H8Atv37DyVZzBOoCxtqhlE2WSRnzt96vGIT1l4EJDvrddXCS4EtxOP8UViKZExX0d5qjN2XZOHMDoX70SzIsHUROB7c%3d");
-        }
-    }
-}, "payment");

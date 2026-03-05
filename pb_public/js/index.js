@@ -352,7 +352,9 @@ async function addPayment() {
             "payment_amount": parseFloat(amount),
             "payment_student": studentId,
             "payment_parent": customerId,
-            "payment_method": "DIRECT"
+            "method": "CASH",
+            "mark": "400012788280888",
+            "qr_url": "https://mydatapi.aade.gr/myDATA/TimologioQR/QRInfo?q=S9ger8dY3c2acZg6H8Atv37DyVZzBOoCxtqhlE2WSRnzt96vGIT1l4EJDvrddXCS4EtxOP8UViKZExX0d5qjN2XZOHMDoX70SzIsHUROB7c%3d"
         };
 
         console.log("Creating payment with data:", data);
