@@ -1419,7 +1419,11 @@ async function handleClassroomDateClick(dateObj, classroomId) {
             </div>
         `;
         document.getElementById('createReportBtn').addEventListener('click', function () {
-            const isoDate = (dateObj instanceof Date) ? dateObj.toISOString().slice(0,10) : (new Date(dateObj)).toISOString().slice(0,10);
+            // Use local date components to avoid timezone shift
+            const year = dateObj.getFullYear();
+            const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const day = String(dateObj.getDate()).padStart(2, '0');
+            const isoDate = `${year}-${month}-${day}`;
             openClassReportModal(null, classroomId, isoDate);
         });
     }
@@ -1442,7 +1446,16 @@ function openClassReportModal(reportId, classroomId, dateISO) {
         // load record
         pb.collection('class_report').getOne(reportId).then(r => {
             document.getElementById('classReport_title').value = r.title || '';
-            document.getElementById('classReport_date').value = r.date ? (new Date(r.date)).toISOString().slice(0,10) : '';
+            // Use local date components to avoid timezone shift when loading existing report
+            if (r.date) {
+                const d = new Date(r.date);
+                const year = d.getFullYear();
+                const month = String(d.getMonth() + 1).padStart(2, '0');
+                const day = String(d.getDate()).padStart(2, '0');
+                document.getElementById('classReport_date').value = `${year}-${month}-${day}`;
+            } else {
+                document.getElementById('classReport_date').value = '';
+            }
             setTimeout(() => {
                 if (!classReportQuill) classReportQuill = new Quill('#classReport_editor', { theme: 'snow' });
                 try {
