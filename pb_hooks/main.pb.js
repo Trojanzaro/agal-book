@@ -426,7 +426,7 @@ routerAdd("GET", "/_dist/payment", (httpContext) => {
         "payment": payment.get('payment_amount'),
         "address": customer.get('address') + " " + customer.get('city') + ", " + customer.get('postal_code'),
         "mark": payment.get('mark') ?? "",
-        "qr_code": payment.get('qr_code') ?? ""
+        "qr_url": payment.get('qr_url') ?? ""
     }
 
     try {
