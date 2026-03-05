@@ -8,15 +8,28 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
 .page {margin:5px 0}
 .page svg {background-color:#fff}
 </style>
-<script>
-        window.onload = function() {
-            setTimeout(function() {
-                window.print();
-            }, 500); // 2000 milliseconds = 2 seconds
-        };
-    </script>
-</head>
-<body >
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.15.4/qrcode.min.js"></script>
+<script type="text/javascript">
+    window.onload = function() {
+        // Generate QR code
+        var qrCanvas = document.createElement('canvas');
+        var qr = new QRCode(qrCanvas, {
+            text: '{{qr_code}}',
+            width: 150,
+            height: 150
+        });
+        
+        // Convert canvas to image data and set as SVG image
+        var img = document.getElementById('qrCodeImage');
+        img.setAttributeNS('http://www.w3.org/1999/xlink', 'href', qrCanvas.toDataURL('image/png'));
+        
+        setTimeout(function() {
+            window.print();
+        }, 500);
+    };
+</script>
+</body>
+</html>
 
 <div class="page">
 <!-- Created with Inkscape (http://www.inkscape.org/) -->
@@ -430,7 +443,14 @@ body {padding:0; margin:0; text-align:center; background-color:#777}
          id="tspan38"
          style="font-variant:normal;font-weight:normal;font-stretch:semi-condensed;font-size:11px;font-family:'DejaVu Sans';writing-mode:lr-tb;fill:#000000;fill-opacity:1;fill-rule:nonzero;stroke:none"
          x="0"
-         y="0">MARK: CHANGE NUMBER!!!<!--400012519489964--></tspan></text>
+         y="0">MARK: {{.mark}}</tspan></text>
+    <image
+       id="qrCodeImage"
+       width="100"
+       height="100"
+       x="450"
+       y="720"
+       preserveAspectRatio="xMidYMid meet" />
     <path
        id="path38"
        d="M 552.76,796.161 H 42.52"
