@@ -473,7 +473,8 @@ routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
         console.log("Generated XML: "+xmlData);
 
         // Here you would send the xmlData to the external payment gateway and get the response
-        const sendInvoiceResponse = await fetch("https://mydatapi.aade.gr/myDATA/Send", {
+        const sendInvoiceResponse = await $http.send({
+            url: "https://mydatapi.aade.gr/myDATA/Send",
             method: "POST",
             headers: {
                 "Content-Type": "application/xml",
