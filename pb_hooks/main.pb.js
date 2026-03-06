@@ -29,7 +29,11 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
     
     //get notifications
     const notifications = []
-    let records = $app.findAllRecords("notification");
+    let records = $app.findAllRecords("notification"); // filter all the notifications where the dismissed list contains auth.model.id
+    records = records.filter(r => {
+        const dismissedList = r.get("dismissed") || [];
+        return !dismissedList.includes(httpContext.auth.model.id);
+    });
 
     const notifCategories = ["info", "warning", "alert"];
     const notifBadges = ["badge rounded-pill bg-primary", "badge rounded-pill bg-warning text-dark", "badge rounded-pill bg-danger"];
