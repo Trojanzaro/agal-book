@@ -390,108 +390,31 @@ async function addPayment() {
 
     const formattedAmount = parseFloat(amount).toFixed(2);
 
-    const xmlBody = `
-<InvoicesDoc xmlns="http://www.aade.gr/myDATA/invoice/v1.0"
- xmlns:icls="https://www.aade.gr/myDATA/incomeClassificaton/v1.0">
-
-  <invoice>
-
-    <uid>${uid}</uid>
-
-    <issuer>
-      <vatNumber>${vatNumber}</vatNumber>
-      <country>GR</country>
-      <branch>0</branch>
-    </issuer>
-
-    <counterpart>
-      <vatNumber>${tin}</vatNumber>
-      <country>GR</country>
-      <branch>0</branch>
-    </counterpart>
-
-    <invoiceHeader>
-      <series>A</series>
-      <aa>${Date.now()}</aa>
-      <issueDate>${issueDate}</issueDate>
-      <invoiceType>11.2</invoiceType>
-      <currency>EUR</currency>
-    </invoiceHeader>
-
-    <paymentMethods>
-      <paymentMethodDetails>
-        <type>1</type>
-        <amount>${formattedAmount}</amount>
-      </paymentMethodDetails>
-    </paymentMethods>
-
-    <invoiceDetails>
-      <lineNumber>1</lineNumber>
-      <netValue>${formattedAmount}</netValue>
-      <vatCategory>7</vatCategory>
-      <vatAmount>0</vatAmount>
-      <vatExemptionCategory>7</vatExemptionCategory>
-
-      <incomeClassification>
-        <icls:classificationType>E3_561_003</icls:classificationType>
-        <icls:classificationCategory>category1_3</icls:classificationCategory>
-        <icls:amount>${formattedAmount}</icls:amount>
-      </incomeClassification>
-    </invoiceDetails>
-
-    <invoiceSummary>
-      <totalNetValue>${formattedAmount}</totalNetValue>
-      <totalVatAmount>0</totalVatAmount>
-      <totalGrossValue>${formattedAmount}</totalGrossValue>
-
-      <incomeClassification>
-        <icls:classificationType>E3_561_003</icls:classificationType>
-        <icls:classificationCategory>category1_3</icls:classificationCategory>
-        <icls:amount>${formattedAmount}</icls:amount>
-      </incomeClassification>
-    </invoiceSummary>
-
-  </invoice>
-
-</InvoicesDoc>
-`;
-
-console.log("Generated XML Body for myDATA:", xmlBody);
-
     const response = await fetch(
-      "https://mydatapi.aade.gr/myDATA/SendInvoices",
+      "https://aggal-book.ddns.net/_dist/process_payment",
       {
         method: "POST",
         headers: {
-          "Content-Type": "application/xml",
-          "Accept": "application/xml",
-          "aade-user-id": aadeUserId,
-          "ocp-apim-subscription-key": subscriptionKey
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+	  "Authorization": pb.authStore.token.trim()
         },
-        body: xmlBody
+	body: JSON.stringify({"charger_tin":`${tin}`,"amount":amount})
       }
     );
+    
+    console.log(JSON.stringify(response))
 
-    const responseText = await response.text();
+    const responseJSON = await response.json();
 
-    console.log("myDATA response:", responseText);
-
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(responseText, "text/xml");
-
-    const mark =
-      xmlDoc.getElementsByTagName("invoiceMark")[0]?.textContent || "";
-
-    const qrUrl =
-      xmlDoc.getElementsByTagName("qrCodeUrl")[0]?.textContent || "";
-
-    const data = {
+    console.log("myDATA response:", JSON.stringify(responseJSON));
+    const data={
       payment_amount: parseFloat(amount),
       payment_student: studentId,
       payment_parent: customerId,
       method: "cash",
-      mark: mark || "400012788280888",
-      qr_url: qrUrl || "https://mydatapi.aade.gr/myDATA/TimologioQR/QRInfo?q=S9ger8dY3c2acZg6H8Atv37DyVZzBOoCxtqhlE2WSRnzt96vGIT1l4EJDvrddXCS4EtxOP8UViKZExX0d5qjN2XZOHMDoX70SzIsHUROB7c%3d"
+      mark: responseJSON.invoiceMark || "1234123412341234",
+      qr_url: responseJSON.qrUrl || "https://mydatapi.aade.gr/myDATA/TimologioQR/QRInfo?q=S9ger8dY3c2acZg6H8Atv37DyVZzBOoCxtqhlE2WSRnzt96vGIT1l4EJDvrddXCS4EtxOP8UViKZExX0d5qjN2XZOHMDoX70SzIsHUROB7c%3d"
     };
 
     await pb.collection("payment").create(data);

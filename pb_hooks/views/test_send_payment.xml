@@ -7,8 +7,6 @@
 
   <invoice>
 
-    <uid>7F4E8A7C6D5A4F3E2B1C9D8E7F6A5B4C3D2E1F0A</uid> <!-- Unique identifier for the invoice -->
-
     <issuer>
       <vatNumber>{{.VatNumber}}</vatNumber><!--<vatNumber>012345678</vatNumber>-->
       <country>GR</country>

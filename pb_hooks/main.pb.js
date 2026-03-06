@@ -471,7 +471,7 @@ routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
             VatNumber: charger_tin,
             IssueDate: new Date().toISOString().split('T')[0],
             PaymentAmount: amount
-        });
+        }).replace(/&lt;/g, "<");
 
         console.log("Generated XML: "+xmlData);
 
@@ -488,8 +488,27 @@ routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
         });
 
         console.log("Response from payment gateway: "+ JSON.stringify(sendInvoiceResponse));
+	
+	const xml = sendInvoiceResponse.raw;
 
-        return httpContext.json(200, {message: "Payment processing started"});
+	function getTag(xml, tag) {
+    		const match = xml.match(new RegExp(`<${tag}>(.*?)</${tag}>`));
+    		return match ? match[1] : null;
+	}
+
+	const invoiceMark = getTag(xml, "invoiceMark");
+	const qrUrl = getTag(xml, "qrUrl");
+	const invoiceUid = getTag(xml, "invoiceUid");
+	const statusCode = getTag(xml, "statusCode");
+
+	console.log("AADE parsed:", invoiceMark, qrUrl, invoiceUid);
+
+	return httpContext.json(200, {
+    		success: "Success",
+    		invoiceMark: invoiceMark,
+    		invoiceUid: invoiceUid,
+    		qrUrl: qrUrl
+	});
 
     } catch(e) {
         console.log("Error processing payment: "+e);
