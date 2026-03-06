@@ -1069,7 +1069,7 @@ async function loadAllCustomers() {
 
     records.forEach(element => {
         document.getElementById("tbodyCustomers").innerHTML += `<tr>\
-            <td>${element.id}</td>\
+            <td>${element.tin}</td>\
             <td><a href="javascript:customerDetails('${element.id}');" >${element.first_name}</a></td>\
             <td><a href="javascript:customerDetails('${element.id}');" >${element.last_name}</a></td>\
             <td>${element.email}</td>\
