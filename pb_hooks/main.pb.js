@@ -459,6 +459,9 @@ routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
         const aade_username = $os.getenv("AADE_API_KEY");
         const aade_password = $os.getenv("AADE_API_SECRET");
 
+        console.log("AADE API Key: "+aade_username);
+        console.log("AADE API Secret: "+aade_password);
+
         console.log("Processing payment with amount: "+amount+" and charger TIN: "+charger_tin);
 
         //creating AADE XML
