@@ -1575,6 +1575,14 @@ async function saveClassReport() {
             await pb.collection('class_report').create({ title: title, date: date, report_body: body, classroom: classroom });
             pushNotification('Report created');
         }
+        // create a new notification for success, then hide modal and refresh calendar and reports
+        await pb.collection('notification').create({
+            title: getLanguage() === 'en' ? 'Report Saved' : 'Αποθήκευση Αναφοράς',
+            message: getLanguage() === 'en' ? `Report for ${date} saved successfully!` : `Η αναφορά για ${date} αποθηκεύτηκε με επιτυχία!`,
+            type: 'success',
+            classroom: classroom
+        });
+        
         // hide modal
         const modalEl = document.getElementById('classReportModal');
         const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
@@ -1588,6 +1596,17 @@ async function saveClassReport() {
         console.error(e);
         alert('Failed to save report');
     }
+}
+
+function userDismissNotification(notificationId) {
+    // add a record to dismissed_notifications collection with user and notification id, then hide the toast
+    pb.collection('dismissed_notification').create({ notification: notificationId, user: pb.authStore.model.id }).then(() => {
+        const toastEl = document.getElementById('mytoast');
+        const toast = bootstrap.Toast.getInstance(toastEl);
+        try { toast.hide(); } catch (e) { /* ignore */ }
+    }).catch(e => {
+        console.error('Failed to dismiss notification', e);
+    });
 }
 
 function getLanguage() {
