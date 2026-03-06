@@ -474,6 +474,7 @@ routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
 
         // Here you would send the xmlData to the external payment gateway and get the response
         const sendInvoiceResponse = await $http.post("https://mydatapi.aade.gr/myDATA/Send", {
+            method: "POST",
             headers: {
                 "Content-Type": "application/xml",
                 "aade-user-id": aade_username,
