@@ -10,7 +10,7 @@
     <uid>7F4E8A7C6D5A4F3E2B1C9D8E7F6A5B4C3D2E1F0A</uid> <!-- Unique identifier for the invoice -->
 
     <issuer>
-      <vatNumber>012345678</vatNumber>
+      <vatNumber>{{.VatNumber}}</vatNumber><!--<vatNumber>012345678</vatNumber>-->
       <country>GR</country>
       <branch>0</branch>
     </issuer>
@@ -18,7 +18,7 @@
     <invoiceHeader>
       <series>A</series>
       <aa>1</aa>
-      <issueDate>2026-03-05</issueDate>
+      <issueDate>{{.IssueDate}}</issueDate>
       <invoiceType>11.2</invoiceType>
       <vatPaymentSuspension>false</vatPaymentSuspension>
       <currency>EUR</currency>
@@ -27,13 +27,13 @@
     <paymentMethods>
       <paymentMethodDetails>
         <type>1</type>
-        <amount>2.50</amount>
+        <amount>{{.PaymentAmount}}</amount>
       </paymentMethodDetails>
     </paymentMethods>
 
     <invoiceDetails>
       <lineNumber>1</lineNumber>
-      <netValue>2.50</netValue>
+      <netValue>{{.PaymentAmount}}</netValue>
       <vatCategory>7</vatCategory>
       <vatAmount>0.00</vatAmount>
       <vatExemptionCategory>7</vatExemptionCategory>
@@ -41,24 +41,24 @@
       <incomeClassification>
         <icls:classificationType>E3_561_003</icls:classificationType>
         <icls:classificationCategory>category1_3</icls:classificationCategory>
-        <icls:amount>2.50</icls:amount>
+        <icls:amount>{{.PaymentAmount}}</icls:amount>
       </incomeClassification>
     </invoiceDetails>
 
     <invoiceSummary>
-      <totalNetValue>2.50</totalNetValue>
+      <totalNetValue>{{.PaymentAmount}}</totalNetValue>
       <totalVatAmount>0.00</totalVatAmount>
       <totalWithheldAmount>0.00</totalWithheldAmount>
       <totalFeesAmount>0.00</totalFeesAmount>
       <totalStampDutyAmount>0.00</totalStampDutyAmount>
       <totalOtherTaxesAmount>0.00</totalOtherTaxesAmount>
       <totalDeductionsAmount>0.00</totalDeductionsAmount>
-      <totalGrossValue>2.50</totalGrossValue>
+      <totalGrossValue>{{.PaymentAmount}}</totalGrossValue>
 
       <incomeClassification>
         <icls:classificationType>E3_561_003</icls:classificationType>
         <icls:classificationCategory>category1_3</icls:classificationCategory>
-        <icls:amount>2.50</icls:amount>
+        <icls:amount>{{.PaymentAmount}}</icls:amount>
       </incomeClassification>
     </invoiceSummary>
 
