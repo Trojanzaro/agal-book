@@ -448,6 +448,8 @@ routerAdd("GET", "/_dist/payment", (httpContext) => {
 //////////
 // ROUTER PAYMENT PROCESSING API
 routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
+
+    console.log("Received payment processing request with body: "+ JSON.stringify(httpContext.requestInfo().body));
     
     const amount = httpContext.requestInfo().body.amount;
     const charger_tin = httpContext.requestInfo().body.charger_tin;
