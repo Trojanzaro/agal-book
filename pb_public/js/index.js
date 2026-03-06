@@ -803,6 +803,7 @@ async function createNewCustomer() {
     const phone2 = document.forms["new_customer_form"]["phone2"].value;
     const birthdate = document.forms["new_customer_form"]["birthdate"].value;
     const postalCode = document.forms["new_customer_form"]["postalCode"].value;
+    const tin = document.forms["new_customer_form"]["tin"].value;
 
 
     // try to loging for error return an error message
@@ -818,7 +819,8 @@ async function createNewCustomer() {
             "postal_code": postalCode,
             "address": address,
             "city": city,
-            "state": state
+            "state": state,
+            "tin": tin
         };
         const record = await pb.collection('customer').create(data);
         pushNotification('Successfully created New Entry!');

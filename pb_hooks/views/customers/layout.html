@@ -15,7 +15,7 @@
   <table id="dataTable" class="table table-striped" style="width:100%">
     <thead>
       <tr>
-        <th>ID</th>
+        <th>{{._tax_identification_number}}</th>
         <th>{{._first_name}} </th>
         <th>{{._last_name}} </th>
         <th>Email</th>
@@ -173,7 +173,8 @@
             <input id="birthdate" class="form-control" type="date" />
           </div>
           <div class="col-12">
-            
+            <label for="tin" class="form-label">{{._tax_identification_number}}</label>
+            <input type="text" class="form-control" id="tin" required>
           </div>
         </form>
       </div>
