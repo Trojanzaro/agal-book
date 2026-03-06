@@ -1599,14 +1599,17 @@ async function saveClassReport() {
 }
 
 function userDismissNotification(notificationId) {
-    // add a record to dismissed_notifications collection with user and notification id, then hide the toast
-    pb.collection('dismissed_notification').create({ notification: notificationId, user: pb.authStore.model.id }).then(() => {
-        const toastEl = document.getElementById('mytoast');
-        const toast = bootstrap.Toast.getInstance(toastEl);
-        try { toast.hide(); } catch (e) { /* ignore */ }
-    }).catch(e => {
-        console.error('Failed to dismiss notification', e);
-    });
+    // add the user's id from the authorization token to the notification.dismissed array, so that it won't show again for this user
+    const userId = pb.authStore.model.id;
+    pb.collection('notification').getOne(notificationId).then(notification => {
+        const dismissed = notification.dismissed || [];
+        if (!dismissed.includes(userId)) {
+            dismissed.push(userId);
+            pb.collection('notification').update(notificationId, { dismissed: dismissed }).then(() => {
+                console.log('Notification dismissed for user', userId);
+            }).catch(e => { console.error('Failed to dismiss notification', e); });
+        }
+    }).catch(e => { console.error('Failed to load notification for dismissal', e); });
 }
 
 function getLanguage() {

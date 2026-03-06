@@ -122,7 +122,6 @@ routerAdd("GET", "/_dist/student/details", (httpContext) => {
         "state": record.get("state"),
         "postal_code": record.get("postal_code"),
         "email": record.email(),
-        "tin": record.get("tin"),
         "sb_student": "active",
         "student_bool": "true"
     };
