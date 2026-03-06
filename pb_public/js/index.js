@@ -1605,6 +1605,7 @@ function userDismissNotification(notificationId) {
         const dismissed = notification.dismissed || [];
         if (!dismissed.includes(userId)) {
             dismissed.push(userId);
+            console.log('Dismissing notification', notificationId, 'for user', userId, 'Current dismissed list:', dismissed);
             pb.collection('notification').update(notificationId, { dismissed: dismissed }).then(() => {
                 console.log('Notification dismissed for user', userId);
             }).catch(e => { console.error('Failed to dismiss notification', e); });
