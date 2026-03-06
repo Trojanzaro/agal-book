@@ -449,47 +449,52 @@ routerAdd("GET", "/_dist/payment", (httpContext) => {
 // ROUTER PAYMENT PROCESSING API
 routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
 
-    console.log("Received payment processing request with body: "+ JSON.stringify(httpContext.requestInfo().body));
-    
-    const amount = httpContext.requestInfo().body.amount;
-    const charger_tin = httpContext.requestInfo().body.charger_tin;
+    try {
+        console.log("Received payment processing request with body: "+ JSON.stringify(httpContext.requestInfo().body));
+        
+        const amount = httpContext.requestInfo().body.amount;
+        const charger_tin = httpContext.requestInfo().body.charger_tin;
 
-    //also get AADE api keys from env variables
-    const aade_username = $env.get("AADE_API_KEY");
-    const aade_password = $env.get("AADE_API_SECRET");
+        //also get AADE api keys from env variables
+        const aade_username = $env.get("AADE_API_KEY");
+        const aade_password = $env.get("AADE_API_SECRET");
 
-    console.log("Processing payment with amount: "+amount+" and charger TIN: "+charger_tin);
+        console.log("Processing payment with amount: "+amount+" and charger TIN: "+charger_tin);
 
-    //creating AADE XML
-    const xmlData = $template.loadFiles(
-        `${__hooks}/views/test_send_payment.xml`
-    ).render({
-        VatNumber: charger_tin,
-        IssueDate: new Date().toISOString().split('T')[0],
-        PaymentAmount: amount
-    });
+        //creating AADE XML
+        const xmlData = $template.loadFiles(
+            `${__hooks}/views/test_send_payment.xml`
+        ).render({
+            VatNumber: charger_tin,
+            IssueDate: new Date().toISOString().split('T')[0],
+            PaymentAmount: amount
+        });
 
-    console.log("Generated XML: "+xmlData);
+        console.log("Generated XML: "+xmlData);
 
-    // Here you would send the xmlData to the external payment gateway and get the response
-    const sendInvoiceResponse = await $http.post("https://mydatapi.aade.gr/myDATA/Send", {
-        headers: {
-            "Content-Type": "application/xml",
-            "aade-user-id": aade_username,
-            "ocp-apim-subscription-key": aade_password
-        },
-        body: xmlData
-    });
+        // Here you would send the xmlData to the external payment gateway and get the response
+        const sendInvoiceResponse = await $http.post("https://mydatapi.aade.gr/myDATA/Send", {
+            headers: {
+                "Content-Type": "application/xml",
+                "aade-user-id": aade_username,
+                "ocp-apim-subscription-key": aade_password
+            },
+            body: xmlData
+        });
 
-    console.log("Response from payment gateway: "+ JSON.stringify(sendInvoiceResponse));
+        console.log("Response from payment gateway: "+ JSON.stringify(sendInvoiceResponse));
 
-    // for simulation we just update the record after 2 seconds delay
-    setTimeout(() => {
-        payment.set("status", "completed");
-        payment.set("mark", "Paid via simulated gateway");
-        $app.updateRecord(payment);
-    }, 2000);
-    
+        // for simulation we just update the record after 2 seconds delay
+        setTimeout(() => {
+            payment.set("status", "completed");
+            payment.set("mark", "Paid via simulated gateway");
+            $app.updateRecord(payment);
+        }, 2000);
 
-    return httpContext.json(200, {message: "Payment processing started"});
+        return httpContext.json(200, {message: "Payment processing started"});
+
+    } catch(e) {
+        console.log("Error processing payment: "+e);
+        return httpContext.json(500, {message: "Error processing payment"});
+    }
 }, $apis.requireAuth("users"));
