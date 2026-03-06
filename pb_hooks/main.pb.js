@@ -474,7 +474,7 @@ routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
 
         // Here you would send the xmlData to the external payment gateway and get the response
         const sendInvoiceResponse = await $http.send({
-            url: "https://mydatapi.aade.gr/myDATA/Send",
+            url: "https://mydatapi.aade.gr/myDATA/SendInvoices",
             method: "POST",
             headers: {
                 "Content-Type": "application/xml",
@@ -485,13 +485,6 @@ routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
         });
 
         console.log("Response from payment gateway: "+ JSON.stringify(sendInvoiceResponse));
-
-        // for simulation we just update the record after 2 seconds delay
-        setTimeout(() => {
-            payment.set("status", "completed");
-            payment.set("mark", "Paid via simulated gateway");
-            $app.updateRecord(payment);
-        }, 2000);
 
         return httpContext.json(200, {message: "Payment processing started"});
 
