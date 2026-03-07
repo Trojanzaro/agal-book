@@ -78,7 +78,7 @@ async function handleCreateAssignment() {
       // create a notification for the newly created assignment much like the notifications for a new class report, but with a different style (e.g. blue instead of green) and a link to the new assignment preview
       const responseNotif = await pb.collection('notification').create({
         title: `New assignment: ${title}`,
-        body: `A new assignment "${title}" has been created.\n\n${body.replace(/<[^>]+>/g, '').substring(0, 100)}...`,
+        body_text: `A new assignment "${title}" has been created.\n\n${body.replace(/<[^>]+>/g, '').substring(0, 100)}...`,
         type: 'info'
       });
       console.log('Notification created', responseNotif);
