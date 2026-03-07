@@ -1600,10 +1600,12 @@ async function saveClassReport() {
 
 async function userDismissNotification(notificationId) {
     try {
+        // get user id and auth type
         const userId = await pb.authStore.model.id;
+        const userField = 'dismissed_' + pb.authStore.model['auth_type'] + 's'; // e.g. dismissed_teacher
         
         const notificationObj = await pb.collection('notification').getOne(notificationId);
-        const dismissed = notificationObj.dismissed || [];
+        const dismissed = notificationObj[userField] || [];
         
         if (!dismissed.includes(userId)) {
             dismissed.push(userId);
@@ -1611,7 +1613,6 @@ async function userDismissNotification(notificationId) {
                         'Current dismissed list:', dismissed);
 
             // get field name from user type
-            const userField = 'dismissed_' + pb.authStore.model.auth_type + 's'; // e.g. dismissed_teacher
             
             await pb.collection('notification').update(notificationId, { [userField]: dismissed });
             
