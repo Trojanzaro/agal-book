@@ -1602,10 +1602,9 @@ async function userDismissNotification(notificationId) {
     try {
         // get user id and auth type
         const userId = await pb.authStore.model.id;
-        const userField = 'dismissed_' + pb.authStore.model['auth_type'] + 's'; // e.g. dismissed_teacher
         
         const notificationObj = await pb.collection('notification').getOne(notificationId);
-        const dismissed = notificationObj[userField] || [];
+        const dismissed = notificationObj.dismissed || [];
         
         if (!dismissed.includes(userId)) {
             dismissed.push(userId);
@@ -1614,7 +1613,7 @@ async function userDismissNotification(notificationId) {
 
             // get field name from user type
             
-            await pb.collection('notification').update(notificationId, { [userField]: dismissed });
+            await pb.collection('notification').update(notificationId, { dismissed: dismissed });
             
             console.log('Notification dismissed for user', userId);
         } 
