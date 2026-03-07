@@ -29,7 +29,7 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
     
     //get notifications
     const notifications = []
-    let records = $app.findAllRecords("notification", { filter: `dismissed ?= '${httpContext.auth.get('id')}'` }); // filter all the notifications where the dismissed list contains auth.model.id
+    let records = $app.findAllRecords("notification"); // filter all the notifications where the dismissed list contains auth.model.id
     console.log("testing request auth id: "+httpContext.auth.get('id'));
     records = records.filter(r => {
        const dismissedList = r.get("dismissed") || [];
