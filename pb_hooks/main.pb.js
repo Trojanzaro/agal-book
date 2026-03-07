@@ -30,9 +30,10 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
     //get notifications
     const notifications = []
     let records = $app.findAllRecords("notification"); // filter all the notifications where the dismissed list contains auth.model.id
+    console.log("testing request auth id: "+httpContext.auth.get('id'));
     records = records.filter(r => {
         const dismissedList = r.get("dismissed") || [];
-        return !dismissedList.includes(httpContext.auth.model.id);
+        return !dismissedList.includes(httpContext.auth.get('id'));
     });
 
     const notifCategories = ["info", "warning", "alert"];
