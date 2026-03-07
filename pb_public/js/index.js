@@ -1600,7 +1600,7 @@ async function saveClassReport() {
 
 async function userDismissNotification(notificationId) {
     try {
-        const userId = await pb.authStore.model.id();
+        const userId = await pb.authStore.model.id;
         
         const notificationObj = await pb.collection('notification').getOne(notificationId);
         const dismissed = notificationObj.dismissed || [];
