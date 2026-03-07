@@ -31,10 +31,10 @@ routerAdd("GET", "/_dist/dashboard", (httpContext) => {
     const notifications = []
     let records = $app.findAllRecords("notification"); // filter all the notifications where the dismissed list contains auth.model.id
     console.log("testing request auth id: "+httpContext.auth.get('id'));
-    //records = records.filter(r => {
-    //    const dismissedList = r.get("dismissed") || [];
-    //    return !dismissedList.includes(httpContext.auth.get('id'));
-    //});
+    records = records.filter(r => {
+       const dismissedList = r.get("dismissed") || [];
+       return !dismissedList.includes(httpContext.auth.get('id'));
+    });
 
     const notifCategories = ["info", "warning", "alert"];
     const notifBadges = ["badge rounded-pill bg-primary", "badge rounded-pill bg-warning text-dark", "badge rounded-pill bg-danger"];

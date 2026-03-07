@@ -1598,19 +1598,26 @@ async function saveClassReport() {
     }
 }
 
-function userDismissNotification(notificationId) {
-    // add the user's id from the authorization token to the notification.dismissed array, so that it won't show again for this user
-    const userId = pb.authStore.model.id;
-    pb.collection('notification').getOne(notificationId).then(notification => {
-        const dismissed = notification.dismissed || [];
+async function userDismissNotification(notificationId) {
+    try {
+        const userId = await pb.authStore.model.id();
+        
+        const notificationObj = await pb.collection('notification').getOne(notificationId);
+        const dismissed = notificationObj.dismissed || [];
+        
         if (!dismissed.includes(userId)) {
             dismissed.push(userId);
-            console.log('Dismissing notification', notificationId, 'for user', userId, 'Current dismissed list:', dismissed);
-            pb.collection('notification').update(notificationId, { dismissed: dismissed }).then(() => {
-                console.log('Notification dismissed for user', userId);
-            }).catch(e => { console.error('Failed to dismiss notification', e); });
-        }
-    }).catch(e => { console.error('Failed to load notification for dismissal', e); });
+            console.log('Dismissing notification', notificationId, 'for user', userId, 
+                        'Current dismissed list:', dismissed);
+            
+            await pb.collection('notification').update(notificationId, { dismissed: dismissed });
+            
+            console.log('Notification dismissed for user', userId);
+        } 
+        // Handle any potential errors
+    } catch (error) {
+        console.error('Failed to dismiss notification', error);
+    }
 }
 
 function getLanguage() {
