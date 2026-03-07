@@ -1577,8 +1577,8 @@ async function saveClassReport() {
         }
         // create a new notification for success, then hide modal and refresh calendar and reports
         await pb.collection('notification').create({
-            title: getLanguage() === 'en' ? 'Report Saved' : 'Αποθήκευση Αναφοράς',
-            message: getLanguage() === 'en' ? `Report for ${date} saved successfully!` : `Η αναφορά για ${date} αποθηκεύτηκε με επιτυχία!`,
+            title: getLanguage() === 'en' ? `Report Saved` : `Αποθήκευση Αναφοράς ${title}`,
+            body_text: getLanguage() === 'en' ? `Report for ${date} saved successfully!\n\n${body}` : `Η αναφορά για ${date} αποθηκεύτηκε με επιτυχία:\n\n${body}`,
             type: 'success',
             classroom: classroom
         });
