@@ -1609,8 +1609,11 @@ async function userDismissNotification(notificationId) {
             dismissed.push(userId);
             console.log('Dismissing notification', notificationId, 'for user', userId, 
                         'Current dismissed list:', dismissed);
+
+            // get field name from user type
+            const userField = 'dismissed_' + pb.authStore.model.auth_type + 's'; // e.g. dismissed_teacher
             
-            await pb.collection('notification').update(notificationId, { dismissed: dismissed });
+            await pb.collection('notification').update(notificationId, { [userField]: dismissed });
             
             console.log('Notification dismissed for user', userId);
         } 
