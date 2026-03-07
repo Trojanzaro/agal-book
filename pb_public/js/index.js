@@ -1579,7 +1579,7 @@ async function saveClassReport() {
         await pb.collection('notification').create({
             title: getLanguage() === 'en' ? `Report Saved` : `Αποθήκευση Αναφοράς ${title}`,
             body_text: getLanguage() === 'en' ? `Report for ${date} saved successfully!\n\n${body}` : `Η αναφορά για ${date} αποθηκεύτηκε με επιτυχία:\n\n${body}`,
-            type: 'success',
+            type: 'info',
             classroom: classroom
         });
         
