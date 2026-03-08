@@ -27,7 +27,9 @@ async function loadStudentsForProfile() {
     tbody.innerHTML = '';
     records.forEach(r => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
+        tr.innerHTML = pb.authStore.model['auth_type'] === 'student' ? `
+            <td>${r.first_name} ${r.last_name}</td>
+        ` : `
             <td><a href="javascript:void(0)" onclick="selectStudentProfile('${r.id}','${escapeHtml(r.first_name + ' ' + r.last_name)}')">${r.first_name} ${r.last_name}</a></td>
         `;
         tbody.appendChild(tr);
@@ -53,7 +55,7 @@ async function loadStudentsForProfile() {
 
 function selectStudentProfile(studentId, displayName) {
     // set header
-    document.getElementById('profile_name').innerHTML = '<a href="javascript:studentDetails(\'' + studentId + '\');sidebarNavActive(\'students\');">' + displayName + '</a>';
+    document.getElementById('profile_name').innerHTML = pb.authStore.model['auth_type'] === 'student' ? displayName : '<a href="javascript:studentDetails(\'' + studentId + '\');sidebarNavActive(\'students\');">' + displayName + '</a>';
     document.getElementById('profile_student_id').innerText = 'ID: ' + studentId;
     document.getElementById('addGradeBtn').style.display = '';
     // store selected id
@@ -924,9 +926,11 @@ async function initializeApp() {
 
 ///////
 // EVENT: CTRL: LOAD ALL STUDENTS
+
+// change logic so that if student, then only show the students in the class he is assigned to and no unassigned ones
 async function loadAllStudents() {
     // load classrooms with students, and collect assigned student ids
-    const classrooms = await pb.collection("classroom").getFullList({ expand: "students" });
+    let classrooms = pb.authStore.model['auth_type'] === 'teacher' ? await pb.collection("classroom").getFullList({ expand: "students" }) : await pb.collection("classroom").getFullList({ filter: `students.id = '${pb.authStore.model.id}'`, expand: "students" });
     const assignedIds = new Set();
 
     // clear table body first
@@ -1244,13 +1248,11 @@ async function loadAllClassrooms() {
                             ${element.name}
                         </a>
                     </td>
-                    <td>${teacherCell}</td>
+                    <td>${pb.authStore.model['auth_type'] === 'teacher' ? teacherCell : teacher.first_name + ' ' + teacher.last_name}</td>
                     <td>${element.level}</td>
                     <td>${element.room}</td>
                     <td>${element.fee}</td>
-                    <td>
-                                ${pb.authStore.model['auth_type'] !== 'student' ? `<button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteClassroom('${element.id}','${element.name}')">Delete</button>` : ``}
-                    </td>
+                    ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteClassroom('${element.id}','${element.name}')">Delete</button></td>` : ``}
                 </tr>
             `;
     });
