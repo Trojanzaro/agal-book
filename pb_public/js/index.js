@@ -27,9 +27,7 @@ async function loadStudentsForProfile() {
     tbody.innerHTML = '';
     records.forEach(r => {
         const tr = document.createElement('tr');
-        tr.innerHTML = pb.authStore.model['auth_type'] === 'student' ? `
-            <td>${r.first_name} ${r.last_name}</td>
-        ` : `
+        tr.innerHTML = `
             <td><a href="javascript:void(0)" onclick="selectStudentProfile('${r.id}','${escapeHtml(r.first_name + ' ' + r.last_name)}')">${r.first_name} ${r.last_name}</a></td>
         `;
         tbody.appendChild(tr);
@@ -948,7 +946,7 @@ async function loadAllStudents() {
                 <td>${((new Date()).getFullYear() - new Date(el['birthdate']).getFullYear())}</td>\
                 <td>${el['phone_number']}</td>\
                 <td><a href="javascript:classroomDetails('${element['id']}');sidebarNavActive('classrooms');">${classroomName}</a></td>\
-                ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>` : `<td></td>`}\
+                ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>` : `<td>${el['first_name']} ${el['last_name']}</td>`}\
             </tr>`;
         });
     });
@@ -1228,7 +1226,8 @@ async function loadAllClassrooms() {
     console.log("Loading Classrooms...");
     const records = await pb.collection('classroom').getFullList({
         sort: '-created',
-        expand: 'teacher'
+        expand: 'teacher',
+        filter: pb.authStore.model['auth_type'] === 'student' ? `students.id = '${pb.authStore.model.id}'` : undefined
     });
 
     records.forEach(element => {
