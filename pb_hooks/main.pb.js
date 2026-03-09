@@ -363,7 +363,7 @@ routerAdd("GET", "/_dist/student/profile", (httpContext) => {
             "classroom_id": classroomId,
             "level": record.get("level"),
             "fee": record.get("fee"),
-            "teacher_bool": httpContext.auth['auth_type'] == "teacher" ? 'true' : 'false',
+            "teacher_bool": httpContext.auth.get('auth_type') == "teacher" ? 'true' : 'false',
             ...localizationMap
         });
         // Once generated return the HTML contents
