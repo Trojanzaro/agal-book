@@ -1423,7 +1423,7 @@ async function drawClassroomCalendar(classroomId, year) {
 }
 
 
-async function handleClassroomDateClick(dateObj, classroomId) {
+async function handleClassroomDateClick(dateObj, classroomId) {    
     const dateISO = formatDDMM(dateObj);
     // Extract LOCAL date parts
     const year = dateObj.getFullYear();
@@ -1476,13 +1476,16 @@ async function handleClassroomDateClick(dateObj, classroomId) {
             container.appendChild(card);
         });
     } else {
+        const reject_student = await pb.authStore.model['auth_type'] === 'student' ? true : false;
         // show create form prompt
-        container.innerHTML = `
-            <div class="card p-3">
-                <div class="mb-2">No reports for <strong>${dateISO}</strong>.</div>
-                <button class="btn btn-primary" id="createReportBtn">Create report for ${dateISO}</button>
-            </div>
-        `;
+        if (!reject_student) {
+            container.innerHTML = `
+                <div class="card p-3">
+                    <div class="mb-2">No reports for <strong>${dateISO}</strong>.</div>
+                    <button class="btn btn-primary" id="createReportBtn">Create report for ${dateISO}</button>
+                </div>
+            `;
+        }
         document.getElementById('createReportBtn').addEventListener('click', function () {
             // Use local date components to avoid timezone shift
             const year = dateObj.getFullYear();

@@ -285,9 +285,11 @@
                                         </a>
                                     </div>
                                     <div class="btn-group btn-group-sm">
+                                        {{if not $.student_bool}}
                                             <button class="btn btn-outline-secondary">Edit</button>
                                             <button class="btn btn-outline-danger" onclick="deleteTextbook('{{.Id}}')">Remove</button>
                                         </div>
+                                        {{end}}
                                 </div>
                             </li>
                             {{end}}
@@ -308,8 +310,10 @@
     <!--CLASSROOM STUDENTS-->
 
     <h3>{{._students_in_classroom}} </h3>
+    {{if not .student_bool}}
     <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal"
         data-bs-target="#assignStudentModal">{{._assign_student_btn}} <i class="fas fa-book-reader"></i></button>
+    {{end}}
     <table id="dataTable" class="table table-striped" style="width:100%">
         <thead>
             <tr>
@@ -345,8 +349,10 @@
     <div class="d-flex justify-content-between align-items-center">
         <h3 class="mb-0">{{._assignments_str}} </h3>
         <div>
+            {{if not .student_bool}}
             <button class="btn btn-success" data-bs-toggle="modal"
                 data-bs-target="#newAssignmentModal">{{._new_assignment_btn}} <i class="fas fa-file-alt"> </i> </button>
+            {{end}}
         </div>
     </div>
 
@@ -372,10 +378,12 @@
                                         onclick="event.stopPropagation(); openSubmitModal('{{.Id}}')">
                                     Submit
                                 </button> -->
+                                    {{if not .student_bool}}
                                 <button type="button" class="btn btn-sm btn-danger ms-2"
                                         onclick="event.stopPropagation(); deleteAssignment('{{.Id}}')">
                                     Delete
                                 </button>
+                                    {{end}}
                             </div>
                         </div>
                     </div>
