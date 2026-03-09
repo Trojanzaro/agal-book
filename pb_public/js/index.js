@@ -1231,7 +1231,7 @@ async function loadAllClassrooms() {
     if (pb.authStore.model['auth_type'] === 'student') {
         let studentId = await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`);
         studentId = studentId ? studentId.id : null;
-        options.filter = `students.id = '${studentId}'`;
+        options.filter = `students.id ?= '${studentId}'`;
     }
     const records = await pb.collection('classroom').getFullList(options);
 
