@@ -104,8 +104,8 @@ async function loadStudentProfile(studentId) {
             <td class="text-center">${actionButtons}</td>
         `;
         tbody.appendChild(tr);
-        drawChart(subs)
     });
+    drawChart(subs)
 }
 function drawChart(grades) {
 console.log('Drawing chart with grades:', grades);
