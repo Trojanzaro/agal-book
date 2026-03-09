@@ -313,6 +313,7 @@ routerAdd("GET", "/_dist/classroom/details", (httpContext) => {
 //  
 //  @param httpContext - echo.Context []
 routerAdd("GET", "/_dist/student/profile", (httpContext) => {
+    console.log("PROFILE WITH:", httpContext.auth.get('auth_type'))
     
     // the view to be returned for the dashboard  will come from the query param 'wd' for 'working directory'
     const classroomId = httpContext.request.url.query().get("id");
@@ -345,7 +346,6 @@ routerAdd("GET", "/_dist/student/profile", (httpContext) => {
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
-        console.log(httpContext.auth['auth_type'])
         //generate templates base on working directory path
         const html = $template.loadFiles(
             `${__hooks}/views/details.html`
