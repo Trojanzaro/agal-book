@@ -1336,8 +1336,8 @@ async function dashboardNavActive(nav) {
     } else if( nav === 'customers'){ 
         loadAllCustomers();
     } else if (nav === 'dashboard') {
-        const studentId = await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`);
-        const grades = await pb.collection('assignment_submit').getFullList({ sort: '-created' , filter: `student = '${studentId.id}'`});
+        const studentId = await pb.collection('student').getFullList({ filter: `user_id = '${pb.authStore.model.id}'` });
+        const grades = await pb.collection('assignment_submit').getFullList({ sort: '-created' , filter: `student = '${studentId[0].id}'`});
         console.log("Grades for dashboard:", grades);
         drawCharts(grades);
     }
