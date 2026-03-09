@@ -1065,9 +1065,15 @@ async function loadAllTeachers() {
 // EVENT: CTRL: LOAD ALL CUSTOMERS
 async function loadAllCustomers() {
     console.log("Loading Customers...");
-    const records = await pb.collection('customer').getFullList({
-        sort: '-created',
-    });
+    let records = [];
+    if (pb.authStore.model['auth_type'] === 'student') {
+        const student = await pb.collection('student').getOne(pb.authStore.model.id, {
+            expand: 'parent_1,parent_2'
+        });
+        records = [...student.expand.parent_1 ? [student.expand.parent_1] : [], ...student.expand.parent_2 ? [student.expand.parent_2] : []];
+    } else {
+        records = await pb.collection('customer').getFullList(options);
+    }
 
     records.forEach(element => {
         document.getElementById("tbodyCustomers").innerHTML += `<tr>\
