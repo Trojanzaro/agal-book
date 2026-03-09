@@ -132,7 +132,7 @@ async function loadStudentProfile(studentId) {
         `;
         tbody.appendChild(tr);
     });
-    drawChart(subs)
+    drawCharts(subs)
 }
 
 function calculateAverage(grades) {
