@@ -1,4 +1,4 @@
-function drawChart(grades) {
+function drawCharts(grades) {
   google.charts.load('current', { packages: ['corechart'] }).then(() => {
     const data = new google.visualization.DataTable();
     data.addColumn('string', 'Type');
