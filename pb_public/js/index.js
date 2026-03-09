@@ -25,6 +25,45 @@ function drawCharts(grades) {
     });
 }
 
+function drawBarChart(grades) {
+  google.charts.setOnLoadCallback(() => {
+
+    const dataArray = [
+      ['Title', 'Grade', { role: 'style' }]
+    ];
+
+    grades.forEach(g => {
+      dataArray.push([
+        g.title,
+        g.grade,
+        'color: #4285F4'
+      ]);
+    });
+
+    const data = google.visualization.arrayToDataTable(dataArray);
+
+    const options = {
+      title: 'Grades',
+      legend: { position: 'none' },
+      vAxis: {
+        title: 'Score',
+        minValue: 0,
+        maxValue: 100
+      },
+      hAxis: {
+        title: 'Assignments'
+      },
+      bar: { groupWidth: '60%' }
+    };
+
+    const chart = new google.visualization.ColumnChart(
+      document.getElementById('bar_chart')
+    );
+
+    chart.draw(data, options);
+  });
+}
+
 ///////
 // EVENT: USER: CLICK TEACHER DETAILS
 async function teacherDetails(teacherId) {
@@ -132,7 +171,8 @@ async function loadStudentProfile(studentId) {
         `;
         tbody.appendChild(tr);
     });
-    drawCharts(subs)
+    drawCharts(subs);
+    drawBarChart(subs);
 }
 
 function calculateAverage(grades) {
@@ -1340,6 +1380,7 @@ async function dashboardNavActive(nav) {
         const grades = await pb.collection('assignment_submit').getFullList({ sort: '-created' , filter: `student = '${studentId[0].id}'`});
         console.log("Grades for dashboard:", grades);
         drawCharts(grades);
+        drawBarChart(grades);
     }
 }
 
