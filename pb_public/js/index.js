@@ -1224,14 +1224,13 @@ function handleDateClick(date, sessions, hours, classroom) {
 //
 async function loadAllClassrooms() {
     console.log("Loading Classrooms...");
-
-    let studentId = await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`);
-    studentId = studentId ? studentId.id : null;
     const options = {
         sort: '-created',
         expand: 'teacher',
     };
     if (pb.authStore.model['auth_type'] === 'student') {
+        const studentId = await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`);
+        studentId = studentId ? studentId.id : null;
         options.filter = `students.id = '${studentId}'`;
     }
     const records = await pb.collection('classroom').getFullList(options);
