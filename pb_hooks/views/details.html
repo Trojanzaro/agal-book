@@ -221,9 +221,13 @@
 
                             <dt class="col-sm-4">{{._assigned_teacher_str}} </dt>
                             <dd class="col-sm-8">
+                                {{if not .student_bool}}
                                 <a
                                     href="javascript:teacherDetails('{{.assigned_teacher_id}}');sidebarNavActive('teachers');"><span
                                         id="classroom_teacher_display">{{.assigned_teacher}}</span></a>
+                                {{else}}
+                                    <span id="classroom_teacher_display">{{.assigned_teacher}}</span>
+                                {{end}} 
                                 <select id="classroomTeacherSelectDetail" class="form-select d-none">
                                     <option value="">Unassigned</option>
                                 </select>
@@ -327,12 +331,21 @@
         <tbody id="tbodyClassroomStudents">
             {{ range $index, $element := .students }}
             <tr>
-                <td><a href='javascript:studentDetails("{{ .Get "id"}}");sidebarNavActive("students");'>{{ .Get
-                        "first_name" }} {{ .Get "last_name" }}</a></td>
+                <td>
+                    {{if not $.student_bool}}
+                        <a href='javascript:studentDetails("{{ .Get "id"}}");sidebarNavActive("students");'>{{ .Get "first_name" }} {{ .Get "last_name" }}</a>
+                    {{else}}
+                        {{ .Get "first_name" }} {{ .Get "last_name" }}
+                    {{end}}
+                    </td>
                 <td>{{ .Get "birthdate" }}</td>
                 <td>{{ .Get "email" }}</td>
                 <td>{{ .Get "created" }}</td>
-                <td><button type="button" class="btn btn-sm btn-outline-danger" onclick="unassignStudent('{{ .Get "id"}}')">Unassign</button></td>
+                <td>
+                    {{if not $.student_bool}}
+                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="unassignStudent('{{ .Get "id"}}')">Unassign</button>
+                    {{end}}
+                </td>
             </tr>
             {{ end }}
         </tbody>

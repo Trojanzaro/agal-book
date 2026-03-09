@@ -17,12 +17,14 @@
           {{._nav_dashboard}} 
         </a>
       </li>
+      {{if not .student_bool}}
       <li>
         <a id="students_a_id" href="#" class="nav-link text-white {{.sb_students}}" onclick="window.localStorage.setItem('nav','students');dashboardNavActive('students')">
           <i class="fas fa-book-reader" style="padding-right: 15px;"></i>
           {{._nav_students}} 
         </a>
       </li>
+      {{end}}
       {{if not .student_bool}}
       <li>
         <a id="teachers_a_id" href="#" class="nav-link text-white {{.sb_teachers}}" onclick="window.localStorage.setItem('nav','teachers');dashboardNavActive('teachers')">
