@@ -277,7 +277,6 @@ async function studentFees(studentId, customerId, customerName, studentName) {
 
     // enable payment button only if student is assigned to a classroom
     if (classroom.length !== 0) {
-        document.getElementById("payment_button").removeAttribute("disabled");
 
         //get the rest of the data and populate accordingly
         // get payments for student under this customer
@@ -1071,9 +1070,11 @@ async function loadAllCustomers() {
             filter: `user_id = '${pb.authStore.model.id}'`,
             expand: 'parent_1,parent_2'
         });
-        records = [student.expand.parent_1, student.expand.parent_2].filter(p => p); // filter out nulls
+        records = [student[0].expand?.parent_1, student[0]?.expand?.parent_2].filter(p => p)
     } else {
-        records = await pb.collection('customer').getFullList(options);
+        records = await pb.collection('customer').getFullList({
+		sort: '-created'
+	});
     }
 
     records.forEach(element => {
