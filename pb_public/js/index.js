@@ -1229,7 +1229,7 @@ async function loadAllClassrooms() {
         expand: 'teacher',
     };
     if (pb.authStore.model['auth_type'] === 'student') {
-        const studentId = await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`);
+        let studentId = await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`);
         studentId = studentId ? studentId.id : null;
         options.filter = `students.id = '${studentId}'`;
     }
