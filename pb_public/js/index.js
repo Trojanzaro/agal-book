@@ -1,65 +1,57 @@
 function drawCharts(grades) {
+  google.charts.load('current', { packages: ['corechart'] }).then(() => {
 
-  const data = new google.visualization.DataTable();
-  data.addColumn('string', 'Type');
-  data.addColumn('number', 'Average Grade');
+    const dataArray = [
+      ['Assignment', 'Grade']
+    ];
 
-  const tests = calculateAverage(
-    grades.filter(g => g.type === 'test').map(g => parseFloat(g.grade))
-  );
+    grades.forEach(g => {
+      dataArray.push([g.title, parseFloat(g.grade)]);
+    });
 
-  const quizzes = calculateAverage(
-    grades.filter(g => g.type === 'quiz').map(g => parseFloat(g.grade))
-  );
+    const data = google.visualization.arrayToDataTable(dataArray);
 
-  const homework = calculateAverage(
-    grades.filter(g => g.type === 'homework').map(g => parseFloat(g.grade))
-  );
+    const options = {
+      title: 'Grades',
+      vAxis: { title: 'Score', minValue: 0, maxValue: 100 },
+      hAxis: { title: 'Assignments' }
+    };
 
-  data.addRows([
-    ['Tests', tests],
-    ['Quizzes', quizzes],
-    ['Homework', homework]
-  ]);
+    const chart = new google.visualization.AreaChart(
+      document.getElementById('areaChart')
+    );
 
-  const options = {
-    title: 'Grade Distribution',
-    vAxis: { title: 'Average Grade', minValue: 0, maxValue: 100 },
-    hAxis: { title: 'Grade Type' }
-  };
-
-  const chart = new google.visualization.AreaChart(
-    document.getElementById('areaChart')
-  );
-
-  chart.draw(data, options);
+    chart.draw(data, options);
+  });
 }
 
 function drawBarChart(grades) {
-  const dataArray = [
-    ['Assignment', 'Grade']
-  ];
+  google.charts.load('current', { packages: ['corechart'] }).then(() => {
 
-  grades.forEach(g => {
-    dataArray.push([g.title, parseFloat(g.grade)]);
+    const data = new google.visualization.DataTable();
+    data.addColumn('string', 'Type');
+    data.addColumn('number', 'Average Grade');
+
+    data.addRows([
+      ['Tests', calculateAverage(grades.filter(g => g.type === 'test').map(g => parseFloat(g.grade)))],
+      ['Quizzes', calculateAverage(grades.filter(g => g.type === 'quiz').map(g => parseFloat(g.grade)))],
+      ['Homework', calculateAverage(grades.filter(g => g.type === 'homework').map(g => parseFloat(g.grade)))]
+    ]);
+
+    const options = {
+      title: 'Grade Distribution',
+      legend: { position: 'none' },
+      vAxis: { title: 'Average Grade' },
+      hAxis: { title: 'Grade Type' }
+    };
+
+    const chart = new google.visualization.ColumnChart(
+      document.getElementById('barChart')
+    );
+
+    chart.draw(data, options);
   });
-
-  const data = google.visualization.arrayToDataTable(dataArray);
-
-  const options = {
-    title: 'Grades',
-    legend: { position: 'none' },
-    vAxis: { title: 'Score', minValue: 0, maxValue: 100 },
-    hAxis: { title: 'Assignments' }
-  };
-
-  const chart = new google.visualization.ColumnChart(
-    document.getElementById('barChart')
-  );
-
-  chart.draw(data, options);
 }
-
 ///////
 // EVENT: USER: CLICK TEACHER DETAILS
 async function teacherDetails(teacherId) {
