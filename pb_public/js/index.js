@@ -1067,10 +1067,11 @@ async function loadAllCustomers() {
     console.log("Loading Customers...");
     let records = [];
     if (pb.authStore.model['auth_type'] === 'student') {
-        const student = await pb.collection('student').getOne(pb.authStore.model.id, {
+        const student = await pb.collection('student').getFullList({
+            filter: `user_id = '${pb.authStore.model.id}'`,
             expand: 'parent_1,parent_2'
         });
-        records = [...student.expand.parent_1 ? [student.expand.parent_1] : [], ...student.expand.parent_2 ? [student.expand.parent_2] : []];
+        records = [student.expand.parent_1, student.expand.parent_2].filter(p => p); // filter out nulls
     } else {
         records = await pb.collection('customer').getFullList(options);
     }
