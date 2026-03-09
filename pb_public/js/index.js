@@ -1,3 +1,30 @@
+function drawChart(grades) {
+  google.charts.load('current', { packages: ['corechart'] }).then(() => {
+    const data = new google.visualization.DataTable();
+    data.addColumn('string', 'Type');
+    data.addColumn('number', 'Average Grade');
+
+  data.addRows([
+    ['Tests', calculateAverage(grades.filter(g => g.type === 'test').map(g => parseFloat(g.grade)))],
+    ['Quizzes', calculateAverage(grades.filter(g => g.type === 'quiz').map(g => parseFloat(g.grade)))],
+    ['Homework', calculateAverage(grades.filter(g => g.type === 'homework').map(g => parseFloat(g.grade)))]
+  ]);
+
+  const options = {
+    title: 'Grade Distribution',
+    is3D: true,
+    vAxis: { title: 'Average Grade' },
+    hAxis: { title: 'Grade Type' },
+  };
+
+  const chart = new google.visualization.AreaChart(
+    document.getElementById('areaChart')
+  );
+
+  chart.draw(data, options);
+    });
+}
+
 ///////
 // EVENT: USER: CLICK TEACHER DETAILS
 async function teacherDetails(teacherId) {
@@ -106,33 +133,6 @@ async function loadStudentProfile(studentId) {
         tbody.appendChild(tr);
     });
     drawChart(subs)
-}
-
-function drawChart(grades) {
-  google.charts.load('current', { packages: ['corechart'] }).then(() => {
-    const data = new google.visualization.DataTable();
-    data.addColumn('string', 'Type');
-    data.addColumn('number', 'Average Grade');
-
-  data.addRows([
-    ['Tests', calculateAverage(grades.filter(g => g.type === 'test').map(g => parseFloat(g.grade)))],
-    ['Quizzes', calculateAverage(grades.filter(g => g.type === 'quiz').map(g => parseFloat(g.grade)))],
-    ['Homework', calculateAverage(grades.filter(g => g.type === 'homework').map(g => parseFloat(g.grade)))]
-  ]);
-
-  const options = {
-    title: 'Grade Distribution',
-    is3D: true,
-    vAxis: { title: 'Average Grade' },
-    hAxis: { title: 'Grade Type' },
-  };
-
-  const chart = new google.visualization.AreaChart(
-    document.getElementById('areaChart')
-  );
-
-  chart.draw(data, options);
-    });
 }
 
 function calculateAverage(grades) {
