@@ -1225,7 +1225,8 @@ function handleDateClick(date, sessions, hours, classroom) {
 async function loadAllClassrooms() {
     console.log("Loading Classrooms...");
 
-    const studentId = (await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`)).get('id');
+    let studentId = await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`);
+    studentId = studentId ? studentId.id : null;
     const options = {
         sort: '-created',
         expand: 'teacher',
