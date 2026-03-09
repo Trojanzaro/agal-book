@@ -1335,7 +1335,12 @@ async function dashboardNavActive(nav) {
         loadAllClassrooms();
     } else if( nav === 'customers'){ 
         loadAllCustomers();
-    } 
+    } else if (nav === 'dashboard') {
+        const studentId = await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`);
+        const grades = await pb.collection('assignment_submit').getFullList({ sort: '-created' , filter: `student = '${studentId.id}'`});
+        console.log("Grades for dashboard:", grades);
+        drawCharts(grades);
+    }
 }
 
 function sidebarNavActive(nav) {
