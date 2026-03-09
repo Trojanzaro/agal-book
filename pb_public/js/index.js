@@ -946,7 +946,7 @@ async function loadAllStudents() {
                 <td>${((new Date()).getFullYear() - new Date(el['birthdate']).getFullYear())}</td>\
                 <td>${el['phone_number']}</td>\
                 <td><a href="javascript:classroomDetails('${element['id']}');sidebarNavActive('classrooms');">${classroomName}</a></td>\
-                ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>` : `<td>${el['first_name']} ${el['last_name']}</td>`}\
+                ${pb.authStore.model['auth_type'] !== 'student' ? `<td><button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteStudentModal('${el['id']}', '${el['first_name']} ${el['last_name']}')">Delete</button></td>` : `<td></td>`}\
             </tr>`;
         });
     });
@@ -1226,8 +1226,7 @@ async function loadAllClassrooms() {
     console.log("Loading Classrooms...");
     const records = await pb.collection('classroom').getFullList({
         sort: '-created',
-        expand: 'teacher',
-        filter: pb.authStore.model['auth_type'] === 'student' ? `students.id = '${pb.authStore.model.id}'` : undefined
+        expand: 'teacher'
     });
 
     records.forEach(element => {

@@ -362,8 +362,8 @@ routerAdd("GET", "/_dist/student/profile", (httpContext) => {
             "classroom_id": classroomId,
             "level": record.get("level"),
             "fee": record.get("fee"),
-            "student_bool": "true",
-            "teacher_bool": "true",
+            "student_bool": httpContext.user.auth_type == "student" ? true : false,
+            "teacher_bool": httpContext.user.auth_type == "teacher" ? true : false,
             ...localizationMap
         });
         // Once generated return the HTML contents
@@ -522,3 +522,5 @@ routerAdd("POST", "/_dist/process_payment", async (httpContext) => {
         return httpContext.json(500, {message: "Error processing payment"});
     }
 }, $apis.requireAuth("users"));
+
+
