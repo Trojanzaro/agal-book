@@ -1224,9 +1224,12 @@ function handleDateClick(date, sessions, hours, classroom) {
 //
 async function loadAllClassrooms() {
     console.log("Loading Classrooms...");
+
+    const studentId = (await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`)).get('id');
     const records = await pb.collection('classroom').getFullList({
         sort: '-created',
-        expand: 'teacher'
+        expand: 'teacher',
+        filter: pb.authStore.model['auth_type'] === 'student' ? `students.id = '${studentId}'` : undefined
     });
 
     records.forEach(element => {
