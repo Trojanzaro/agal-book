@@ -345,6 +345,7 @@ routerAdd("GET", "/_dist/student/profile", (httpContext) => {
 
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
+        console.log(httpContext.auth['auth_type'])
         //generate templates base on working directory path
         const html = $template.loadFiles(
             `${__hooks}/views/details.html`
