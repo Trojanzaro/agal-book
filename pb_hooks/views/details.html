@@ -285,7 +285,7 @@
                                         </a>
                                     </div>
                                     <div class="btn-group btn-group-sm">
-                                        {{if not .student_bool}}
+                                        {{if not $.student_bool}}
                                             <button class="btn btn-outline-secondary">Edit</button>
                                             <button class="btn btn-outline-danger" onclick="deleteTextbook('{{.Id}}')">Remove</button>
                                         {{end}}
@@ -378,7 +378,7 @@
                                         onclick="event.stopPropagation(); openSubmitModal('{{.Id}}')">
                                     Submit
                                 </button> -->
-                                    {{if not .student_bool}}
+                                    {{if not $.student_bool}}
                                 <button type="button" class="btn btn-sm btn-danger ms-2"
                                         onclick="event.stopPropagation(); deleteAssignment('{{.Id}}')">
                                     Delete
