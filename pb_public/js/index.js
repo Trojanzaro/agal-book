@@ -55,7 +55,7 @@ function selectStudentProfile(studentId, displayName) {
     // set header
     document.getElementById('profile_name').innerHTML = pb.authStore.model['auth_type'] === 'student' ? displayName : '<a href="javascript:studentDetails(\'' + studentId + '\');sidebarNavActive(\'students\');">' + displayName + '</a>';
     document.getElementById('profile_student_id').innerText = 'ID: ' + studentId;
-    document.getElementById('addGradeBtn').style = ''
+    document.getElementById('addGradeBtn').setAttribute('style', 'display: block;');
     // store selected id
     document.getElementById('grade_student_id').value = studentId;
     // load assignments
