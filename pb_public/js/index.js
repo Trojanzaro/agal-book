@@ -1226,11 +1226,14 @@ async function loadAllClassrooms() {
     console.log("Loading Classrooms...");
 
     const studentId = (await pb.collection('student').getFirstListItem(`user_id = '${pb.authStore.model.id}'`)).get('id');
-    const records = await pb.collection('classroom').getFullList({
+    const options = {
         sort: '-created',
         expand: 'teacher',
-        filter: pb.authStore.model['auth_type'] === 'student' ? `students.id = '${studentId}'` : undefined
-    });
+    };
+    if (pb.authStore.model['auth_type'] === 'student') {
+        options.filter = `students.id = '${studentId}'`;
+    }
+    const records = await pb.collection('classroom').getFullList(options);
 
     records.forEach(element => {
         console.log("ele:", element)
