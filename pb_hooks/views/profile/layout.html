@@ -107,10 +107,13 @@
 </div>
 
 <script>
-  google.charts.load('current', { packages: ['corechart'] });
-google.charts.setOnLoadCallback(() => {
-  console.log("Google charts ready");
-});
+  //load google charts once when the page loads, the charts will be drawn when the data is available 
+  window.addEventListener('load', () => {
+      google.charts.load('current', { packages: ['corechart'] });
+      google.charts.setOnLoadCallback(() => {
+        console.log("Google charts ready");
+      });
+    });
 </script>
 
 <!-- Add/Edit Grade Modal -->
