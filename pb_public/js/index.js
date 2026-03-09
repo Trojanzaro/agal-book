@@ -108,25 +108,30 @@ async function loadStudentProfile(studentId) {
     });
 }
 function drawChart(grades) {
-  const data = new google.visualization.DataTable();
-  data.addColumn('string', 'Type');
-  data.addColumn('number', 'Average Grade');
+console.log('Drawing chart with grades:', grades);
+// fix these so that it uses the promises .then() method like the other times that google charts were used int the file
+  google.charts.load('current', {'packages':['corechart']}).then(() => {
+    google.charts.setOnLoadCallback(drawChart);
+    const data = new google.visualization.DataTable();
+    data.addColumn('string', 'Type');
+    data.addColumn('number', 'Average Grade');
 
-  data.addRows([
-    ['Tests', calculateAverage(grades.test)],
-    ['Quizzes', calculateAverage(grades.quiz)],
-    ['Homework', calculateAverage(grades.homework)]
-  ]);
+    data.addRows([
+        ['Tests', calculateAverage(grades.test)],
+        ['Quizzes', calculateAverage(grades.quiz)],
+        ['Homework', calculateAverage(grades.homework)]
+    ]);
 
-  const options = {
-    title: 'Grade Distribution',
-    is3D: true,
-    vAxis: {title: 'Average Grade'},
-    hAxis: {title: 'Grade Type'},
-  };
+    const options = {
+        title: 'Grade Distribution',
+        is3D: true,
+        vAxis: {title: 'Average Grade'},
+        hAxis: {title: 'Grade Type'},
+    };
 
-  const chart = new google.visualization.AreaChart(document.getElementById('areaChart'));
-  chart.draw(data, options);
+    const chart = new google.visualization.AreaChart(document.getElementById('areaChart'));
+    chart.draw(data, options);
+  });
 }
 
 function calculateAverage(grades) {
