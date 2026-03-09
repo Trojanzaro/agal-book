@@ -57,7 +57,7 @@ function drawBarChart(grades) {
     };
 
     const chart = new google.visualization.ColumnChart(
-      document.getElementById('bar_chart')
+      document.getElementById('barChart')
     );
 
     chart.draw(data, options);
