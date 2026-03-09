@@ -26,7 +26,7 @@ function drawCharts(grades) {
 }
 
 function drawBarChart(grades) {
-  google.charts.setOnLoadCallback(() => {
+  google.charts.load('current', { packages: ['corechart'] }).then(() => {
 
     const dataArray = [
       ['Title', 'Grade', { role: 'style' }]
