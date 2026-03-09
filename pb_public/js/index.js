@@ -109,9 +109,10 @@ async function loadStudentProfile(studentId) {
 }
 
 function drawChart(grades) {
-  const data = new google.visualization.DataTable();
-  data.addColumn('string', 'Type');
-  data.addColumn('number', 'Average Grade');
+  google.charts.load('current', { packages: ['corechart'] }).then(() => {
+    const data = new google.visualization.DataTable();
+    data.addColumn('string', 'Type');
+    data.addColumn('number', 'Average Grade');
 
   data.addRows([
     ['Tests', calculateAverage(grades.filter(g => g.type === 'test').map(g => parseFloat(g.grade)))],
@@ -131,6 +132,7 @@ function drawChart(grades) {
   );
 
   chart.draw(data, options);
+    });
 }
 
 function calculateAverage(grades) {
