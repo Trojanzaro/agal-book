@@ -104,7 +104,34 @@ async function loadStudentProfile(studentId) {
             <td class="text-center">${actionButtons}</td>
         `;
         tbody.appendChild(tr);
+        drawChart(subs)
     });
+}
+function drawChart(grades) {
+  const data = new google.visualization.DataTable();
+  data.addColumn('string', 'Type');
+  data.addColumn('number', 'Average Grade');
+
+  data.addRows([
+    ['Tests', calculateAverage(grades.test)],
+    ['Quizzes', calculateAverage(grades.quiz)],
+    ['Homework', calculateAverage(grades.homework)]
+  ]);
+
+  const options = {
+    title: 'Grade Distribution',
+    is3D: true,
+    vAxis: {title: 'Average Grade'},
+    hAxis: {title: 'Grade Type'},
+  };
+
+  const chart = new google.visualization.AreaChart(document.getElementById('areaChart'));
+  chart.draw(data, options);
+}
+
+function calculateAverage(grades) {
+  if (grades.length === 0) return 0;
+  return grades.reduce((sum, grade) => sum + grade, 0) / grades.length;
 }
 
 function openEditGradeModal(subId, studentId) {
