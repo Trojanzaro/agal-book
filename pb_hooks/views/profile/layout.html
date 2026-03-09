@@ -106,6 +106,13 @@
   </div>
 </div>
 
+<script>
+  google.charts.load('current', { packages: ['corechart'] });
+google.charts.setOnLoadCallback(() => {
+  console.log("Google charts ready");
+});
+</script>
+
 <!-- Add/Edit Grade Modal -->
 <div class="modal fade" id="addGradeModal" tabindex="-1">
   <div class="modal-dialog">
