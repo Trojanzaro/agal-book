@@ -1,20 +1,31 @@
 function drawCharts(grades) {
-  google.charts.load('current', { packages: ['corechart'] }).then(() => {
-    const data = new google.visualization.DataTable();
-    data.addColumn('string', 'Type');
-    data.addColumn('number', 'Average Grade');
+
+  const data = new google.visualization.DataTable();
+  data.addColumn('string', 'Type');
+  data.addColumn('number', 'Average Grade');
+
+  const tests = calculateAverage(
+    grades.filter(g => g.type === 'test').map(g => parseFloat(g.grade))
+  );
+
+  const quizzes = calculateAverage(
+    grades.filter(g => g.type === 'quiz').map(g => parseFloat(g.grade))
+  );
+
+  const homework = calculateAverage(
+    grades.filter(g => g.type === 'homework').map(g => parseFloat(g.grade))
+  );
 
   data.addRows([
-    ['Tests', calculateAverage(grades.filter(g => g.type === 'test').map(g => parseFloat(g.grade)))],
-    ['Quizzes', calculateAverage(grades.filter(g => g.type === 'quiz').map(g => parseFloat(g.grade)))],
-    ['Homework', calculateAverage(grades.filter(g => g.type === 'homework').map(g => parseFloat(g.grade)))]
+    ['Tests', tests],
+    ['Quizzes', quizzes],
+    ['Homework', homework]
   ]);
 
   const options = {
     title: 'Grade Distribution',
-    is3D: true,
-    vAxis: { title: 'Average Grade' },
-    hAxis: { title: 'Grade Type' },
+    vAxis: { title: 'Average Grade', minValue: 0, maxValue: 100 },
+    hAxis: { title: 'Grade Type' }
   };
 
   const chart = new google.visualization.AreaChart(
@@ -22,46 +33,31 @@ function drawCharts(grades) {
   );
 
   chart.draw(data, options);
-    });
 }
 
 function drawBarChart(grades) {
-  google.charts.load('current', { packages: ['corechart'] }).then(() => {
+  const dataArray = [
+    ['Assignment', 'Grade']
+  ];
 
-    const dataArray = [
-      ['Title', 'Grade', { role: 'style' }]
-    ];
-
-    grades.forEach(g => {
-      dataArray.push([
-        g.title,
-        g.grade,
-        'color: #4285F4'
-      ]);
-    });
-
-    const data = google.visualization.arrayToDataTable(dataArray);
-
-    const options = {
-      title: 'Grades',
-      legend: { position: 'none' },
-      vAxis: {
-        title: 'Score',
-        minValue: 0,
-        maxValue: 100
-      },
-      hAxis: {
-        title: 'Assignments'
-      },
-      bar: { groupWidth: '60%' }
-    };
-
-    const chart = new google.visualization.ColumnChart(
-      document.getElementById('barChart')
-    );
-
-    chart.draw(data, options);
+  grades.forEach(g => {
+    dataArray.push([g.title, parseFloat(g.grade)]);
   });
+
+  const data = google.visualization.arrayToDataTable(dataArray);
+
+  const options = {
+    title: 'Grades',
+    legend: { position: 'none' },
+    vAxis: { title: 'Score', minValue: 0, maxValue: 100 },
+    hAxis: { title: 'Assignments' }
+  };
+
+  const chart = new google.visualization.ColumnChart(
+    document.getElementById('barChart')
+  );
+
+  chart.draw(data, options);
 }
 
 ///////
