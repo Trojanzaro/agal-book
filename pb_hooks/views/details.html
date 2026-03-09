@@ -285,7 +285,7 @@
                                         </a>
                                     </div>
                                     <div class="btn-group btn-group-sm">
-                                        {{if not $.student_bool}}
+                                        {{if not .student_bool}}
                                             <button class="btn btn-outline-secondary">Edit</button>
                                             <button class="btn btn-outline-danger" onclick="deleteTextbook('{{.Id}}')">Remove</button>
                                         {{end}}
