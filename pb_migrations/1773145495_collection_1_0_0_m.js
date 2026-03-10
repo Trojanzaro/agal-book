@@ -1,0 +1,6 @@
+/// <reference path="../pb_data/types.d.ts" />
+migrate((app) => {
+  // add up queries...
+}, (app) => {
+  // add down queries...
+})
