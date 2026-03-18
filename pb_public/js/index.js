@@ -1253,6 +1253,7 @@ function handleDateClick(date, sessions, hours, classroom) {
         dataTable.addColumn({ type: 'string', id: 'Room' });
         dataTable.addColumn({ type: 'date', id: 'Start' });
         dataTable.addColumn({ type: 'date', id: 'End' });
+        dataTable.addColumn({ type: 'string', role: 'tooltip' });
 
         const parsedHours = JSON.parse(hours);
 
@@ -1270,10 +1271,10 @@ function handleDateClick(date, sessions, hours, classroom) {
             hxDayEnd.setHours(23, 59, 59, 999); // 23:59:59.999
 
             // making sure the classroom name is clickable and redirects to the classroom details page
-            classroom = `<a href="javascript:classroomDetails('${classroom}');sidebarNavActive('classrooms');">${classroom}</a>`;
+            const classroomTooltip = `<div style="padding:10px;"><strong>Classroom:</strong> <a href="javascript:classroomDetails('${classroom}');sidebarNavActive('classrooms');">${classroom}</a><br><strong>Hours:</strong> ${hourRange}</div>`;
 
             dataTable.addRows([
-                [ classroom, dayStart, endDate ]
+                [ classroom, dayStart, endDate, classroomTooltip ]
             ]);
 
             var options = {
