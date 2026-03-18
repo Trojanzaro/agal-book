@@ -1185,7 +1185,7 @@ function drawTeacherCallendar(schedule, year) {
             const startDate = new Date(year, 0, 1);
             const endDate = new Date(year, 11, 31);
             for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-                dataTable.addRow([new Date(d), 0, '', '']);
+                dataTable.addRow([new Date(d), 0, '', '', '']);
             }
             
             // for each weekday that we need to mark in the calendar 
