@@ -1269,6 +1269,9 @@ function handleDateClick(date, sessions, hours, classroom) {
             endDate.setHours(parseInt(hourRange.split('-')[1].split(':')[0]), 0, 0);
             hxDayEnd.setHours(23, 59, 59, 999); // 23:59:59.999
 
+            // making sure the classroom name is clickable and redirects to the classroom details page
+            classroom = `<a href="javascript:classroomDetails('${classroom}');sidebarNavActive('classrooms');">${classroom}</a>`;
+
             dataTable.addRows([
                 [ classroom, dayStart, endDate ]
             ]);
