@@ -1277,6 +1277,7 @@ function handleDateClick(date, sessions, hours, classroom) {
             ]);
 
             var options = {
+                tooltip: { isHtml: true },
                 timeline: { singleColor: 'rgb(13, 134, 155)' },
                 title: 'Teacher Timeline',
                 hAxis: {
