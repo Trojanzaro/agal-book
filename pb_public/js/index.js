@@ -1179,6 +1179,7 @@ function drawTeacherCallendar(schedule, year) {
             dataTable.addColumn({ type: 'number', id: 'Sessions' });
             dataTable.addColumn({ type: 'string', role: 'hours' });
             dataTable.addColumn({ type: 'string', role: 'clarssroom' });
+            dataTable.addColumn({ type: 'string', role: 'clarssroom_id' });
 
             // Step 1: Pre-fill all days of the year with 0
             const startDate = new Date(year, 0, 1);
@@ -1198,7 +1199,8 @@ function drawTeacherCallendar(schedule, year) {
                             new Date(year, i, date, 0, 0, 0, 0),
                             session["hours"].length,
                             JSON.stringify(session['hours']),
-                            session["classroom_name"]
+                            session["classroom_name"],
+                            session["classroom_id"]
                         ]);
                     });
                 }
@@ -1238,14 +1240,15 @@ function drawTeacherCallendar(schedule, year) {
                 const sessions = dataTable.getValue(selection[0].row, 1);
                 const hours = dataTable.getValue(selection[0].row, 2);
                 const classroom = dataTable.getValue(selection[0].row, 3);
+                const classroomId = dataTable.getValue(selection[0].row, 4);
                 
-                if(sessions !== 0) handleDateClick(clickedDate, sessions, hours, classroom);
+                if(sessions !== 0) handleDateClick(clickedDate, sessions, hours, classroom, classroomId);
             });
 
         });
 }
 
-function handleDateClick(date, sessions, hours, classroom) {
+function handleDateClick(date, sessions, hours, classroom, classroomId) {
     google.charts.load("current", {packages:["timeline"]}).then(function() {
         var container = document.getElementById('example5.2');
         var chart = new google.visualization.Timeline(container);
@@ -1253,7 +1256,7 @@ function handleDateClick(date, sessions, hours, classroom) {
         dataTable.addColumn({ type: 'string', id: 'Room' });
         dataTable.addColumn({ type: 'date', id: 'Start' });
         dataTable.addColumn({ type: 'date', id: 'End' });
-        dataTable.addColumn({ type: 'string', role: 'tooltip' });
+        dataTable.addColumn({ type: 'string', role: 'tooltip', p: { html: true } });
 
         const parsedHours = JSON.parse(hours);
 
@@ -1271,7 +1274,7 @@ function handleDateClick(date, sessions, hours, classroom) {
             hxDayEnd.setHours(23, 59, 59, 999); // 23:59:59.999
 
             // making sure the classroom name is clickable and redirects to the classroom details page
-            const classroomTooltip = `<div style="padding:10px;"><strong>Classroom:</strong> <a href="javascript:classroomDetails('${classroom}');sidebarNavActive('classrooms');">${classroom}</a><br><strong>Hours:</strong> ${hourRange}</div>`;
+            const classroomTooltip = `<a href="javascript:classroomDetails('${classroomId}');sidebarNavActive('classrooms');">${classroom}</a>`;
 
             dataTable.addRows([
                 [ classroom, dayStart, endDate, classroomTooltip ]
