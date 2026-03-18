@@ -1185,7 +1185,7 @@ function drawTeacherCallendar(schedule, year) {
             const startDate = new Date(year, 0, 1);
             const endDate = new Date(year, 11, 31);
             for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-                dataTable.addRow([new Date(d), 0, '', '']);
+                dataTable.addRow([new Date(d), 0, '', '', '']);
             }
             
             // for each weekday that we need to mark in the calendar 
@@ -1253,10 +1253,10 @@ function handleDateClick(date, sessions, hours, classroom, classroomId) {
         var container = document.getElementById('example5.2');
         var chart = new google.visualization.Timeline(container);
         var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn({ type: 'string', id: 'Room' });
-        dataTable.addColumn({ type: 'date', id: 'Start' });
+        dataTable.addColumn({ type: 'string', id: 'Classroom'});
+	dataTable.addColumn({ type: 'string', id: 'ClassroomId'});
+	dataTable.addColumn({ type: 'date', id: 'Start' });
         dataTable.addColumn({ type: 'date', id: 'End' });
-        dataTable.addColumn({ type: 'string', role: 'tooltip', p: { html: true } });
 
         const parsedHours = JSON.parse(hours);
 
@@ -1273,14 +1273,12 @@ function handleDateClick(date, sessions, hours, classroom, classroomId) {
             endDate.setHours(parseInt(hourRange.split('-')[1].split(':')[0]), 0, 0);
             hxDayEnd.setHours(23, 59, 59, 999); // 23:59:59.999
 
-            // making sure the classroom name is clickable and redirects to the classroom details page
-            const classroomTooltip = `<a href="javascript:classroomDetails('${classroomId}');sidebarNavActive('classrooms');">${classroom}</a>`;
-
             dataTable.addRows([
-                [ classroom, dayStart, endDate, classroomTooltip ]
+                [classroom, classroomId, dayStart, endDate ]
             ]);
 
             var options = {
+		        selectionMode: 'single',
                 tooltip: { isHtml: true },
                 timeline: { singleColor: 'rgb(13, 134, 155)' },
                 title: 'Teacher Timeline',
@@ -1290,10 +1288,20 @@ function handleDateClick(date, sessions, hours, classroom, classroomId) {
                     format: 'HH:mm'
                 }
             };
+	chart.draw(dataTable,options);
+	google.visualization.events.addListener(chart, 'select', function () {
+		const selection = chart.getSelection();
 
-            chart.draw(dataTable, options);
+    		if (selection.length > 0) {
+        		const rowIndex = selection[0].row;
+        		const selectedId = dataTable.getValue(rowIndex, 1); 
+        
+        		classroomDetails(selectedId);
+        		sidebarNavActive('classrooms');
+    		}
+	    });
         });
-    });    
+    });
 }
 
 ///////
