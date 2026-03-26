@@ -1072,12 +1072,9 @@ async function loadAllTeachersForSelect() {
     });
 
     records.forEach(element => {
-        document.getElementById("classroomTeacherSelect").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+        document.getElementById("teacherList").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
     });
 
-    records.forEach(element => {
-        document.getElementById("classroomTeacherSelectDetail").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
-    });
 }
 
 ///////
