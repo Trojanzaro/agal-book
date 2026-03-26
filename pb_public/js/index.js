@@ -390,6 +390,7 @@ async function studentFees(studentId, customerId, customerName, studentName) {
             document.getElementById("paymentProgress").style.width = ((paidAmount / discountedTotal) * 100) + '%';
 
         });
+        document.getElementById("payment_button").removeAttribute("disabled");
     } else {
         document.getElementById("payment_button").setAttribute("disabled", "true");
     }
@@ -1058,6 +1059,24 @@ async function loadAllParentsForSelect() {
 
     records.forEach(element => {
         document.getElementById("parent2List").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+    });
+}
+
+///////
+// EVENT: CTRL: LOAD ALL TEACHERS FOR SELECT
+async function loadAllTeachersForSelect() {
+    console.log("Loading Teachers for Select...");
+    // you can also fetch all records at once via getFullList
+    const records = await pb.collection('teacher').getFullList({
+        sort: '-created',
+    });
+
+    records.forEach(element => {
+        document.getElementById("classroomTeacherSelect").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+    });
+
+    records.forEach(element => {
+        document.getElementById("classroomTeacherSelectDetail").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
     });
 }
 
