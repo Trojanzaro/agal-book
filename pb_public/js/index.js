@@ -1053,11 +1053,11 @@ async function loadAllParentsForSelect() {
     });
 
     records.forEach(element => {
-        document.getElementById("parentSelect1").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+        document.getElementById("parent1List").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
     });
 
     records.forEach(element => {
-        document.getElementById("parentSelect2").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+        document.getElementById("parent2List").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
     });
 }
 
