@@ -1128,8 +1128,6 @@ async function loadAllTeachers() {
         </tr>`
     });
 
-    loadAllTeachersForSelect();
-
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
             lengthChange: true,
@@ -1366,6 +1364,9 @@ async function loadAllClassrooms() {
                 </tr>
             `;
     });
+
+
+    loadAllTeachersForSelect();
 
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
