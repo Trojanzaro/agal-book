@@ -8,8 +8,7 @@
 <div class="main-dashboard" id="main-dashboard">
   <h1>{{._customers}} </h1>
   {{if not .student_bool}}
-  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">{{._new_entry_btn}}  <i
-      class="fas fa-file-alt"> </i></button>
+  <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newCustomerModal">{{._new_entry_btn}}  <span>📝</span> </button>
   <br /><br />
   {{end}}
   <table id="dataTable" class="table table-striped" style="width:100%">
@@ -53,7 +52,7 @@
 
   <!--NEW PAYMENT BUTTON -->
   {{if not .student_bool}}
-  <button class="btn bs b-btn-xl btn-primary" id="payment_button" data-bs-toggle="modal" data-bs-target="#newPaymentModal" disabled="true">{{._new_payment}} <i class="fa-solid fa-money-bill"></i></button>
+  <button class="btn bs b-btn-xl btn-primary" id="payment_button" data-bs-toggle="modal" data-bs-target="#newPaymentModal" disabled="true">{{._new_payment}} <span>💵</span></button>
   <br /><br />
   {{end}}
   <!-- Payment Summary Cards -->

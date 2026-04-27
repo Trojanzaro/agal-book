@@ -13,14 +13,14 @@
     <ul class="nav nav-pills flex-column mb-auto" style="margin-bottom:27rem !important">
       <li class="nav-item">
         <a id="dashboard_a_id" href="#" class="nav-link text-white {{.sb_dashboard}}" onclick="window.localStorage.setItem('nav','dashboard');dashboardNavActive('dashboard')"><!--...active" aria-current="page"-->
-          <i class="fas fa-window-restore" style="padding-right: 15px;"></i>
+           <span style="padding-right: 15px; font-size: x-large;">🖥️</span>
           {{._nav_dashboard}} 
         </a>
       </li>
       {{if not .student_bool}}
       <li>
         <a id="students_a_id" href="#" class="nav-link text-white {{.sb_students}}" onclick="window.localStorage.setItem('nav','students');dashboardNavActive('students')">
-          <i class="fas fa-book-reader" style="padding-right: 15px;"></i>
+           <span style="padding-right: 15px; font-size: x-large;" >🧑‍🎓</span>
           {{._nav_students}} 
         </a>
       </li>
@@ -28,26 +28,26 @@
       {{if not .student_bool}}
       <li>
         <a id="teachers_a_id" href="#" class="nav-link text-white {{.sb_teachers}}" onclick="window.localStorage.setItem('nav','teachers');dashboardNavActive('teachers')">
-          <i class="fas fa-user-graduate" style="padding-right: 15px;"></i>
+           <span style="padding-right: 15px; font-size: x-large;" >🧑‍🏫</span>
           {{._nav_teachers}}
         </a>
       </li>
       {{end}}
       <li>
         <a id="classrooms_a_id" href="#" class="nav-link text-white {{.sb_classrooms}}" onclick="window.localStorage.setItem('nav','classrooms');dashboardNavActive('classrooms')">
-          <i class="fas fa-graduation-cap" style="padding-right: 15px;"></i>
+           <span style="padding-right: 15px; font-size: x-large;" >🏫</span>
           {{._nav_classrooms}} 
         </a>
       </li>
       <li>
         <a id="customers_a_id" href="#" class="nav-link text-white {{.sb_profile}}" onclick="window.localStorage.setItem('nav','profile');dashboardNavActive('profile')">
-          <i class="fa-solid fa-address-card" style="padding-right: 15px;"></i>
+           <span style="padding-right: 15px; font-size: x-large;" >🪪</span>
           {{._nav_profile}} 
         </a>
       </li>
       <li>
         <a id="customers_a_id" href="#" class="nav-link text-white {{.sb_customers}}" onclick="window.localStorage.setItem('nav','customers');dashboardNavActive('customers')">
-          <i class="fas fa-award" style="padding-right: 15px;"></i>
+           <span style="padding-right: 15px; font-size: x-large;" >🏅</span>
           {{._nav_customers}} 
         </a>
       </li>
