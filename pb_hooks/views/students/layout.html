@@ -15,7 +15,7 @@
   <div class="main-dashboard" id="main-dashboard">
     <h1>{{._students}} </h1>
     {{if not .student_bool}}
-    <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newStudentModal">{{._new_entry_btn}}  <i class="fas fa-file-alt">  </i></button>
+    <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal" data-bs-target="#newStudentModal">{{._new_entry_btn}}  <span>📝</span></button>
     <br/><br/>
     {{end}}
 
@@ -91,15 +91,16 @@
           <hr />
           <div class="col-12">
             <h5>{{._assign_parent}} 1</h5>
-            <select class="form-select" id="parentSelect1" aria-label="Parent select">
-              <option value="" selected>{{._select_parent}}</option>
-            </select>
+            <!-- replace parent select option with bootstrap datalist-->
+            <input class="form-control" list="parent1List" id="parentSelect1" aria-label="Parent select" placeholder="Type parent name...">
+            <datalist id="parent1List">
+            </datalist>
           </div>
           <div class="col-12">
             <h5>{{._assign_parent}} 2</h5>
-            <select class="form-select" id="parentSelect2" aria-label="Parent select">
-              <option value="" selected>{{._select_parent}}</option>
-            </select>
+            <input class="form-control" list="parent2List" id="parentSelect2" aria-label="Parent select" placeholder="Type parent name...">
+            <datalist id="parent2List">
+            </datalist>
           </div>
           <div class="col-12">
           </div>

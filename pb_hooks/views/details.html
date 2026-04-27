@@ -93,7 +93,7 @@
     <div class="col-12">
         <!-- Edit Schedule Button -->
         <button type="button" id="editScheduleBtn" class="btn btn-primary" data-bs-toggle="modal"
-            data-bs-target="#scheduleModal">Edit Schedule <i class="fa-regular fa-calendar"></i></button>
+            data-bs-target="#scheduleModal">Edit Schedule <span>🗓️</span></button>
     </div>
 
 
@@ -202,7 +202,7 @@
                         <div class="mb-2">
                             <button id="editClassroomBtn" class="btn btn-outline-warning btn-sm" type="button"
                                 onclick="enableDetailsEdit('classroom');$('#submitClassroomBtn').removeAttr('disabled');$('#editbtn').attr('disabled', true)">
-                                <i class="fas fa-edit"></i> {{._edit_btn}}
+                                <span>📝</span> {{._edit_btn}}
                             </button>
                             <button id="submitClassroomBtn" class="btn btn-primary btn-sm" type="button"
                                 onclick="putDetails('{{.classroom_id}}','classroom')" disabled>{{._submit_btn}}</button>
@@ -316,7 +316,7 @@
     <h3>{{._students_in_classroom}} </h3>
     {{if not .student_bool}}
     <button class="btn bsb-btn-xl btn-primary" data-bs-toggle="modal"
-        data-bs-target="#assignStudentModal">{{._assign_student_btn}} <i class="fas fa-book-reader"></i></button>
+        data-bs-target="#assignStudentModal">{{._assign_student_btn}} <span>📚</span></button>
     {{end}}
     <table id="dataTable" class="table table-striped" style="width:100%">
         <thead>
@@ -364,7 +364,7 @@
         <div>
             {{if not .student_bool}}
             <button class="btn btn-success" data-bs-toggle="modal"
-                data-bs-target="#newAssignmentModal">{{._new_assignment_btn}} <i class="fas fa-file-alt"> </i> </button>
+                data-bs-target="#newAssignmentModal">{{._new_assignment_btn}} <span>📝</span> </button>
             {{end}}
         </div>
     </div>

@@ -145,8 +145,8 @@ async function loadStudentProfile(studentId) {
         const pct = (s.grade && s.max_score) ? Math.round((parseFloat(s.grade) / parseFloat(s.max_score)) * 100) + '%' : '-';
         const tr = document.createElement('tr');
         const actionButtons = pb.authStore.model['auth_type'] !== 'student' ? `
-                <button class="btn btn-outline-secondary btn-sm" onclick="openEditGradeModal('${s.id}','${studentId}')"><i class="fa-solid fa-pencil"></i></button>
-                <button class="btn btn-outline-danger btn-sm" onclick="deleteGrade('${s.id}','${studentId}')"><i class="fa-solid fa-trash"></i></button>
+                <button class="btn btn-outline-secondary btn-sm" onclick="openEditGradeModal('${s.id}','${studentId}')"><span>✏️</span></button>
+                <button class="btn btn-outline-danger btn-sm" onclick="deleteGrade('${s.id}','${studentId}')"><span>🗑️</span></button>
             ` : '';
         tr.innerHTML = `
             <td>${escapeHtml(s.type || '')}</td>
@@ -383,13 +383,14 @@ async function studentFees(studentId, customerId, customerName, studentName) {
                 <td>€${payment.payment_amount}</td>\
                 <td>DIRECT</td>\
                 <td><span class="badge bg-success">Completed</span></td>\
-                <td><button class="btn bs b-btn-xl btn-primary" type="button" onclick="window.open('https://aggal-book.ddns.net/_dist/payment?id=${payment.id}')">Print <i class="fa-solid fa-print"></i></button></td>\
+                <td><button class="btn bs b-btn-xl btn-primary" type="button" onclick="window.open('https://aggal-book.ddns.net/_dist/payment?id=${payment.id}')">Print <span>🖨️</span></button></td>\
             </tr>`;
 
             // payment progrees bar
             document.getElementById("paymentProgress").style.width = ((paidAmount / discountedTotal) * 100) + '%';
 
         });
+        document.getElementById("payment_button").removeAttribute("disabled");
     } else {
         document.getElementById("payment_button").setAttribute("disabled", "true");
     }
@@ -1053,12 +1054,27 @@ async function loadAllParentsForSelect() {
     });
 
     records.forEach(element => {
-        document.getElementById("parentSelect1").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+        document.getElementById("parent1List").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
     });
 
     records.forEach(element => {
-        document.getElementById("parentSelect2").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+        document.getElementById("parent2List").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
     });
+}
+
+///////
+// EVENT: CTRL: LOAD ALL TEACHERS FOR SELECT
+async function loadAllTeachersForSelect() {
+    console.log("Loading Teachers for Select...");
+    // you can also fetch all records at once via getFullList
+    const records = await pb.collection('teacher').getFullList({
+        sort: '-created',
+    });
+
+    records.forEach(element => {
+        document.getElementById("teacherList").innerHTML += `<option value="${element.id}">${element.id}: ${element.first_name} ${element.last_name}</option>`;
+    });
+
 }
 
 ///////
@@ -1345,6 +1361,9 @@ async function loadAllClassrooms() {
                 </tr>
             `;
     });
+
+
+    loadAllTeachersForSelect();
 
     $(document).ready(function () {
         var table = $('#dataTable').DataTable({
