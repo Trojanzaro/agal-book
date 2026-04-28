@@ -1265,7 +1265,8 @@ function drawTeacherCallendar(schedule, year) {
 }
 
 function handleDateClick(date, sessions, hours, classroom, classroomId) {
-    google.charts.load("current", {packages:["timeline"]}).then(function() {
+console.log(date,sessions,hours,classroom,classroomId)
+	google.charts.load("current", {packages:["timeline"]}).then(function() {
         var container = document.getElementById('example5.2');
         var chart = new google.visualization.Timeline(container);
         var dataTable = new google.visualization.DataTable();

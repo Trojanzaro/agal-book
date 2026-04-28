@@ -430,7 +430,7 @@ function scheduleTablePopulate() {
     const scheduleArray = [];
 
     // Get classroom (from first row, first column)
-    const classroomInput = rows[1]?.cells[0]?.querySelector('.classroom-input');
+    const classroomInput = rows[1]?.cells[0]?.querySelector('input[type="text"]');
     const classroomValue = classroomInput ? classroomInput.value : "";
 
     // Loop days (columns 1 → 5)
