@@ -921,11 +921,15 @@ async function createNewClassroom() {
     const name = document.forms["new_classroom_form"]["classroomName"].value;
     const teacher = document.getElementById('classroomTeacher')?.value || '';
     const room = document.forms["new_classroom_form"]["classroomRoom"].value || '';
+    const fee = document.forms["new_classroom_form"]["classroomLevel"].value || '';
+    const room = document.forms["new_classroom_form"]["classroomFee"].value || '';
     try {
         const data = {
             "name": name,
             "teacher": teacher,
-            "room": room
+            "room": room,
+            "fee" : fee,
+            "level" : level
         };
         const record = await pb.collection('classroom').create(data);
         pushNotification('Successfully created New Classroom!');
