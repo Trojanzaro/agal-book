@@ -429,9 +429,6 @@ function scheduleTablePopulate() {
     const rows = table.rows;
     const scheduleArray = [];
 
-    // Get classroom (from first row, first column)
-    const classroomInput = rows[1]?.cells[0]?.querySelector('input[type="text"]');
-    const classroomValue = classroomInput ? classroomInput.value : "";
 
     // Loop days (columns 1 → 5)
     for (let i = 0; i < days.length; i++) {
@@ -451,21 +448,23 @@ function scheduleTablePopulate() {
       for (let j = 1; j < rows.length; j++) {
         const cell = rows[j].cells[i + 1]; // +1 because first column is classroom
         if (!cell) continue;
+        const classroomInput = rows[j]?.cells[0]?.querySelector('input[type="text"]');
+        const classroomValue = classroomInput ? classroomInput.value : "";
         const checkbox = cell.querySelector('.hour-checkbox');
         const timeInput = cell.querySelector('input[type="text"]');
 
         if (checkbox && checkbox.checked && timeInput) {
           hours.push(timeInput.value);
         }
-      }
 
-      // Only push if hours exist
-      if (hours.length > 0) {
-        scheduleArray.push({
-          classroom: classroomValue,
-          day: day,
-          hours: hours
-        });
+        // Only push if hours exist
+        if (hours.length > 0) {
+          scheduleArray.push({
+            classroom: classroomValue,
+            day: day,
+            hours: hours
+          });
+        }
       }
     }
 
@@ -565,7 +564,8 @@ function buildScheduleGrid(schedule) {
       <td>
         <input type="text"
                class="form-control classroom-input"
-               value="${classroom}">
+               value="${classroom}"
+               oninput="console.log(this.value)">
       </td>
     `;
 

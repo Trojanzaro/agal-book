@@ -1186,40 +1186,56 @@ async function loadAllCustomers() {
 // EVENT: LOAD TEACHER CALENDAR ON DETAILS PAGE
 function drawTeacherCallendar(schedule, year) {
 
-    // Create the calendar chart
-    // Ensure Google Charts is loaded before drawing
     google.charts.load('current', { packages: ['calendar'] })
         .then(() => {
+
             const dataTable = new google.visualization.DataTable();
             dataTable.addColumn({ type: 'date', id: 'Date' });
             dataTable.addColumn({ type: 'number', id: 'Sessions' });
-            dataTable.addColumn({ type: 'string', role: 'hours' });
-            dataTable.addColumn({ type: 'string', role: 'clarssroom' });
-            dataTable.addColumn({ type: 'string', role: 'clarssroom_id' });
+            dataTable.addColumn({ type: 'string', role: 'Payload' }); // 👈 store everything here
 
-            // Step 1: Pre-fill all days of the year with 0
-            const startDate = new Date(year, 0, 1);
-            const endDate = new Date(year, 11, 31);
-            for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-                dataTable.addRow([new Date(d), 0, '', '', '']);
-            }
-            
-            // for each weekday that we need to mark in the calendar 
+            // 🔹 Aggregate all sessions per date
+            const dateMap = {};
+
             schedule.forEach((session) => {
-                console.log("Processing session for day:", session['hours']);
+                console.log("Processing session:", session);
+
                 const sessionDates = getWeekdayDatesInYear(session["day"], year);
-                //console.log("Session dates for", session["day"]);
+
                 for (let i = 0; i < 12; i++) {
                     sessionDates[i.toString()].forEach((date) => {
-                        dataTable.addRow([
-                            new Date(year, i, date, 0, 0, 0, 0),
-                            session["hours"].length,
-                            JSON.stringify(session['hours']),
-                            session["classroom_name"],
-                            session["classroom_id"]
-                        ]);
+
+                        const d = new Date(year, i, date, 0, 0, 0, 0);
+                        const key = d.toDateString();
+
+                        if (!dateMap[key]) {
+                            dateMap[key] = {
+                                date: d,
+                                sessions: 0,
+                                items: []
+                            };
+                        }
+
+                        // increment session count
+                        dateMap[key].sessions += session["hours"].length;
+
+                        // push full session info
+                        dateMap[key].items.push({
+                            name: session["classroom_name"],
+                            hours: session["hours"],
+                            id: session["classroom_id"]
+                        });
                     });
                 }
+            });
+
+            // Add ONE row per date
+            Object.values(dateMap).forEach(entry => {
+                dataTable.addRow([
+                    entry.date,
+                    entry.sessions,
+                    JSON.stringify(entry.items)
+                ]);
             });
 
             const chart = new google.visualization.Calendar(
@@ -1232,93 +1248,119 @@ function drawTeacherCallendar(schedule, year) {
                     maxValue: 10,
                     colors: ['#e0f2f1', '#26a4d6']
                 },
-                title: getLanguage() === 'en' ? 'Teacher Calendar' : 'Ημερολόγιο Δασκάλου',
+                title: getLanguage() === 'en'
+                    ? 'Teacher Calendar'
+                    : 'Ημερολόγιο Δασκάλου',
                 calendar: {
                     cellSize: 15,
                 }
             };
 
             chart.draw(dataTable, options);
-             // CLICK HANDLER
+
+            //CLICK HANDLER
             google.visualization.events.addListener(chart, 'select', function () {
 
                 const selection = chart.getSelection();
 
-                if (!selection || selection.length === 0) {
-                    return;
-                }
-
-                if (selection[0].row == null) {
-                    return;
-                }
+                if (!selection || selection.length === 0) return;
+                if (selection[0].row == null) return;
 
                 const clickedDate = dataTable.getValue(selection[0].row, 0);
                 const sessions = dataTable.getValue(selection[0].row, 1);
-                const hours = dataTable.getValue(selection[0].row, 2);
-                const classroom = dataTable.getValue(selection[0].row, 3);
-                const classroomId = dataTable.getValue(selection[0].row, 4);
-                
-                if(sessions !== 0) handleDateClick(clickedDate, sessions, hours, classroom, classroomId);
+                const payload = dataTable.getValue(selection[0].row, 2);
+
+                const parsed = JSON.parse(payload);
+
+                console.log("All sessions for day:", parsed);
+
+                if (sessions !== 0) {
+                    handleDateClick(clickedDate, sessions, parsed);
+                }
             });
 
         });
 }
 
-function handleDateClick(date, sessions, hours, classroom, classroomId) {
-console.log(date,sessions,hours,classroom,classroomId)
-	google.charts.load("current", {packages:["timeline"]}).then(function() {
-        var container = document.getElementById('example5.2');
-        var chart = new google.visualization.Timeline(container);
-        var dataTable = new google.visualization.DataTable();
-        dataTable.addColumn({ type: 'string', id: 'Classroom'});
-	dataTable.addColumn({ type: 'string', id: 'ClassroomId'});
-	dataTable.addColumn({ type: 'date', id: 'Start' });
-        dataTable.addColumn({ type: 'date', id: 'End' });
+function handleDateClick(date, sessions, payload) {
+    console.log(date, sessions, payload);
 
-        const parsedHours = JSON.parse(hours);
+    google.charts.load("current", { packages: ["timeline"] })
+        .then(function () {
 
-        console.log("Parsed Hours:", parsedHours);
+            const container = document.getElementById('example5.2');
+            const chart = new google.visualization.Timeline(container);
+            const dataTable = new google.visualization.DataTable();
 
-        parsedHours.forEach(hourRange => {
-            const dayStart = new Date(date);
+            dataTable.addColumn({ type: 'string', id: 'Classroom' });
+            dataTable.addColumn({ type: 'string', id: 'ClassroomId' });
+            dataTable.addColumn({ type: 'date', id: 'Start' });
+            dataTable.addColumn({ type: 'date', id: 'End' });
+
+            //timeline bounds
             const hxDayStart = new Date(date);
-            hxDayStart.setHours(8, 0, 0, 0); // 08:00:00.000
-            dayStart.setHours(parseInt(hourRange.split('-')[0].split(':')[0]), 0, 0, 0);
+            hxDayStart.setHours(0, 0, 0, 0);
 
-            const endDate = new Date(date);
             const hxDayEnd = new Date(date);
-            endDate.setHours(parseInt(hourRange.split('-')[1].split(':')[0]), 0, 0);
-            hxDayEnd.setHours(23, 59, 59, 999); // 23:59:59.999
+            hxDayEnd.setHours(23, 59, 59, 999);
 
-            dataTable.addRows([
-                [classroom, classroomId, dayStart, endDate ]
-            ]);
+            //LOOP ALL SESSIONS
+            payload.forEach(session => {
 
-            var options = {
-		        selectionMode: 'single',
+                const classroom = session.name;
+                const classroomId = session.id;
+
+                session.hours.forEach(hourRange => {
+
+                    const [startStr, endStr] = hourRange.split('-');
+
+                    const [startH, startM] = startStr.split(':').map(Number);
+                    const [endH, endM] = endStr.split(':').map(Number);
+
+                    const startDate = new Date(date);
+                    startDate.setHours(startH, startM, 0, 0);
+
+                    const endDate = new Date(date);
+                    endDate.setHours(endH, endM, 0, 0);
+
+                    dataTable.addRow([
+                        classroom,
+                        classroomId,
+                        startDate,
+                        endDate
+                    ]);
+                });
+            });
+
+            const options = {
+                selectionMode: 'single',
                 tooltip: { isHtml: true },
                 timeline: { singleColor: 'rgb(13, 134, 155)' },
                 title: 'Teacher Timeline',
                 hAxis: {
-                    minValue: hxDayStart,   // 00:00
-                    maxValue: hxDayEnd, // 23:59
+                    minValue: hxDayStart,
+                    maxValue: hxDayEnd,
                     format: 'HH:mm'
                 }
             };
-	chart.draw(dataTable,options);
-	google.visualization.events.addListener(chart, 'select', function () {
-		const selection = chart.getSelection();
 
-    		if (selection.length > 0) {
-        		const rowIndex = selection[0].row;
-        		const selectedId = dataTable.getValue(rowIndex, 1); 
-        
-        		classroomDetails(selectedId);
-        		sidebarNavActive('classrooms');
-    		}
-	    });
+            chart.draw(dataTable, options);
+
+            //CLICK HANDLER (timeline)
+            google.visualization.events.addListener(chart, 'select', function () {
+
+                const selection = chart.getSelection();
+
+                if (selection.length > 0) {
+                    const rowIndex = selection[0].row;
+                    const selectedId = dataTable.getValue(rowIndex, 1);
+
+                    classroomDetails(selectedId);
+                    sidebarNavActive('classrooms');
+                }
+            });
+
         });
-    });
 }
 
 ///////
@@ -1774,7 +1816,7 @@ function insertTableRow(tableId, classroomid) {
     var c4 = row.insertCell(3)
     var c5 = row.insertCell(4)
     var c6 = row.insertCell(5)
-    c1.innerHTML = `<input type="text" class="form-control w-15" value="${classroomid}"/>`
+    c1.innerHTML = `<input type="text" class="form-control w-15" value="${classroomid}" oninput="console.log(this.value)"/>`
     c2.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Monday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
     c3.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Tuesday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'
     c4.innerHTML = '<input type="checkbox"class="hour-checkbox"data-day="Wednesday"><input type="text" class="form-control w-15" value="00:00-00:00"></input>'

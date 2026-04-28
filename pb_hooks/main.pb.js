@@ -205,7 +205,7 @@ routerAdd("GET", "/_dist/teacher/details", (httpContext) => {
         session["classroom_id"] = session["classroom"]
     });
 
-    console.log("scheduleArray", JSON.stringify(scheduleArray));
+    // console.log("scheduleArray", JSON.stringify(scheduleArray));
     // wrapped in try watch for any internal problem so that nothing get returned to client
     try {
         //generate templates base on working directory path
