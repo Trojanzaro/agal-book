@@ -921,8 +921,8 @@ async function createNewClassroom() {
     const name = document.forms["new_classroom_form"]["classroomName"].value;
     const teacher = document.getElementById('classroomTeacher')?.value || '';
     const room = document.forms["new_classroom_form"]["classroomRoom"].value || '';
-    const fee = document.forms["new_classroom_form"]["classroomLevel"].value || '';
-    const room = document.forms["new_classroom_form"]["classroomFee"].value || '';
+    const level = document.forms["new_classroom_form"]["classroomLevel"].value || '';
+    const fee = document.forms["new_classroom_form"]["classroomFee"].value || '';
     try {
         const data = {
             "name": name,
